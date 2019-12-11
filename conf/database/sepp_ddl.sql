@@ -1,9 +1,3 @@
-/*
-SQLyog Ultimate v10.51 
-MySQL - 5.5.5-10.3.9-MariaDB-log : Database - sepp
-*********************************************************************
-*/
-
 /*!40101 SET NAMES utf8mb4 */;
 
 /*!40101 SET SQL_MODE=''*/;
