@@ -1,0 +1,145 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.sep.release.dao.ReleaseDAO">
+
+    <select id="releaseQuery" resultType="com.pr.sepp.sep.release.model.Release">
+        select r.id,
+            r.rel_code                                  as relCode,
+            r.branch_id                                 as branchId,
+            rt.branch_name                              as branchName,
+            r.status,
+            rs.status_name                              as statusName,
+            r.creator,
+            u1.user_name                                as creatorName,
+            r.responser,
+            u2.user_name                                as responserName,
+            date_format(r.rel_date, '%Y-%m-%d')         as relDate,
+            date_format(r.req_confirm_date, '%Y-%m-%d') as reqConfirmDate,
+            date_format(r.sit_begin_date, '%Y-%m-%d')   as sitBeginDate,
+            date_format(r.uat_begin_date, '%Y-%m-%d')   as uatBeginDate,
+            date_format(r.ready_date, '%Y-%m-%d')       as readyDate,
+            date_format(r.rel_date_act, '%Y-%m-%d')     as relDateAct,
+            date_format(r.created_date, '%Y-%m-%d')     as createDate,
+            r.environment
+        from
+            sepp_release r,
+            sepp_product_branch rt,
+            sepp_rel_status rs,
+            sepp_user u1,
+            sepp_user u2
+        where rs.status_id = r.status
+          and r.creator = u1.user_id
+          and r.branch_id = rt.branch_id
+          and r.responser = u2.user_id
+        <choose>
+            <when test="id!=null and id!=''">
+                and r.id = #{id}
+            </when>
+            <when test="relId!=null and relId!=''">
+                and r.id = #{relId}
+            </when>
+            <when test="reqId!=null and reqId!=''">
+                and r.id in
+                (select
+                    req.rel_id
+                from
+                    sepp_requirement req
+                where req.id = #{reqId})
+            </when>
+            <otherwise>
+                and r.product_id = #{productId}
+                <if test="sts!=null">
+                    and r.status in
+                    <foreach collection="sts" index="index" item="status" open="(" separator="," close=")">
+                        #{status}
+                    </foreach>
+                </if>
+                <if test="relCode!=null and relCode!=''">
+                    and r.rel_code = #{relCode}
+                </if>
+                <if test="branchId!=null and branchId!=''">
+                    and r.branch_id = #{branchId}
+                </if>
+                <if test="responser!=null and responser!=''">
+                    and r.responser = #{responser}
+                </if>
+                <if test="creator!=null and creator!=''">
+                    and r.creator = #{creator}
+                </if>
+                <if test="relDateBegin!=null and relDateBegin!=''">
+                    <![CDATA[and r.rel_date >= #{relDateBegin}]]>
+                </if>
+                <if test="relDateEnd!=null and relDateEnd!=''">
+                    <![CDATA[and r.rel_date <= #{relDateEnd}]]>
+                </if>
+            </otherwise>
+        </choose>
+        order by r.rel_date desc
+    </select>
+
+    <select id="openReleaseQuery" resultType="com.pr.sepp.sep.release.model.Release">
+        select r.id,
+               r.rel_code                                  as relCode,
+               r.branch_id                                 as branchId,
+               rt.branch_name                              as branchName,
+               r.status,
+               rs.status_name                              as statusName,
+               r.creator,
+               u1.user_name                                as creatorName,
+               r.responser,
+               u2.user_name                                as responserName,
+               date_format(r.rel_date, '%Y-%m-%d')         as relDate,
+               date_format(r.req_confirm_date, '%Y-%m-%d') as reqConfirmDate,
+               date_format(r.sit_begin_date, '%Y-%m-%d')   as sitBeginDate,
+               date_format(r.uat_begin_date, '%Y-%m-%d')   as uatBeginDate,
+               date_format(r.ready_date, '%Y-%m-%d')       as readyDate,
+               date_format(r.rel_date_act, '%Y-%m-%d')     as relDateAct,
+               date_format(r.created_date, '%Y-%m-%d')     as createDate,
+               r.environment
+        from sepp_release r,
+             sepp_product_branch rt,
+             sepp_rel_status rs,
+             sepp_user u1,
+             sepp_user u2
+        where r.product_id = #{productId}
+          and rs.status_id = r.status
+          and r.creator = u1.user_id
+          and r.branch_id = rt.branch_id
+          and r.responser = u2.user_id
+          and r.status > 0
+        order by r.rel_date desc
+    </select>
+
+    <insert id="releaseCreate" useGeneratedKeys="true" parameterType="com.pr.sepp.sep.release.model.Release">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            select last_insert_id()
+        </selectKey>
+        insert into sepp_release
+            (rel_code, branch_id, status, creator, responser, product_id, rel_date,
+            req_confirm_date, sit_begin_date, uat_begin_date, ready_date, environment)
+        values
+            (#{relCode}, #{branchId}, #{status}, #{creator}, #{responser}, #{productId}, #{relDate},
+            #{reqConfirmDate}, #{sitBeginDate}, #{uatBeginDate}, #{readyDate}, #{environment})
+    </insert>
+
+    <update id="releaseUpdate" parameterType="com.pr.sepp.sep.release.model.Release">
+        update
+            sepp_release
+        set
+            status=#{status},
+            branch_id=#{branchId},
+            responser=#{responser},
+            rel_date=#{relDate},
+            req_confirm_date=#{reqConfirmDate},
+            sit_begin_date=#{sitBeginDate},
+            uat_begin_date=#{uatBeginDate},
+            ready_date=#{readyDate},
+            rel_date_act=#{relDateAct},
+            environment = #{environment}
+        where id=#{id}
+    </update>
+
+</mapper>

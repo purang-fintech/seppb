@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.sep.defect.dao.DefectDAO">
+
+    <select id="defectQuery" resultType="com.pr.sepp.sep.defect.model.Defect" parameterType="java.util.HashMap">
+        select
+            d.id,
+            d.status,
+            d.req_id as reqId,
+            d.rel_id as relId,
+            rel.rel_code as relCode,
+            d.priority,
+            d.influence,
+            d.submitter,
+            d.conciliator,
+            d.responser,
+            m.pd_responser as productor,
+            d.defect_type as defectType,
+            d.found_period as foundPeriod,
+            d.found_means as foundMeans,
+            d.defect_period as defectPeriod,
+            d.product_id as productId,
+            d.prod_module as prodModule,
+            d.fix_times as fixTimes,
+            d.summary,
+            d.detail,
+            ds.status_name as statusName,
+            dp.priority_name as priorityName,
+            di.influence_name as influenceName,
+            dt.type_name as defectTypeName,
+            fp.period_name as foundPeriodName,
+            fm.means_name as foundMeansName,
+            dpd.period_name as defectPeriodName,
+            m.module_name as prodModuleName,
+            date_format(d.found_time, '%Y-%m-%d %T') as foundTime,
+            date_format(d.response_time, '%Y-%m-%d %T') as responseTime,
+            date_format(d.fixed_time, '%Y-%m-%d %T') as fixedTime,
+            date_format(d.deployed_time, '%Y-%m-%d %T') as deployedTime,
+            date_format(d.closed_time, '%Y-%m-%d %T') as closedTime,
+            d.response_cost as responseCost,
+            d.fix_cost as fixCost,
+            d.deploy_cost as deployCost,
+            d.verify_cost as verifyCost,
+            d.refuse_reason as refuseReason,
+            d.refuse_detail as refuseDetail,
+            d.same_code_defect as sameCodeDefect
+        from
+            sepp_defects d,
+            sepp_release rel,
+            sepp_requirement r,
+            sepp_defect_influence di,
+            sepp_defect_period dpd,
+            sepp_defect_priority dp,
+            (select distinct status_id, status_name from sepp_defect_status) ds,
+            sepp_defect_type dt,
+            sepp_found_means fm,
+            sepp_found_period fp,
+            sepp_prod_module m
+        where r.id = d.req_id
+            and IFNULL(d.rel_id, 0) = rel.id
+            and d.status = ds.status_id
+            and d.priority = dp.priority_id
+            and d.influence = di.influence_id
+            and d.defect_type = dt.type_id
+            and d.found_period = fp.period_id
+            and d.defect_period = dpd.period_id
+            and d.found_means = fm.means_id
+            AND IFNULL(d.prod_module, 0) = m.module_id
+            <choose>
+                <when test="id!=null and id!=''">
+                    and d.id = #{id}
+                </when>
+                <otherwise>
+                    and d.product_id = #{productId}
+                    <if test="relId!=null and relId!=''">
+                        and r.rel_id = #{relId}
+                    </if>
+                    <if test="reqId!=null and reqId != ''">
+                        and d.req_id = #{reqId}
+                    </if>
+                    <if test="sts!=null">
+                        and d.status in
+                        <foreach collection="sts" index="index" item="status" open="(" separator="," close=")">
+                            #{status}
+                        </foreach>
+                    </if>
+                    <if test="priority!=null and priority!=''">
+                        and d.priority = #{priority}
+                    </if>
+                    <if test="influence!=null and influence!=''">
+                        and d.influence = #{influence}
+                    </if>
+                    <if test="submitter!=null and submitter!=''">
+                        and d.submitter = #{submitter}
+                    </if>
+                    <if test="conciliator!=null and conciliator!=''">
+                        and d.conciliator = #{conciliator}
+                    </if>
+                    <if test="responser!=null and responser!=''">
+                        and d.responser = #{responser}
+                    </if>
+                    <if test="prodModule!=null and prodModule!=''">
+                        and d.prod_module = #{prodModule}
+                    </if>
+                    <if test="foundPeriod!=null and foundPeriod!=''">
+                        and d.found_period = #{foundPeriod}
+                    </if>
+                    <if test="defectPeriod!=null and defectPeriod!=''">
+                        and d.defect_period = #{defectPeriod}
+                    </if>
+                    <if test="defectType !=null and defectType !=''">
+                        and d.defect_type = #{defectType}
+                    </if>
+                    <if test="foundTimeBegin!=null and foundTimeBegin!=''">
+                        <![CDATA[and d.found_time >= #{foundTimeBegin}]]>
+                    </if>
+                    <if test="foundTimeEnd!=null and foundTimeEnd!=''">
+                        <![CDATA[and d.found_time <= #{foundTimeEnd}]]>
+                    </if>
+                </otherwise>
+            </choose>
+        order by foundTime desc
+    </select>
+
+    <select id="defectQueryNC" resultType="java.lang.Integer" parameterType="java.util.HashMap">
+        select
+            count(id)
+        from
+            sepp_defects
+        where status > 0
+        and product_id = #{productId}
+        <if test="rel_id!=null and rel_id!=''">
+            and rel_id = #{relId}
+        </if>
+    </select>
+
+    <insert id="defectInfoCreate" useGeneratedKeys="true" parameterType="com.pr.sepp.sep.defect.model.Defect">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            select last_insert_id()
+        </selectKey>
+        insert into
+            sepp_defects(status, rel_id, req_id, priority, influence, submitter, conciliator, responser, defect_type, found_period,
+            found_means, defect_period, product_id, prod_module, fix_times, summary, detail, found_time, response_time, response_cost)
+        values
+            (#{status}, #{relId}, #{reqId}, #{priority}, #{influence}, #{submitter}, #{conciliator},
+            #{responser}, #{defectType}, #{foundPeriod}, #{foundMeans}, #{defectPeriod}, #{productId},
+            #{prodModule}, #{fixTimes}, #{summary}, #{detail}, #{foundTime}, #{responseTime}, #{responseCost})
+    </insert>
+
+    <update id="defectInfoUpdate" parameterType="com.pr.sepp.sep.defect.model.Defect">
+        update
+            sepp_defects
+        set
+            rel_id = #{relId},
+            req_id = #{reqId},
+            priority = #{priority},
+            influence = #{influence},
+            submitter = #{submitter},
+            conciliator = #{conciliator},
+            responser = #{responser},
+            defect_type = #{defectType},
+            found_period = #{foundPeriod},
+            found_means = #{foundMeans},
+            defect_period = #{defectPeriod},
+            product_id = #{productId},
+            prod_module = #{prodModule},
+            fix_times = #{fixTimes},
+            summary = #{summary},
+            detail = #{detail},
+            found_time = #{foundTime},
+            response_time = #{responseTime},
+            fixed_time = #{fixedTime},
+            deployed_time = #{deployedTime},
+            closed_time = #{closedTime},
+            response_cost = #{responseCost},
+            fix_cost = #{fixCost},
+            deploy_cost = #{deployCost},
+            verify_cost = #{verifyCost},
+            status = #{status},
+            refuse_reason = #{refuseReason},
+            refuse_detail = #{refuseDetail},
+            same_code_defect = #{sameCodeDefect}
+        where id = #{id}
+    </update>
+
+    <update id="defectStatusUpdate" parameterType="com.pr.sepp.sep.defect.model.Defect">
+        update
+            sepp_defects
+        set
+            status = #{status},
+            detail = #{detail},
+            <if test="responser!=null and responser!=''">
+                responser = #{responser},
+            </if>
+            <if test="refuseReason!=null and refuseReason!=''">
+                refuse_reason = #{refuseReason},
+            </if>
+            <if test="refuseDetail!=null and refuseDetail!=''">
+                refuse_detail = #{refuseDetail},
+            </if>
+            <if test="sameCodeDefect!=null and sameCodeDefect!=''">
+                same_code_defect = #{sameCodeDefect},
+            </if>
+            <if test="responseTime!=null and responseTime!=''">
+                response_time = #{responseTime},
+            </if>
+            <if test="fixedTime!=null and fixedTime!=''">
+                fixed_time = #{fixedTime},
+            </if>
+            <if test="deployedTime!=null and deployedTime!=''">
+                deployed_time = #{deployedTime},
+            </if>
+            <if test="closedTime!=null and closedTime!=''">
+                closed_time = #{closedTime},
+            </if>
+            <if test="fixCost!=null and fixCost!=''">
+                fix_cost = #{fixCost},
+            </if>
+            <if test="responseCost!=null and responseCost!=''">
+                response_cost = #{responseCost},
+            </if>
+            <if test="deployCost!=null and deployCost!=''">
+                deploy_cost = #{deployCost},
+            </if>
+            <if test="verifyCost!=null and verifyCost!=''">
+                verify_cost = #{verifyCost},
+            </if>
+            fix_times = #{fixTimes}
+        where id = #{id}
+    </update>
+
+    <select id="refusedDefectQuery" resultType="com.pr.sepp.sep.defect.model.Defect" parameterType="java.util.HashMap">
+        select
+            d.id,
+            d.status,
+            d.req_id as reqId,
+            d.rel_id as relId,
+            rel.rel_code as relCode,
+            d.priority,
+            d.influence,
+            d.submitter,
+            d.conciliator,
+            d.responser,
+            m.pd_responser as productor,
+            d.defect_type as defectType,
+            d.found_period as foundPeriod,
+            d.found_means as foundMeans,
+            d.defect_period as defectPeriod,
+            d.product_id as productId,
+            d.prod_module as prodModule,
+            d.fix_times as fixTimes,
+            d.summary,
+            d.detail,
+            ds.status_name as statusName,
+            dp.priority_name as priorityName,
+            di.influence_name as influenceName,
+            dt.type_name as defectTypeName,
+            fp.period_name as foundPeriodName,
+            fm.means_name as foundMeansName,
+            dpd.period_name as defectPeriodName,
+            m.module_name as prodModuleName,
+            date_format(d.found_time, '%Y-%m-%d %T') as foundTime,
+            date_format(d.response_time, '%Y-%m-%d %T') as responseTime,
+            date_format(d.fixed_time, '%Y-%m-%d %T') as fixedTime,
+            date_format(d.deployed_time, '%Y-%m-%d %T') as deployedTime,
+            date_format(d.closed_time, '%Y-%m-%d %T') as closedTime,
+            d.response_cost as responseCost,
+            d.fix_cost as fixCost,
+            d.deploy_cost as deployCost,
+            d.verify_cost as verifyCost,
+            d.refuse_reason as refuseReason,
+            d.refuse_detail as refuseDetail,
+            d.same_code_defect as sameCodeDefect
+        from
+            sepp_defects d,
+            sepp_release rel,
+            sepp_requirement r,
+            sepp_defect_influence di,
+            sepp_defect_period dpd,
+            sepp_defect_priority dp,
+            (select distinct status_id, status_name from sepp_defect_status) ds,
+            sepp_defect_type dt,
+            sepp_found_means fm,
+            sepp_found_period fp,
+            sepp_prod_module m
+        where r.id = d.req_id
+          and d.rel_id = rel.id
+          and d.status = ds.status_id
+          and d.priority = dp.priority_id
+          and d.influence = di.influence_id
+          and d.defect_type = dt.type_id
+          and d.found_period = fp.period_id
+          and d.defect_period = dpd.period_id
+          and d.found_means = fm.means_id
+          AND IFNULL(d.prod_module, 0) = m.module_id
+          AND d.closed_time IS NOT NULL
+          AND d.status = 0
+          AND EXISTS
+            (SELECT
+                'X'
+            FROM
+                sepp_history h
+            WHERE h.obj_type = 5
+              AND h.obj_key = 'status'
+              AND h.org_value = 6
+              AND h.new_value = 0
+              AND h.obj_id = d.id
+              AND NOT EXISTS
+                (SELECT
+                    'X'
+                FROM
+                    sepp_history hh
+                WHERE hh.obj_id = h.obj_id
+                  AND hh.obj_key = 'status'
+                  AND hh.obj_type = 5
+                  AND hh.id > h.id))
+        <choose>
+            <when test="id!=null and id!=''">
+                and d.id = #{id}
+            </when>
+            <otherwise>
+                and d.product_id = #{productId}
+                <if test="relId!=null and relId!=''">
+                    and d.rel_id = #{relId}
+                </if>
+                <if test="reqId!=null and reqId != ''">
+                    and d.req_id = #{reqId}
+                </if>
+                <if test="priority!=null and priority!=''">
+                    and d.priority = #{priority}
+                </if>
+                <if test="influence!=null and influence!=''">
+                    and d.influence = #{influence}
+                </if>
+                <if test="submitter!=null and submitter!=''">
+                    and d.submitter = #{submitter}
+                </if>
+                <if test="conciliator!=null and conciliator!=''">
+                    and d.conciliator = #{conciliator}
+                </if>
+                <if test="responser!=null and responser!=''">
+                    and d.responser = #{responser}
+                </if>
+                <if test="prodModule!=null and prodModule!=''">
+                    and d.prod_module = #{prodModule}
+                </if>
+                <if test="foundPeriod!=null and foundPeriod!=''">
+                    and d.found_period = #{foundPeriod}
+                </if>
+                <if test="defectPeriod!=null and defectPeriod!=''">
+                    and d.defect_period = #{defectPeriod}
+                </if>
+                <if test="defectType !=null and defectType !=''">
+                    and d.defect_type = #{defectType}
+                </if>
+                <if test="foundTimeBegin!=null and foundTimeBegin!=''">
+                    <![CDATA[and d.found_time >= #{foundTimeBegin}]]>
+                </if>
+                <if test="foundTimeEnd!=null and foundTimeEnd!=''">
+                    <![CDATA[and d.found_time <= #{foundTimeEnd}]]>
+                </if>
+            </otherwise>
+        </choose>
+        order by foundTime desc
+    </select>
+</mapper>

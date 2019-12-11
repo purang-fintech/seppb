@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.auth.dao.MenuDAO">
+
+    <select id="findAllMenus" resultType="com.pr.sepp.auth.model.Menu">
+        select id,
+               menu_icon  menuIcon,
+               menu_index menuIndex,
+               title,
+               role_ids   roles,
+               parent_id  parentId
+        from sepp_menu
+    </select>
+
+    <insert id="saveMenu" useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO sepp_menu(menu_icon, menu_index, title, role_ids, parent_id)
+        VALUES (#{menuIcon}, #{menuIndex}, #{title}, #{roles}, #{parentId})
+    </insert>
+
+    <update id="updateMenu">
+        UPDATE sepp_menu
+        SET menu_icon = #{menuIcon},
+            menu_index=#{menuIndex},
+            role_ids=#{roles},
+            title = #{title}
+        WHERE id = #{id}
+    </update>
+
+    <delete id="deleteMenu">
+        delete from sepp_menu where id = #{id}
+    </delete>
+
+    <select id="getMenu" resultType="com.pr.sepp.auth.model.Menu">
+        select id,
+               menu_icon  menuIcon,
+               menu_index menuIndex,
+               title,
+               role_ids   roles,
+               parent_id  parentId
+        from sepp_menu
+        where menu_index = #{menuIndex}
+          and title is not null
+    </select>
+
+    <select id="getMenuByParent" resultType="com.pr.sepp.auth.model.Menu">
+        select id,
+               menu_icon  menuIcon,
+               menu_index menuIndex,
+               title,
+               role_ids   roles,
+               parent_id  parentId
+        from sepp_menu
+        where id = #{parentId}
+          and title is not null
+    </select>
+</mapper>

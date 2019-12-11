@@ -1,0 +1,351 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.sep.build.dao.BuildDAO">
+    <select id="releasenoteQuery" resultType="com.pr.sepp.sep.build.model.ReleaseNote" resultMap="noteMaps">
+        select
+            rn.id,
+            rn.req_id as reqId,
+            rn.rel_id as relId,
+            rn.status,
+            rn.description,
+            rn.submitter,
+            rn.files,
+            rn.others,
+            rn.attachment,
+            r.summary as reqSummary,
+            r.sit_date as sitDate,
+            r.uat_date as uatDate,
+            r.submitter as reqSubmitter,
+            r.expect_date as expectDate,
+            r.submit_date as submitDate,
+            bs.status_name as statusName,
+            rel.rel_code as relCode,
+            m.pd_responser as pdResponser,
+            m.dev_responser as devResponser,
+            m.test_responser as testResponser
+        from
+            sepp_requirement r,
+            sepp_prod_module m,
+            sepp_release_note rn,
+            sepp_releasenote_status bs,
+            sepp_release rel
+        where r.id = rn.req_id
+          and r.product_id = #{productId}
+          and rn.status = bs.status_id
+          and rel.id = rn.rel_id
+          and m.module_id = r.module_id
+        <if test="reqId!=null and reqId!=''">
+            and rn.req_id = #{reqId}
+        </if>
+        <if test="id!=null and id!=''">
+            and rn.id = #{id}
+        </if>
+        <if test="relId!=null and relId!=''">
+            and rn.rel_id = #{relId}
+        </if>
+        <if test="reqStatus!=null">
+            and r.status in
+            <foreach collection="reqStatus" index="index" item="status" open="(" separator="," close=")">
+                #{status}
+            </foreach>
+        </if>
+        <if test="status!=null">
+            and rn.status in
+            <foreach collection="status" index="index" item="status" open="(" separator="," close=")">
+                #{status}
+            </foreach>
+        </if>
+        <if test="submitter!=null and submitter!=''">
+            and rn.submitter = #{submitter}
+        </if>
+        order by rn.id desc
+    </select>
+    <resultMap type="com.pr.sepp.sep.build.model.ReleaseNote" id="noteMaps">
+        <id column="id" property="id"/>
+        <result column="reqId" property="reqId"/>
+        <result column="relId" property="relId"/>
+        <result column="status" property="status"/>
+        <result column="description" property="description"/>
+        <result column="submitter" property="submitter"/>
+        <result column="files" property="files"/>
+        <result column="others" property="others"/>
+        <result column="attachment" property="attachment"/>
+        <collection property="buildFiles" ofType="com.pr.sepp.sep.build.model.BuildFile" select="listBuildFilesById" column="id">
+        </collection>
+    </resultMap>
+
+    <select id="listBuildFilesById" resultType="com.pr.sepp.sep.build.model.BuildFile">
+        select id,
+               note_id     noteId,
+               instance,
+               param_key   paramKey,
+               param_value paramValue
+        from sepp_build_files
+        where note_id = #{id}
+    </select>
+
+    <insert id="releasenoteCreate" keyProperty="id" useGeneratedKeys="true" parameterType="com.pr.sepp.sep.build.model.ReleaseNote">
+        insert into sepp_release_note
+            (req_id, status, rel_id, submitter, attachment, description, others)
+        values
+            (#{reqId}, #{status}, #{relId}, #{submitter}, #{attachment}, #{description}, #{others})
+    </insert>
+
+    <update id="releasenoteUpdate" parameterType="com.pr.sepp.sep.build.model.ReleaseNote">
+        update
+            sepp_release_note
+        set
+            status=#{status},
+            description=#{description},
+            others=#{others},
+            attachment=#{attachment}
+        where
+            id=#{id}
+    </update>
+
+    <select id="buildQuery" resultType="com.pr.sepp.sep.build.model.Build">
+        select b.id,
+               b.note_id      as noteId,
+               b.product_id   as productId,
+               b.prod_branch  AS prodBranch,
+               b.env_type     AS envType,
+               b.instance,
+               b.job_number   AS jobNumber,
+               b.queue_id     AS queueId,
+               b.submit_time  AS submitTime,
+               b.build_start  AS buildStart,
+               b.build_end    AS buildEnd,
+               b.submitter    AS submitter,
+               b.build_host   AS buildHost,
+               b.build_result AS buildResult,
+               b.build_detail AS buildDetail,
+               b.job_name     AS jobName,
+               u.user_name    as submitterName,
+               br.status_name as resultName,
+               et.type_name   as envTypeName
+        from sepp_build b,
+             sepp_build_status br,
+             sepp_user u,
+             sepp_env_type et
+        where b.note_id = #{noteId}
+          and u.user_id = b.submitter
+          and br.status_id = b.build_result
+          and et.type_id = b.env_type
+        order by b.id desc
+    </select>
+
+    <select id="urlQuery" resultType="com.pr.sepp.sep.build.model.JenkinsParam">
+        select e.job_url    as jobUrl,
+               e.job_params as jobParams
+        from sepp_environment e
+        where e.prodBranch = #{prodBranch}
+          and e.instance = #{instance}
+          and e.env_type = #{envType}
+    </select>
+
+    <insert id="startBuild" parameterType="com.pr.sepp.sep.build.model.ReleaseNote">
+        insert into sepp_build
+        (
+            note_id,
+            product_id,
+            prodBranch,
+            env_type,
+            instance,
+            submit_time,
+            submitter,
+            build_result,
+            build_host
+        )
+        values (
+            #{noteId},
+            #{productId},
+            #{prodBranch},
+            #{envType},
+            #{instance},
+            #{submitTime},
+            #{submitter},
+            2,
+            #{ip}
+        )
+    </insert>
+
+    <insert id="saveBuild" parameterType="com.pr.sepp.sep.build.model.BuildHistory">
+        insert into sepp_build_history
+        (
+            note_id,
+            job_name,
+            product_id,
+            env_type,
+            instance,
+            submitter,
+            build_version,
+            build_status,
+            build_params,
+            code_change,
+            build_interval,
+            tag,
+            branch_id,
+            branch_name,
+            env_name,
+            instance_type,
+            build_type
+        )
+        values (
+            #{noteId},
+            #{jobName},
+            #{productId},
+            #{envType},
+            #{instance},
+            #{submitter},
+            #{buildVersion},
+            #{buildStatus},
+            #{buildParams},
+            #{codeChange},
+            #{buildInterval},
+            #{tag},
+            #{branchId},
+            #{branchName},
+            #{envName},
+            #{type},
+            #{buildType}
+        )
+    </insert>
+
+    <update id="update">
+        <selectKey keyProperty="id" resultType="int" order="BEFORE">
+            select count(*) from sepp_build_history where job_name = #{jobName} and build_version=#{buildVersion}
+        </selectKey>
+        <if test="id > 0">
+            UPDATE
+                sepp_build_history
+            SET
+                build_status=#{buildStatus},
+                build_interval=#{buildInterval},
+                pipeline_step=#{pipelineStep},
+                code_change = #{codeChange}
+            WHERE job_name=#{jobName}
+              AND build_version=#{buildVersion}
+              AND build_status NOT IN('SUCCESS','FAILURE','UNSTABLE','ABORTED')
+        </if>
+        <if test="id==0">
+            insert into sepp_build_history
+                (job_name, build_version, build_status, build_interval, pipeline_step, code_change)
+            values
+                (#{jobName}, #{buildVersion}, #{buildStatus}, #{buildInterval}, #{pipelineStep}, #{codeChange})
+        </if>
+    </update>
+
+    <select id="maxBuildVersion" resultType="java.lang.Integer">
+        select max(build_version)
+        from sepp_build_history
+        where job_name = #{jobName}
+    </select>
+
+    <select id="buildHistories" resultType="com.pr.sepp.sep.build.model.BuildHistory">
+        SELECT h.id,
+               h.job_name       jobName,
+               h.note_id        noteId,
+               h.product_id     productId,
+               h.env_type       envType,
+               h.instance,
+               h.build_version  buildVersion,
+               h.submitter,
+               h.build_host     buildHost,
+               h.build_status   buildStatus,
+               h.build_params   buildParams,
+               h.build_interval buildInterval,
+               h.code_change    codeChange,
+               h.created_date   createdDate,
+               h.tag,
+               h.branch_name    branchName,
+               h.env_name       envName,
+               h.pipeline_step  pipelineStep,
+               instance_type    type,
+               h.build_type     buildType
+        FROM (SELECT tag FROM sepp_build_history WHERE note_id = #{noteId} GROUP BY tag ORDER BY created_date DESC LIMIT #{pageStart},#{pageSize}) t
+                 INNER JOIN sepp_build_history h ON t.tag = h.tag
+    </select>
+
+    <insert id="saveBuildFiles" parameterType="java.util.List">
+        INSERT INTO sepp_build_files(note_id,instance,param_key,param_value)
+        VALUES
+        <foreach collection="buildFiles" index="index" item="buildFile" separator=",">
+            (#{buildFile.noteId},#{buildFile.instance},#{buildFile.paramKey},#{buildFile.paramValue})
+        </foreach>
+    </insert>
+
+    <delete id="deleteBuildFiles">
+        delete from sepp_build_files where note_id=#{noteId}
+    </delete>
+
+    <select id="listBuildFiles" resultType="com.pr.sepp.sep.build.model.BuildFile">
+        select id,note_id noteId,instance,param_key paramKey,param_value paramValue
+        from sepp_build_files
+        where note_id = #{noteId}
+        <if test="instances != null">
+            and instance in
+            <foreach collection="instances" index="index" item="instance" open="(" separator="," close=")">
+                #{instance}
+            </foreach>
+        </if>
+    </select>
+
+    <select id="allBuildInstances" resultType="com.pr.sepp.sep.build.model.BuildInstance">
+        select id, instance
+        from sepp_build_instance
+        where product_id = #{productId}
+    </select>
+
+    <select id="findBuildHistoryById" resultType="com.pr.sepp.sep.build.model.BuildHistory">
+        SELECT h.id,
+               h.job_name       jobName,
+               h.note_id        noteId,
+               h.product_id     productId,
+               h.env_type       envType,
+               h.instance,
+               h.build_version  buildVersion,
+               h.submitter,
+               h.build_host     buildHost,
+               h.build_status   buildStatus,
+               h.build_params   buildParams,
+               h.build_interval buildInterval,
+               h.code_change    codeChange,
+               h.created_date   createdDate,
+               h.tag,
+               h.branch_name    branchName,
+               h.env_name       envName,
+               h.pipeline_step  pipelineStep
+        FROM sepp_build_history h
+        where id = #{id}
+    </select>
+
+    <select id="getBuildHistories" resultType="com.pr.sepp.sep.build.model.BuildHistory">
+        SELECT h.id,
+               h.job_name       jobName,
+               h.note_id        noteId,
+               h.product_id     productId,
+               h.env_type       envType,
+               h.instance,
+               h.build_version  buildVersion,
+               h.submitter,
+               h.build_host     buildHost,
+               h.build_status   buildStatus,
+               h.build_params   buildParams,
+               h.build_interval buildInterval,
+               h.code_change    codeChange,
+               h.created_date   createdDate,
+               h.tag,
+               h.branch_name    branchName,
+               h.env_name       envName,
+               h.pipeline_step  pipelineStep,
+               h.instance_type  type,
+               h.build_type     buildType
+        FROM sepp_build_history h
+        WHERE job_name = #{jobName}
+        ORDER BY buildVersion DESC
+        LIMIT 0,20
+    </select>
+</mapper>

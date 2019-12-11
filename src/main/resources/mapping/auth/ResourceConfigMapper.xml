@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.auth.dao.ResourceConfigDAO">
+
+    <select id="listResourceConfigs" resultType="com.pr.sepp.auth.model.ResourceConfig">
+        SELECT id,
+               resource_desc         resourceDesc,
+               component_name        componentName,
+               auth_id               authId,
+               request_url           requestUrl,
+               request_method        requestMethod,
+               GROUP_CONCAT(role_id) roleIds,
+               product_id            productId,
+               `user`,
+               is_valid              isValid,
+               updated_date          updatedDate
+        FROM sepp_resource_config
+        where product_id = #{productId}
+        GROUP BY component_name, auth_id
+        ORDER BY updated_date desc
+    </select>
+
+    <select id="findResourceConfigsByApi" resultType="com.pr.sepp.auth.model.ResourceConfig">
+        SELECT id,
+               resource_desc  resourceDesc,
+               component_name componentName,
+               auth_id        authId,
+               request_url    requestUrl,
+               request_method requestMethod,
+               role_id        roleId,
+               product_id     productId,
+               `user`,
+               is_valid       isValid,
+               updated_date   updatedDate
+        FROM sepp_resource_config
+        where request_url = #{requestUrl}
+          and request_method = #{requestMethod}
+    </select>
+
+    <insert id="batchInsert">
+        INSERT INTO sepp_resource_config
+        (resource_desc,component_name,auth_id,request_url,request_method,role_id,product_id,is_valid)
+        VALUES
+        <foreach collection="resourceConfig.roles" item="role" separator=",">
+            (#{resourceConfig.resourceDesc},#{resourceConfig.componentName},#{resourceConfig.authId},
+            #{resourceConfig.requestUrl},#{resourceConfig.requestMethod},#{role},#{resourceConfig.productId},
+            #{resourceConfig.isValid})
+        </foreach>
+    </insert>
+
+    <select id="findResourceConfigsByComponent" resultType="com.pr.sepp.auth.model.ResourceConfig">
+        SELECT id,
+               resource_desc  resourceDesc,
+               component_name componentName,
+               auth_id        authId,
+               request_url    requestUrl,
+               request_method requestMethod,
+               role_id        roleId,
+               product_id     productId,
+               `user`,
+               is_valid       isValid,
+               updated_date   updatedDate
+        FROM sepp_resource_config
+        where is_valid = true and component_name = #{componentName}
+          <if test="authId != null">
+              and auth_id = #{authId}
+          </if>
+    </select>
+
+    <delete id="deleteByComponent">
+        delete from sepp_resource_config where component_name = #{componentName} and auth_id = #{authId}
+    </delete>
+
+</mapper>

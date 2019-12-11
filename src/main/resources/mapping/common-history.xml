@@ -1,0 +1,76 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pr.sepp.history.dao.HistoryDAO">
+
+    <insert id="historyInsert" useGeneratedKeys="true" parameterType="com.pr.sepp.history.model.SEPPHistory">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            select last_insert_id()
+        </selectKey>
+        insert into sepp_history
+            (obj_type, obj_id, obj_key, product_id, oper_user, oper_type, refer_user, org_value, new_value, oper_comment)
+        values
+            (#{objType}, #{objId}, #{objKey}, #{productId}, #{operUser}, #{operType}, #{referUser}, #{orgValue}, #{newValue}, #{operComment})
+    </insert>
+
+    <insert id="historyInsertBatch" parameterType="java.util.List" useGeneratedKeys="false">
+        insert into sepp_history
+            (obj_type, obj_id, obj_key, product_id, oper_user, oper_type, refer_user, org_value, new_value, oper_comment)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.objType},
+            #{item.objId},
+            #{item.objKey},
+            #{item.productId},
+            #{item.operUser},
+            #{item.operType},
+            #{item.referUser},
+            #{item.orgValue},
+            #{item.newValue},
+            #{item.operComment}
+            )
+        </foreach>
+    </insert>
+
+    <select id="historyDirectQuery" resultType="com.pr.sepp.history.model.SEPPHistory" parameterType="java.util.HashMap">
+        select id,
+               obj_type                              as objType,
+               obj_id                                as objId,
+               obj_key                               as objKey,
+               product_id                            as productId,
+               oper_user                             as operUser,
+               oper_type                             as operType,
+               date_format(oper_time, '%Y-%m-%d %T') as operTime,
+               refer_user                            as referUser,
+               org_value                             as orgValue,
+               new_value                             as newValue,
+               oper_comment                          as operComment
+        from sepp_history
+        where oper_user = #{userId}
+          and product_id = #{productId}
+		<![CDATA[and oper_time >= DATE_ADD(NOW(), INTERVAL -30 DAY)]]>
+        order by oper_time desc
+    </select>
+
+    <select id="historyReferQuery" resultType="com.pr.sepp.history.model.SEPPHistory" parameterType="java.util.HashMap">
+        select id,
+               obj_type                              as objType,
+               obj_id                                as objId,
+               obj_key                               as objKey,
+               product_id                            as productId,
+               oper_user                             as operUser,
+               oper_type                             as operType,
+               date_format(oper_time, '%Y-%m-%d %T') as operTime,
+               refer_user                            as referUser,
+               org_value                             as orgValue,
+               new_value                             as newValue,
+               oper_comment                          as operComment
+        from sepp_history
+        where refer_user = #{userId}
+          and product_id = #{productId}
+		<![CDATA[and oper_time >= DATE_ADD(NOW(), INTERVAL -30 DAY)]]>
+        order by oper_time desc
+    </select>
+</mapper>

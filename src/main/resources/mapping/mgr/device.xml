@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+		"mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.sep.device.dao.DeviceDAO">
+
+	<select id="deviceQuery" resultType="com.pr.sepp.sep.device.model.Device">
+		select
+			d.id,
+			d.asset_id as assetId,
+			d.device_name as deviceName,
+			d.brand,
+			d.opr_sys as oprSys,
+			d.model,
+			d.color,
+			d.versions,
+			d.ram,
+			d.rom,
+			d.status,
+			d.user_name as userName,
+		    d.controller,
+			u.user_name AS controllerName,
+			d.rent_date as rentDate,
+			d.return_date as returnDate
+		from
+			sepp_device d,
+			sepp_user u
+		where u.user_id = d.controller
+		<if test="assetId!=null and assetId!=''">
+			and d.asset_id = #{assetId}
+		</if>
+		<if test="oprSys!=null and oprSys!=''">
+			and d.opr_sys = #{oprSys}
+		</if>
+		<if test="brand!=null and brand!=''">
+			and d.brand = #{brand}
+		</if>
+		<if test="status!=null and status!=''">
+			and d.status = #{status}
+		</if>
+		<if test="deviceName!=null and deviceName!=''">
+			and d.device_name = #{deviceName}
+		</if>
+		<if test="userName!=null and userName!=''">
+			and d.user_name = #{userName}
+		</if>
+	</select>
+
+	<insert id="deviceCreate" useGeneratedKeys="true" parameterType="com.pr.sepp.sep.device.model.Device">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+		insert into
+			sepp_device(user_name, asset_id, device_name, opr_sys, model, color, versions, ram, rom)
+		values
+			(#{userName}, #{assetId}, #{deviceName}, #{oprSys}, #{model}, #{color}, #{versions}, #{ram}, #{rom})
+	</insert>
+
+	<update id="changeUser" parameterType="java.util.HashMap">
+		update
+			sepp_device
+		set
+			user_name = #{userName},
+			rent_date = #{rentDate},
+			status = #{status}
+		where
+			id = #{id}
+	</update>
+
+	<update id="intoWarehouse" parameterType="java.util.HashMap">
+		update
+			sepp_device
+		set
+			user_name = #{userName},
+			return_date = #{returnDate},
+			status = #{status}
+		where
+			id = #{id}
+	</update>
+
+	<update id="deviceUpdate" parameterType="com.pr.sepp.sep.device.model.Device">
+		update
+			sepp_device
+		set
+			versions = #{versions}
+		where id = #{id}
+	</update>
+</mapper>

@@ -1,0 +1,122 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.auth.dao.UserRoleDAO">
+    <select id="allRoles" resultType="com.pr.sepp.auth.model.Role">
+        SELECT role_id roleId,
+        role_code roleCode,
+        role_name roleName,
+        role_desc roleDesc,
+        is_valid isValid,
+        updated_date updatedDate
+        FROM sepp_user_role
+        WHERE 1 = 1
+        <if test="valid != null">
+            and is_valid = #{valid}
+        </if>
+        order by roleId
+    </select>
+
+    <select id="getPrivilegesByUserAndProductId" resultType="com.pr.sepp.auth.model.Privilege">
+        select p.priv_id    privId,
+               p.user_id    userId,
+               p.role_id    roleId,
+               p.product_id productId
+        from sepp_privileges p,
+             sepp_user_role r
+        where p.user_id = #{userId}
+          and p.product_id = #{productId}
+          and p.role_id = r.role_id
+          and r.is_valid = 'Y'
+    </select>
+
+    <select id="getRolesByIds" resultType="com.pr.sepp.auth.model.Role">
+        SELECT
+            role_id roleId,
+            role_name roleName,
+            role_code roleCode
+        FROM sepp_user_role
+        WHERE role_id IN
+        <foreach collection="roleIds" index="index" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </select>
+
+    <insert id="save">
+        insert into sepp_user_role(role_code, role_name, role_desc, is_valid)
+        values (#{roleCode}, #{roleName}, #{roleDesc}, #{isValid})
+    </insert>
+
+    <update id="setRoleValid">
+        update
+            sepp_user_role
+        set
+            is_valid = #{isValid}
+        where
+            role_id = #{roleId}
+    </update>
+
+    <update id="updateRole">
+        update
+            sepp_user_role
+        set
+            is_valid = #{isValid},
+            role_code = #{roleCode},
+            role_desc = #{roleDesc},
+            role_name=#{roleName}
+        where
+            role_id = #{roleId}
+    </update>
+
+    <select id="findRolesByUser" resultType="com.pr.sepp.auth.model.Role">
+        SELECT p.role_id roleId,
+               role_code roleCode,
+               role_name roleName,
+               role_desc roleDesc,
+               is_valid  isValid
+        FROM sepp_user_role r
+                 INNER JOIN (
+            SELECT *
+            FROM sepp_privileges
+            WHERE user_id = #{userId}
+              AND product_id = #{productId}) p
+                            ON r.role_id = p.role_id
+    </select>
+
+    <select id="currentUserRoles" resultType="com.pr.sepp.auth.model.CurrentUserRole">
+        select pr.product_id   productId,
+               pr.product_code productCode,
+               pr.product_name productName,
+               pr.is_valid     isValid,
+               r.role_id       roleId,
+               r.role_name     roleName,
+               r.role_code     roleCode
+        from sepp_privileges p,
+             sepp_product pr,
+             sepp_user_role r
+        where p.product_id = pr.product_id
+          and p.role_id = r.role_id
+          and p.user_id = #{userId}
+          and pr.is_valid = 'Y'
+    </select>
+
+    <select id="currentUserRolesByProductId" resultType="com.pr.sepp.auth.model.CurrentUserRole">
+        select pr.product_id   productId,
+               pr.product_code productCode,
+               pr.product_name productName,
+               pr.is_valid     isValid,
+               r.role_id       roleId,
+               r.role_name     roleName,
+               r.role_code     roleCode
+        from sepp_privileges p,
+             sepp_product pr,
+             sepp_user_role r
+        where p.product_id = pr.product_id
+          and p.role_id = r.role_id
+          and p.user_id = #{userId}
+          and p.product_id = #{productId}
+          and pr.is_valid = 'Y'
+    </select>
+</mapper>

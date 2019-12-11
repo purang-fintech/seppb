@@ -1,0 +1,369 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.sep.testing.dao.TestReportDAO">
+
+	<select id="reportListQuery" resultType="com.pr.sepp.sep.testing.model.TestReport" parameterType="java.util.HashMap">
+		select
+		  r.id,
+		  r.report_type as reportType,
+		  date_format(r.report_date, '%Y-%m-%d %T') as reportDate,
+		  rel.id as relId,
+		  rel.rel_code as relCode,
+		  p.plan_type as planType,
+		  r.emergency_plan as emergencyPlan,
+		  r.sqa_suggestion as sqaSuggestion,
+		  r.title,
+		  r.url
+		from
+		  sepp_test_report r,
+		  (select
+		    0 as plan_type,
+		    0 as plan_id
+		  from
+		    sepp_test_plan
+		  where rel_id = #{relId}
+		  union
+		  select
+		    plan_type,
+		    id as plan_id
+		  from
+		    sepp_test_plan
+		  where rel_id = #{relId} ) p,
+		    sepp_release rel
+		  where r.rel_id = rel.id
+		    and p.plan_id = ifnull(r.plan_id, 0)
+		    and r.rel_id = #{relId}
+			<if test="reportType!=null and reportType!='' ">
+				and r.report_type = #{reportType}
+			</if>
+			<if test="planType!=null and planType!='' ">
+				and p.plan_type = #{planType}
+			</if>
+	</select>
+
+	<select id="reportInfoQuery" resultType="com.pr.sepp.sep.testing.model.TestReport" parameterType="java.util.HashMap">
+		select
+		  r.id,
+		  r.report_type as reportType,
+		  pd.product_id as productId,
+  		  pd.product_name as productName,
+		  date_format(r.report_date, '%Y-%m-%d %T') as reportDate,
+		  rel.id as relId,
+		  rel.rel_code as relCode,
+		  r.emergency_plan as emergencyPlan,
+		  r.sqa_suggestion as sqaSuggestion,
+		  p.planType,
+		  p.emailTo,
+		  p.emailCc,
+		  p.planBegin,
+		  p.planEnd,
+		  r.title,
+		  r.url
+		from
+		  sepp_test_report r,
+		  (select
+		    group_concat(email_to) as emailTo,
+		    group_concat(email_cc) as emailCc,
+			null as planBegin,
+			null as planEnd,
+		    0 as planType,
+		    0 as planId
+		  from
+		    sepp_test_plan
+		  where rel_id in
+		    (select
+		      rel_id
+		    from
+		      sepp_test_report
+		    where id = #{id})
+		    and plan_type in (4, 5)
+		    union
+		    select
+		      email_to as emailTo,
+		      email_cc as emailCc,
+			  date_format(plan_begin, '%Y-%m-%d') as planBegin,
+			  date_format(plan_end, '%Y-%m-%d') as planEnd,
+		      plan_type as planType,
+		      id as planId
+		    from
+		      sepp_test_plan
+		    where rel_id in
+		      (select
+		        rel_id
+		      from
+		        sepp_test_report
+		      where id = #{id})) p,
+		    sepp_release rel,
+        	sepp_product pd
+		  where rel.id = r.rel_id
+      		and pd.product_id = rel.product_id
+		    and r.id = #{id}
+		    and ifnull(r.plan_id, 0) = p.planId
+	</select>
+
+	<insert id="testReportCreate" useGeneratedKeys="true" parameterType="com.pr.sepp.sep.testing.model.TestReport">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+		insert into
+			sepp_test_report(plan_id, rel_id, report_type, report_date, title, url)
+		values
+			(#{planId}, #{relId}, #{reportType}, #{reportDate}, #{title}, #{url})
+	</insert>
+
+	<update id="testReportUpdate" parameterType="com.pr.sepp.sep.testing.model.TestReport">
+		update
+			sepp_test_report
+		set
+			url = #{url},
+			emergency_plan = #{emergencyPlan},
+			sqa_suggestion = #{sqaSuggestion}
+		where id = #{id}
+	</update>
+
+	<delete id="testReportDelete" parameterType="java.util.HashMap">
+		delete from
+			sepp_test_report
+		where
+			id = #{id}
+	</delete>
+
+	<select id="planSidQuery" resultType="java.lang.Integer" parameterType="java.util.HashMap">
+		select id from sepp_test_plan where plan_type = #{planType} and rel_id = #{relId}
+	</select>
+
+	<select id="coveredReqQuery" resultType="java.lang.Integer" parameterType="java.util.HashMap">
+		select count(distinct cr.relate_id) as covered_sr
+		from
+		  sepp_case_related cr
+		where cr.relate_type = 2
+		  and exists
+		  (select
+		    'X'
+		  from
+			sepp_requirement r
+		  where r.id = cr.relate_id
+		    and r.rel_id = #{relId} )
+	</select>
+
+	<select id="relCasesStrQuery" resultType="java.lang.String" parameterType="java.util.HashMap">
+		select
+		  group_concat(cases) as cases
+		from
+		  sepp_test_scenario
+		where plan_id in
+		  (select
+		    id
+		  from
+		    sepp_test_plan
+		  where rel_id = #{relId}
+		  <choose>
+		  	<when test="planType!=0 and planType!='0'">
+		  		and plan_type = #{planType}
+		  	</when>
+		  	<otherwise>
+				<![CDATA[ and plan_type >= 4 ]]>
+		  	</otherwise>
+		  </choose>
+		  )
+	</select>
+
+	<select id="relCaseQuery" resultMap="relCaseQuery_Res"  parameterType="java.util.HashMap">
+		select
+			ci.case_id as caseId,
+			cf.name,
+			ci.status,
+			ci.designer,
+			ci.priority,
+			ci.test_period as testPeriod,
+			ci.test_type as testType,
+			ci.prod_module as prodModule,
+			ci.regress_mark as regressMark,
+			ci.auto_path as autoPath,
+			ci.pre_condition as preCondition,
+			ci.summary,
+			u.user_name as  designerName,
+			ts.status_name as statusName,
+			tp.priority_name as priorityName,
+			tpd.period_name AS periodName,
+			tt.type_name as typeName,
+			m.module_name as moduleName
+		from
+			sepp_case_tree cf,
+			sepp_case_info ci,
+			sepp_prod_module m,
+			sepp_test_status ts,
+			sepp_test_type tt,
+			sepp_test_priority tp,
+			sepp_test_period tpd,
+			sepp_user u
+		where ci.case_id = cf.id
+			and m.module_id = ci.prod_module
+			and u.user_id = ci.designer
+			and ci.status = ts.status_id
+			and ci.priority = tp.priority_id
+			and ci.test_period = tpd.period_id
+			and ci.test_type = tt.type_id
+			and cf.id in
+		<foreach collection="cases" index="index" item="caseId" open="(" separator="," close=")">
+			#{caseId}
+		</foreach>
+	</select>
+	<resultMap type="java.util.HashMap" id="relCaseQuery_Res">
+		<id column="caseId" property="caseId" javaType="Integer" />
+		<result column="name" property="name" javaType="String" />
+		<result column="status" property="status" javaType="Integer" />
+		<result column="priority" property="priority" javaType="Integer" />
+		<result column="designer" property="designer" javaType="Integer" />
+		<result column="testPeriod" property="testPeriod" javaType="Integer" />
+		<result column="testType" property="testType" javaType="Integer" />
+		<result column="prodModule" property="prodModule" javaType="Integer" />
+		<result column="moduleName" property="moduleName" javaType="String" />
+		<result column="regressMark" property="regressMark" javaType="String" />
+		<result column="autoPath" property="autoPath" javaType="String" />
+		<result column="preCondition" property="preCondition" javaType="String" />
+		<result column="summary" property="summary" javaType="String" />
+		<result column="designerName" property="designerName" javaType="String" />
+		<result column="statusName" property="statusName" javaType="String" />
+		<result column="priorityName" property="priorityName" javaType="String" />
+		<result column="periodName" property="periodName" javaType="String" />
+		<result column="typeName" property="typeName" javaType="String" />
+	</resultMap>
+
+	<select id="runedCaseQuery" resultType="java.lang.Integer" parameterType="java.util.HashMap">
+		select
+		  count(distinct tr.case_id) as runedCase
+		from
+		  sepp_test_result tr,
+		  sepp_test_scenario ts,
+		  sepp_test_plan tp ,
+  		 (select max(plan_end) as plan_end from sepp_test_plan where rel_id = #{relId} ) init
+		where tr.scenario_id = ts.id
+		  and tp.id = ts.plan_id
+		<choose>
+			<when test="planType!=0 and planType!='0'">
+				and tp.plan_type = #{planType}
+			</when>
+			<otherwise>
+				<![CDATA[ and tp.plan_type >= 4 ]]>
+			</otherwise>
+		</choose>
+		  and tp.rel_id = #{relId}
+		<![CDATA[and tr.run_date <= date_format(concat(init.plan_end,' 23:59:59'), '%Y-%m-%d %T')]]>
+		<if test="report_date!=null and report_date!='' ">
+			<![CDATA[ and tr.run_date <= #{reportDate} ]]>
+		</if>
+	</select>
+
+	<select id="passedCaseQuery" resultType="java.lang.Integer" parameterType="java.util.HashMap">
+		select
+		  count(distinct case_id) as passedCase
+		from
+		  sepp_test_result
+		where id in
+		  (select
+		    max(tr.id)
+		  from
+		    sepp_test_result tr,
+		    sepp_test_scenario ts,
+		    sepp_test_plan tp  ,
+  		 	(select max(plan_end) as plan_end from sepp_test_plan where rel_id = #{relId}) init
+		  where tr.scenario_id = ts.id
+		    and tp.id = ts.plan_id
+		<choose>
+			<when test="planType!=0 and planType!='0'">
+				and tp.plan_type = #{planType}
+			</when>
+			<otherwise>
+				<![CDATA[ and tp.plan_type >= 4 ]]>
+			</otherwise>
+		</choose>
+		    and tp.rel_id = #{relId}
+		<![CDATA[and tr.run_date <= date_format(concat(init.plan_end,' 23:59:59'), '%Y-%m-%d %T')]]>
+		<if test="reportDate!=null and reportDate!='' ">
+			<![CDATA[ and tr.run_date <= #{reportDate} ]]>
+		</if>
+		  group by tr.case_id)
+		  and result = 1
+	</select>
+
+	<select id="relDefectQuery" resultType="com.pr.sepp.sep.defect.model.Defect" parameterType="java.util.HashMap">
+		select
+			a.*,
+			u2.user_name as responserName
+		from (
+			select
+				d.id,
+				d.status,
+				d.req_id                                        as reqId,
+				d.priority,
+				d.influence,
+				d.submitter,
+				d.responser,
+				r.submitter                                     as productor,
+				d.defect_type                                   as defectType,
+				d.found_period                                  as foundPeriod,
+				d.found_means                                   as foundMeans,
+				d.defect_period                                 as defectPeriod,
+				d.product_id                                    as productId,
+				d.prod_module                                   as prodModule,
+				d.fix_times                                     as fixTimes,
+				d.summary,
+				d.detail,
+				ds.status_name                                  as statusName,
+				dp.priority_name                                as priorityName,
+				di.influence_name                               as influenceName,
+				u1.user_name                                    as submitterName,
+				u3.user_name                                    as productorName,
+				dt.type_name                                    as defectTypeName,
+				fp.period_name                                  as foundPeriodName,
+				fm.means_name                                   as foundMeansName,
+				dpd.period_name                                 as defectPeriodName,
+				m.module_name                                   as prodModuleName,
+				date_format(d.found_time, '%Y-%m-%d %T')        as foundTime,
+				date_format(d.response_time, '%Y-%m-%d %T')     as responseTime,
+				date_format(d.fixed_time, '%Y-%m-%d %T')        as fixedTime,
+				date_format(d.deployed_time, '%Y-%m-%d %T')     as deployedTime,
+				date_format(d.closed_time, '%Y-%m-%d %T')       as closedTime,
+				d.response_cost                                 as responseCost,
+				d.fix_cost                                      as fixCost,
+				d.deploy_cost                                   as deployCost,
+				d.verify_cost                                   as verifyCost
+			from
+				sepp_defects d,
+				sepp_requirement r,
+				sepp_defect_influence di,
+				sepp_defect_period dpd,
+				sepp_defect_priority dp,
+				(select distinct status_id, status_name from sepp_defect_status) ds,
+				sepp_defect_type dt,
+				sepp_found_means fm,
+				sepp_found_period fp,
+				sepp_user u1,
+				sepp_user u3,
+				sepp_prod_module m
+			where r.id = d.req_id
+				and d.status = ds.status_id
+				and d.priority = dp.priority_id
+				and d.influence = di.influence_id
+				and d.submitter = u1.user_id
+				and r.submitter = u3.user_id
+				and d.defect_type = dt.type_id
+				and d.found_period = fp.period_id
+				and d.defect_period = dpd.period_id
+				and d.found_means = fm.means_id
+				and d.prod_module = m.module_id
+				and d.rel_id = #{relId}
+				<if test="reportDate!=null and reportDate!='' ">
+					<![CDATA[ and d.found_time <= #{reportDate} ]]>
+				</if>
+				<if test="planType!=null and planType!=0 and planType!='0' ">
+					and d.found_period = #{planType}
+				</if> ) as a
+			left join sepp_user u2
+			on a.responser = u2.user_id
+	</select>
+</mapper>

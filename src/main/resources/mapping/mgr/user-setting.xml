@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.mgr.user.dao.UserSettingDAO">
+
+    <select id="userSettingQuery" resultType="com.pr.sepp.mgr.user.model.UserSetting">
+        select id                as id,
+               user_id           as userId,
+               message_on        as messageOn,
+               dialog_auto_close as dialogAutoClose,
+               auto_login        as autoLogin,
+               auto_refresh      as autoRefresh,
+               table_show_border as tableShowBorder,
+               table_page_size   as tablePageSize,
+               message_subscribe as messageSubscribe,
+               email_subscribe   as emailSubscribe,
+               portal_config     as portalConfig
+        from sepp_user_setting
+        where user_id = #{userId}
+    </select>
+
+    <update id="userSettingUpdate" parameterType="com.pr.sepp.mgr.user.model.UserSetting">
+        UPDATE sepp_user_setting
+        <trim prefix="set" suffixOverrides=",">
+            <if test="messageOn!=null">message_on=#{messageOn},</if>
+            <if test="dialogAutoClose!=null">dialog_auto_close=#{dialogAutoClose},</if>
+            <if test="autoLogin!=null">auto_login=#{autoLogin},</if>
+            <if test="autoRefresh!=null">auto_refresh=#{autoRefresh},</if>
+            <if test="tableShowBorder!=null">table_show_border=#{tableShowBorder},</if>
+            <if test="tablePageSize!=null">table_page_size=#{tablePageSize},</if>
+            <if test="messageSubscribe!=null">message_subscribe=#{messageSubscribe},</if>
+            <if test="emailSubscribe!=null">email_subscribe=#{emailSubscribe},</if>
+            <if test="portalConfig!=null">portal_config=#{portalConfig},</if>
+        </trim>
+        WHERE user_id = #{userId}
+    </update>
+</mapper>

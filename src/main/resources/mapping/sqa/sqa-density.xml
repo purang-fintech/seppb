@@ -1,0 +1,336 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.sqa.dao.AnalysisDAO">
+    <select id="defectReqDensity" resultMap="defectReqDensityR" parameterType="java.util.HashMap">
+        select r.id                                             as relId,
+               r.rel_code                                        as relCode,
+               0                                                 as influence,
+               count(d.id) / count(distinct ifnull(d.req_id, 0)) as bugReq
+        from sepp_defects d,
+             sepp_release r,
+             sepp_requirement req
+        where r.id = req.rel_id
+          and req.id = d.req_id
+          and r.product_id = #{productId}
+          and r.rel_date <![CDATA[>=]]> #{qTimeBegin}
+          and r.rel_date <![CDATA[<=]]> #{qTimeEnd}
+        group by r.id
+        union
+        select r.id                                           as relId,
+               r.rel_code                                        as relCode,
+               d.influence                                       as influence,
+               count(d.id) / count(distinct ifnull(d.req_id, 0)) as bugReq
+        from sepp_defects d,
+             sepp_release r,
+             sepp_requirement req
+        where r.id = req.rel_id
+          and req.id = d.req_id
+          and r.product_id = #{productId}
+          and r.rel_date <![CDATA[>=]]> #{qTimeBegin}
+          and r.rel_date <![CDATA[<=]]> #{qTimeEnd}
+        group by r.id , d.influence
+        order by relId, influence
+    </select>
+    <resultMap type="java.util.HashMap" id="defectReqDensityR">
+        <result column="relCode" property="relCode" javaType="String"/>
+        <result column="influence" property="influence" javaType="Integer"/>
+        <result column="bugReq" property="bugReq" javaType="Float"/>
+    </resultMap>
+
+    <select id="defectCmsDensity" resultMap="defectCmsDensityr" parameterType="java.util.HashMap">
+        select a.rel_code           as relCode,
+               a.bugNum,
+               ifnull(b.cmsNum, 0) as cmsNum
+        from (select r.rel_code,
+                     count(d.id) as bugNum
+              from sepp_defects d,
+                   sepp_release r,
+                   sepp_requirement req
+              where r.id = req.rel_id
+                and req.id = d.req_id
+                and r.product_id = #{productId}
+                and r.rel_date <![CDATA[>=]]> #{qTimeBegin}
+                and r.rel_date <![CDATA[<=]]> #{qTimeEnd}
+              group by req.rel_id) a
+                 left join
+             (select r.rel_code,
+                     count(cm.id) as cmsNum
+              from sepp_code_mission cm,
+                   sepp_release r,
+                   sepp_requirement req
+              where r.id = req.rel_id
+                and req.id = cm.req_id
+                and r.product_id = #{productId}
+                and r.rel_date <![CDATA[>=]]> #{qTimeBegin}
+                and r.rel_date <![CDATA[<=]]> #{qTimeEnd}
+              group by req.rel_id) b
+             on a.rel_code = b.rel_code
+        order by a.rel_code
+    </select>
+    <resultMap type="java.util.HashMap" id="defectCmsDensityr">
+        <result column="relCode" property="relCode" javaType="String"/>
+        <result column="bugNum" property="bugNum" javaType="Integer"/>
+        <result column="cmsNum" property="cmsNum" javaType="Integer"/>
+    </resultMap>
+
+    <select id="defectTmsDensity" resultMap="defectTmsDensityR" parameterType="java.util.HashMap">
+        select a.rel_code          as relCode,
+               a.bugNum,
+               ifnull(b.tmsNum, 0) as tmsNum
+        from (select r.rel_code,
+                     count(d.id) as bugNum
+              from sepp_defects d,
+                   sepp_release r,
+                   sepp_requirement req
+              where r.id = req.rel_id
+                and req.id = d.req_id
+                and r.product_id = #{productId}
+                and r.rel_date <![CDATA[>=]]> #{qTimeBegin}
+                and r.rel_date <![CDATA[<=]]> #{qTimeEnd}
+              group by req.rel_id) a
+                 left join
+             (select r.rel_code,
+                     count(tm.id) as tmsNum
+              from sepp_test_mission tm,
+                   sepp_release r,
+                   sepp_test_plan tp
+              where tm.plan_id = tp.id
+                and tp.rel_id = r.id
+                and r.product_id = #{productId}
+                and r.rel_date <![CDATA[>=]]> #{qTimeBegin}
+                and r.rel_date <![CDATA[<=]]> #{qTimeEnd}
+              group by r.id) b
+             on a.rel_code = b.rel_code
+        order by a.rel_code
+    </select>
+    <resultMap type="java.util.HashMap" id="defectTmsDensityR">
+        <result column="relCode" property="relCode" javaType="String"/>
+        <result column="bugNum" property="bugNum" javaType="Integer"/>
+        <result column="tmsNum" property="tmsNum" javaType="Integer"/>
+    </resultMap>
+
+    <select id="defectManDensity" resultMap="defectManDensitySQA" parameterType="java.util.HashMap">
+        select a.rel_code                   as relCode,
+               b.totalBug,
+               a.totalManpower,
+               b.totalBug / a.totalManpower as manDensity
+        from (select r.rel_code,
+                     r.id,
+                     sum(cm.manpower) as totalManpower
+              from sepp_code_mission cm,
+                   sepp_release r,
+                   sepp_requirement req
+              where r.id = req.rel_id
+                and req.id = cm.req_id
+                and r.product_id = #{productId}
+                and r.rel_date <![CDATA[>=]]> #{qTimeBegin}
+                and r.rel_date <![CDATA[<=]]> #{qTimeEnd}
+              group by req.rel_id) a,
+             (select r.rel_code,
+                     r.id,
+                     count(d.id) as totalBug
+              from sepp_defects d,
+                   sepp_release r,
+                   sepp_requirement req
+              where r.id = req.rel_id
+                and req.id = d.req_id
+                and r.product_id = #{productId}
+                and r.rel_date <![CDATA[>=]]> #{qTimeBegin}
+                and r.rel_date <![CDATA[<=]]> #{qTimeEnd}
+              group by req.rel_id) b
+        where a.id = b.id
+        order by a.id
+    </select>
+    <resultMap type="java.util.HashMap" id="defectManDensitySQA">
+        <result column="relCode" property="relCode" javaType="String"/>
+        <result column="totalBug" property="totalBug" javaType="Integer"/>
+        <result column="totalManpower" property="totalManpower" javaType="Integer"/>
+        <result column="manDensity" property="manDensity" javaType="Float"/>
+    </resultMap>
+
+    <select id="defectCaseDensity" resultMap="defectCaseDensityR" parameterType="java.util.HashMap">
+        select a.relCode,
+               a.totalBug,
+               a.period,
+               b.cases
+        from (select r.rel_code     as relCode,
+                     count(d.id)    as totalBug,
+                     d.found_period as period
+              from sepp_defects d,
+                   sepp_release r,
+                   sepp_requirement req
+              where r.id = req.rel_id
+                and req.id = d.req_id
+                and r.product_id = #{productId}
+                and r.rel_date <![CDATA[>=]]> #{qTimeBegin}
+                and r.rel_date <![CDATA[<=]]> #{qTimeEnd}
+              group by r.rel_code, d.found_period) a
+                 left join
+             (select r.rel_code          as relCode,
+                     tp.plan_type        as period,
+                     group_concat(cases) as cases
+              from sepp_test_scenario ts,
+                   sepp_test_plan tp,
+                   sepp_release r
+              where ts.plan_id = tp.id
+                and tp.rel_id = r.id
+                and r.product_id = #{productId}
+                and r.rel_date <![CDATA[>=]]> #{qTimeBegin}
+                and r.rel_date <![CDATA[<=]]> #{qTimeEnd}
+              group by r.rel_code, tp.plan_type) b on a.relCode = b.relCode and a.period = b.period
+    </select>
+    <resultMap type="java.util.HashMap" id="defectCaseDensityR">
+        <result column="relCode" property="relCode" javaType="String"/>
+        <result column="totalBug" property="totalBug" javaType="Integer"/>
+        <result column="period" property="period" javaType="Integer"/>
+        <result column="cases" property="cases" javaType="String"/>
+    </resultMap>
+
+    <select id="defectReqDensityM" resultMap="defectReqDensityMR" parameterType="java.util.HashMap">
+        SELECT DATE_FORMAT(d.found_time, '%Y-%m')                AS groupKey,
+               COUNT(d.id)                                       as bugCount,
+               COUNT(DISTINCT IFNULL(d.req_id, 0))               as reqCount,
+               COUNT(d.id) / COUNT(DISTINCT IFNULL(d.req_id, 0)) AS bugReq
+        FROM sepp_defects d
+        where d.product_id = #{productId}
+          and d.found_time <![CDATA[>=]]> #{qTimeBegin}
+          and d.found_time <![CDATA[<=]]> #{qTimeEnd}
+        GROUP BY groupKey
+        ORDER BY groupKey
+    </select>
+    <resultMap type="java.util.HashMap" id="defectReqDensityMR">
+        <result column="groupKey" property="groupKey" javaType="String"/>
+        <result column="bugCount" property="bugCount" javaType="Integer"/>
+        <result column="reqCount" property="reqCount" javaType="Integer"/>
+        <result column="bugReq" property="bugReq" javaType="Float"/>
+    </resultMap>
+
+    <select id="defectCmsDensityM" resultMap="defectCmsDensityMR" parameterType="java.util.HashMap">
+        select a.groupKey,
+               a.bugNum,
+               ifnull(b.cmsNum, 0) as cmsNum
+        from (select DATE_FORMAT(d.found_time, '%Y-%m') AS groupKey,
+                     count(d.id)                        as bugNum
+              from sepp_defects d
+              where d.product_id = #{productId}
+                and d.found_time <![CDATA[>=]]> #{qTimeBegin}
+                and d.found_time <![CDATA[<=]]> #{qTimeEnd}
+              group by groupKey) a
+                 left join
+             (select DATE_FORMAT(cm.split_date, '%Y-%m') AS groupKey,
+                     count(cm.id)                        as cmsNum
+              from sepp_code_mission cm,
+                   sepp_release r,
+                   sepp_requirement req
+              where r.id = req.rel_id
+                and req.id = cm.req_id
+                and r.product_id = #{productId}
+                and cm.split_date <![CDATA[>=]]> #{qTimeBegin}
+                and cm.split_date <![CDATA[<=]]> #{qTimeEnd}
+              group by groupKey) b
+             on a.groupKey = b.groupKey
+        order by a.groupKey
+    </select>
+    <resultMap type="java.util.HashMap" id="defectCmsDensityMR">
+        <result column="groupKey" property="groupKey" javaType="String"/>
+        <result column="bugNum" property="bugNum" javaType="Integer"/>
+        <result column="cmsNum" property="cmsNum" javaType="Integer"/>
+    </resultMap>
+
+    <select id="defectTmsDensityM" resultMap="defectTmsDensityMR" parameterType="java.util.HashMap">
+        select a.groupKey,
+               a.bugNum,
+               ifnull(b.tmsNum, 0) as tmsNum
+        from (select DATE_FORMAT(d.found_time, '%Y-%m') AS groupKey,
+                     count(d.id)                        as bugNum
+              from sepp_defects d
+              where d.product_id = #{productId}
+                and d.found_time <![CDATA[>=]]> #{qTimeBegin}
+                and d.found_time <![CDATA[<=]]> #{qTimeEnd}
+              group by groupKey) a
+                 left join
+             (select DATE_FORMAT(tm.split_date, '%Y-%m') AS groupKey,
+                     count(tm.id)                        as tmsNum
+              from sepp_test_mission tm,
+                   sepp_release r,
+                   sepp_test_plan tp
+              where tm.plan_id = tp.id
+                and tp.rel_id = r.id
+                and r.product_id = #{productId}
+                and tm.split_date <![CDATA[>=]]> #{qTimeBegin}
+                and tm.split_date <![CDATA[<=]]> #{qTimeEnd}
+              group by groupKey) b
+             on a.groupKey = b.groupKey
+        order by a.groupKey
+    </select>
+    <resultMap type="java.util.HashMap" id="defectTmsDensityMR">
+        <result column="groupKey" property="groupKey" javaType="String"/>
+        <result column="bugNum" property="bugNum" javaType="Integer"/>
+        <result column="tmsNum" property="tmsNum" javaType="Integer"/>
+    </resultMap>
+
+    <select id="defectManDensityM" resultMap="defectManDensityMR" parameterType="java.util.HashMap">
+        select a.groupKey,
+               b.totalBug,
+               ROUND(a.totalManpower, 2)                    AS totalManpower,
+               round(b.totalBug / a.totalManpower, 2)       as manDensity
+        from (select DATE_FORMAT(cm.split_date, '%Y-%m')    AS groupKey,
+                     sum(cm.manpower)                       AS totalManpower
+              from sepp_code_mission cm,
+                   sepp_release r,
+                   sepp_requirement req
+              where r.id = req.rel_id
+                and req.id = cm.req_id
+                and r.product_id = #{productId}
+                and cm.split_date <![CDATA[>=]]> #{qTimeBegin}
+                and cm.split_date <![CDATA[<=]]> #{qTimeEnd}
+              group by groupKey) a,
+             (select DATE_FORMAT(d.found_time, '%Y-%m') AS groupKey,
+                     count(d.id)                        as totalBug
+              from sepp_defects d
+              where d.product_id = #{productId}
+                and d.found_time <![CDATA[>=]]> #{qTimeBegin}
+                and d.found_time <![CDATA[<=]]> #{qTimeEnd}
+              group by groupKey) b
+        where a.groupKey = b.groupKey
+        order by a.groupKey
+    </select>
+    <resultMap type="java.util.HashMap" id="defectManDensityMR">
+        <result column="groupKey" property="groupKey" javaType="String"/>
+        <result column="totalBug" property="totalBug" javaType="Integer"/>
+        <result column="totalManpower" property="totalManpower" javaType="Float"/>
+        <result column="manDensity" property="manDensity" javaType="Float"/>
+    </resultMap>
+
+    <select id="releaseCmsManpower" resultMap="releaseCmsManpowerR" parameterType="java.lang.Integer">
+        select sum(manpower) as totalManpower,
+               count(cm.id)  as cmsCount,
+               req.rel_id    as relId
+        from sepp_code_mission cm,
+             sepp_requirement req
+        where req.rel_id = #{relId}
+          and req.id = cm.req_id
+    </select>
+    <resultMap type="java.util.HashMap" id="releaseCmsManpowerR">
+        <result column="cmsCount" property="cmsCount" javaType="Integer"/>
+        <result column="totalManpower" property="totalManpower" javaType="Float"/>
+        <result column="relId" property="relId" javaType="Integer"/>
+    </resultMap>
+
+    <select id="releaseDefectCount" resultMap="releaseDefectCountR" parameterType="java.lang.Integer">
+        select count(d.id) as defectCount,
+               req.rel_id  as relId
+        from sepp_defects d,
+             sepp_requirement req
+        where req.rel_id = #{relId}
+          and req.id = d.req_id
+    </select>
+    <resultMap type="java.util.HashMap" id="releaseDefectCountR">
+        <result column="defectCount" property="defectCount" javaType="Integer"/>
+        <result column="relId" property="relId" javaType="Integer"/>
+    </resultMap>
+
+</mapper>

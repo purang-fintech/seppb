@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.work.dashboard.dao.UserWorkDAO">
+
+    <select id="productOpenReleaseQuery" resultType="com.pr.sepp.sep.release.model.Release">
+        SELECT r.id,
+               r.rel_code     AS relCode,
+               r.branch_id    AS branchId,
+               rt.branch_name as branchName,
+               r.status,
+               r.creator,
+               r.responser,
+               r.rel_date     as  relDate
+        FROM sepp_release r,
+             sepp_product_branch rt
+        WHERE r.product_id = #{productId}
+          and r.branch_id = rt.branch_id
+          AND r.status > 0
+    </select>
+
+    <select id="productOpenCmsQuery" resultType="com.pr.sepp.sep.coding.model.CodeMission">
+        SELECT c.id,
+               c.req_id    AS reqId,
+               c.module_id AS moduleId,
+               c.status,
+               r.summary   AS reqDesc,
+               c.spliter,
+               c.responser,
+               c.summary,
+               c.plan_to   as planTo
+        FROM sepp_code_mission c,
+             sepp_requirement r
+        WHERE r.product_id = #{productId}
+          AND r.id = c.req_id
+          AND c.status > 0
+          AND <![CDATA[c.status < 5]]>
+    </select>
+
+    <select id="productOpenDefectQuery" resultType="com.pr.sepp.sep.defect.model.Defect">
+        SELECT d.id,
+               d.status,
+               d.req_id      AS reqId,
+               d.rel_id      AS relId,
+               d.submitter,
+               d.conciliator,
+               d.responser,
+               d.summary,
+               d.found_time as foundTime
+        FROM sepp_defects d
+        WHERE d.product_id = #{productId}
+          AND d.status > 0
+    </select>
+
+    <select id="productOpenRequestQuery" resultType="com.pr.sepp.sep.requirement.model.Requirement">
+        SELECT r.id,
+               r.source_id      AS sourceId,
+               r.rel_id         AS relId,
+               r.status,
+               r.module_id      AS moduleId,
+               m.pd_responser   AS pdResponser,
+               m.dev_responser  AS devResponser,
+               m.test_responser AS testResponser,
+               r.submitter,
+               r.summary,
+               r.expect_date    as expectDate
+        FROM sepp_requirement r,
+             sepp_prod_module m
+        WHERE r.product_id = #{productId}
+          AND r.module_id = m.module_id
+          AND r.status > 0
+          AND <![CDATA[r.status < 6]]>
+    </select>
+
+    <select id="releaseRequestQuery" resultType="com.pr.sepp.sep.requirement.model.Requirement">
+        SELECT r.id,
+               r.source_id      AS sourceId,
+               r.rel_id         AS relId,
+               r.status,
+               r.module_id      AS moduleId,
+               m.pd_responser   AS pdResponser,
+               m.dev_responser  AS devResponser,
+               m.test_responser AS testResponser,
+               r.submitter,
+               r.summary,
+               r.expect_date    as expectDate
+        FROM sepp_requirement r,
+             sepp_prod_module m
+        WHERE r.rel_id = #{relId}
+          AND r.module_id = m.module_id
+    </select>
+
+    <select id="releaseAllCaseQuery" resultMap="releaseAllCaseQueryR">
+        SELECT tp.rel_id    AS relId,
+               tp.plan_type AS planType,
+               ts.name      AS scenarioName,
+               ct.id        AS caseId,
+               ct.name      AS caseName
+        FROM sepp_test_plan tp,
+             sepp_test_scenario ts,
+             sepp_case_tree ct
+        WHERE tp.id = ts.plan_id
+          AND tp.rel_id = #{relId}
+          AND ts.cases != ''
+          AND ts.cases IS NOT NULL
+          AND FIND_IN_SET(ct.id, ts.cases) > 0
+    </select>
+    <resultMap type="java.util.HashMap" id="releaseAllCaseQueryR">
+        <result column="relId" property="relId" javaType="Integer"/>
+        <result column="planType" property="planType" javaType="Integer"/>
+        <result column="scenarioName" property="scenarioName" javaType="String"/>
+        <result column="caseId" property="caseId" javaType="Integer"/>
+        <result column="caseName" property="caseName" javaType="String"/>
+    </resultMap>
+
+    <select id="releaseScenarioCaseNotRun" resultMap="releaseScenarioCaseNotRunR">
+        SELECT tp.rel_id    AS relId,
+               tp.plan_type AS planType,
+               ts.name      AS scenarioName,
+               ct.id        AS caseId,
+               ct.name      AS caseName
+        FROM sepp_test_plan tp,
+             sepp_test_scenario ts,
+             sepp_case_tree ct
+        WHERE tp.id = ts.plan_id
+          AND tp.rel_id = #{relId}
+          AND ts.cases != ''
+          AND ts.cases IS NOT NULL
+          AND FIND_IN_SET(ct.id, ts.cases) > 0
+          AND NOT EXISTS
+            (SELECT 'X' FROM sepp_test_run tr WHERE tr.scenario_id = ts.id)
+    </select>
+    <resultMap type="java.util.HashMap" id="releaseScenarioCaseNotRunR">
+        <result column="relId" property="relId" javaType="Integer"/>
+        <result column="planType" property="planType" javaType="Integer"/>
+        <result column="scenarioName" property="scenarioName" javaType="String"/>
+        <result column="caseId" property="caseId" javaType="Integer"/>
+        <result column="caseName" property="caseName" javaType="String"/>
+    </resultMap>
+
+    <select id="releaseScenarioCaseFailed" resultMap="releaseScenarioCaseFailedR">
+        SELECT tp.rel_id    AS relId,
+               tp.plan_type AS planType,
+               ts.name      AS scenarioName,
+               ct.id        AS caseId,
+               ct.name      AS caseName
+        FROM sepp_test_plan tp,
+             sepp_test_scenario ts,
+             sepp_test_result tr,
+             sepp_case_tree ct
+        WHERE tr.scenario_id = ts.id
+          AND ts.plan_id = tp.id
+          AND tr.run_id IN
+              (SELECT MAX(a.id)
+               FROM sepp_test_run a,
+                    sepp_test_scenario b,
+                    sepp_test_plan c
+               WHERE a.scenario_id = b.id
+                 AND b.plan_id = c.id
+                 AND c.rel_id = #{relId}
+               GROUP BY b.id)
+          AND ts.cases != ''
+          AND ts.cases IS NOT NULL
+          AND FIND_IN_SET(ct.id, ts.cases) > 0
+          AND tr.result > 1
+          AND tr.case_id = ct.id
+    </select>
+    <resultMap type="java.util.HashMap" id="releaseScenarioCaseFailedR">
+        <result column="relId" property="relId" javaType="Integer"/>
+        <result column="planType" property="planType" javaType="Integer"/>
+        <result column="scenarioName" property="scenarioName" javaType="String"/>
+        <result column="caseId" property="caseId" javaType="Integer"/>
+        <result column="caseName" property="caseName" javaType="String"/>
+    </resultMap>
+
+    <select id="releaseScenarioCaseSkipped" resultMap="releaseScenarioCaseSkippedR">
+        SELECT tp.rel_id    AS relId,
+               tp.plan_type AS planType,
+               ts.name      AS scenarioName,
+               ct.id        AS caseId,
+               ct.name      AS caseName
+        FROM sepp_case_tree ct,
+             sepp_test_plan tp,
+             sepp_test_scenario ts,
+             sepp_test_run run
+        WHERE tp.rel_id = #{relId}
+          AND ts.plan_id = tp.id
+          AND ts.cases != ''
+          AND ts.cases IS NOT NULL
+          AND run.scenario_id = ts.id
+          AND run.id IN
+              (SELECT MAX(a.id)
+               FROM sepp_test_run a,
+                    sepp_test_scenario b,
+                    sepp_test_plan c
+               WHERE a.scenario_id = b.id
+                 AND b.plan_id = c.id
+                 AND c.rel_id = #{relId}
+               GROUP BY b.id)
+          and FIND_IN_SET(ct.id, ts.cases) > 0
+          AND NOT EXISTS
+            (SELECT 'X'
+             FROM sepp_test_result tr
+             WHERE tr.scenario_id = ts.id
+               AND ct.id = tr.case_id)
+    </select>
+    <resultMap type="java.util.HashMap" id="releaseScenarioCaseSkippedR">
+        <result column="relId" property="relId" javaType="Integer"/>
+        <result column="planType" property="planType" javaType="Integer"/>
+        <result column="scenarioName" property="scenarioName" javaType="String"/>
+        <result column="caseId" property="caseId" javaType="Integer"/>
+        <result column="caseName" property="caseName" javaType="String"/>
+    </resultMap>
+
+    <select id="caseRequestRelateQuery" parameterType="java.util.Map" resultType="java.lang.Integer">
+        select count(relate_id) as relateCount
+        from sepp_case_related
+        where relate_type = 2
+        and case_id in
+        <foreach collection="cases" index="index" item="item" open="(" separator="," close=")">
+            #{item.caseId}
+        </foreach>
+        and relate_id in
+        <foreach collection="reqs" index="index" item="item" open="(" separator="," close=")">
+            #{item.id}
+        </foreach>
+    </select>
+</mapper>

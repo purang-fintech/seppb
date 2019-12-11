@@ -1,0 +1,509 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.sqa.dao.AnalysisDAO">
+
+    <select id="problemSubmitter" resultMap="problemSubmitterr" parameterType="java.util.HashMap">
+        select
+            count(p.id) as num,
+            p.influence,
+            concat(u.user_name,'(', u.user_account,')') as submitter
+        from
+            sepp_problem p,
+            sepp_user u
+        where u.user_id = p.submitter
+          and p.product_id = #{productId}
+        <if test="responser != null and responser != ''">
+            and p.responser=#{responser}
+        </if>
+        <if test="moduleId != null and moduleId != ''">
+            and p.module_id=#{moduleId}
+        </if>
+        <choose>
+            <when test="timeType = '1'">
+                <![CDATA[and p.submit_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.submit_time <= #{qTimeEnd}]]>
+            </when>
+            <when test="timeType = '2'">
+                <![CDATA[and p.resolve_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.resolve_time <= #{qTimeEnd}]]>
+            </when>
+            <when test="timeType = '3'">
+                <![CDATA[and p.close_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.close_time <= #{qTimeEnd}]]>
+            </when>
+            <otherwise>
+                and 1 = 2
+            </otherwise>
+        </choose>
+        group by p.submitter, p.influence
+        order by num
+    </select>
+    <resultMap type="java.util.HashMap" id="problemSubmitterr">
+        <result column="num" property="num" javaType="Integer"/>
+        <result column="influence" property="influence" javaType="Integer"/>
+        <result column="submitter" property="submitter" javaType="String"/>
+    </resultMap>
+
+    <select id="problemResponser" resultMap="problemResponserr" parameterType="java.util.HashMap">
+        select
+            count(p.id) as num,
+            p.influence,
+            concat(u.user_name,'(', u.user_account,')') as responser
+        from
+            sepp_problem p,
+            sepp_user u
+        where u.user_id = p.responser
+          and p.product_id = #{productId}
+        <if test="responser != null and responser != ''">
+            and p.responser=#{responser}
+        </if>
+        <if test="moduleId != null and moduleId != ''">
+            and p.module_id=#{moduleId}
+        </if>
+        <choose>
+            <when test="timeType = '1'">
+                <![CDATA[and p.submit_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.submit_time <= #{qTimeEnd}]]>
+            </when>
+            <when test="timeType = '2'">
+                <![CDATA[and p.resolve_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.resolve_time <= #{qTimeEnd}]]>
+            </when>
+            <when test="timeType = '3'">
+                <![CDATA[and p.close_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.close_time <= #{qTimeEnd}]]>
+            </when>
+            <otherwise>
+                and 1 = 2
+            </otherwise>
+        </choose>
+        group by p.responser, p.influence
+        order by num
+    </select>
+    <resultMap type="java.util.HashMap" id="problemResponserr">
+        <result column="num" property="num" javaType="Integer"/>
+        <result column="influence" property="influence" javaType="Integer"/>
+        <result column="responser" property="responser" javaType="String"/>
+    </resultMap>
+
+    <select id="problemModule" resultMap="problemModuler" parameterType="java.util.HashMap">
+        select
+            count(p.id) as num,
+            p.influence,
+            m.module_name as moduleName
+        from
+            sepp_prod_module m,
+            sepp_problem p
+        where p.product_id = #{productId}
+          and p.module_id = m.module_id
+        <if test="responser != null and responser != ''">
+            and p.responser=#{responser}
+        </if>
+        <if test="moduleId != null and moduleId != ''">
+            and p.module_id=#{moduleId}
+        </if>
+        <choose>
+            <when test="timeType = '1'">
+                <![CDATA[and p.submit_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.submit_time <= #{qTimeEnd}]]>
+            </when>
+            <when test="timeType = '2'">
+                <![CDATA[and p.resolve_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.resolve_time <= #{qTimeEnd}]]>
+            </when>
+            <when test="timeType = '3'">
+                <![CDATA[and p.close_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.close_time <= #{qTimeEnd}]]>
+            </when>
+            <otherwise>
+                and 1 = 2
+            </otherwise>
+        </choose>
+        group by p.module_id, p.influence
+        order by num
+    </select>
+    <resultMap type="java.util.HashMap" id="problemModuler">
+        <result column="num" property="num" javaType="Integer"/>
+        <result column="influence" property="influence" javaType="Integer"/>
+        <result column="moduleName" property="moduleName" javaType="String"/>
+    </resultMap>
+
+    <select id="problemStatus" resultMap="problemStatusr" parameterType="java.util.HashMap">
+        select
+            count(p.id) as num,
+            p.influence,
+            p.status
+        from
+            sepp_problem p
+        where p.product_id = #{productId}
+        <if test="responser != null and responser != ''">
+            and p.responser=#{responser}
+        </if>
+        <if test="moduleId != null and moduleId != ''">
+            and p.module_id=#{moduleId}
+        </if>
+        <choose>
+            <when test="timeType = '1'">
+                <![CDATA[and p.submit_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.submit_time <= #{qTimeEnd}]]>
+            </when>
+            <when test="timeType = '2'">
+                <![CDATA[and p.resolve_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.resolve_time <= #{qTimeEnd}]]>
+            </when>
+            <when test="timeType = '3'">
+                <![CDATA[and p.close_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.close_time <= #{qTimeEnd}]]>
+            </when>
+            <otherwise>
+                and 1 = 2
+            </otherwise>
+        </choose>
+        group by p.status,p.influence
+        order by num
+    </select>
+    <resultMap type="java.util.HashMap" id="problemStatusr">
+        <result column="num" property="num" javaType="Integer"/>
+        <result column="influence" property="influence" javaType="Integer"/>
+        <result column="status" property="status" javaType="Integer"/>
+    </resultMap>
+
+    <select id="problemPriority" resultMap="problemPriorityr" parameterType="java.util.HashMap">
+        select
+            count(p.id) as num,
+            p.priority
+        from
+            sepp_problem p
+        where p.product_id = #{productId}
+        <if test="responser != null and responser != ''">
+            and p.responser=#{responser}
+        </if>
+        <if test="moduleId != null and moduleId != ''">
+            and p.module_id=#{moduleId}
+        </if>
+        <choose>
+            <when test="timeType = '1'">
+                <![CDATA[and p.submit_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.submit_time <= #{qTimeEnd}]]>
+            </when>
+            <when test="timeType = '2'">
+                <![CDATA[and p.resolve_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.resolve_time <= #{qTimeEnd}]]>
+            </when>
+            <when test="timeType = '3'">
+                <![CDATA[and p.close_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.close_time <= #{qTimeEnd}]]>
+            </when>
+            <otherwise>
+                and 1 = 2
+            </otherwise>
+        </choose>
+        group by p.priority
+        order by num
+    </select>
+    <resultMap type="java.util.HashMap" id="problemPriorityr">
+        <result column="num" property="num" javaType="Integer"/>
+        <result column="priority" property="priority" javaType="Integer"/>
+    </resultMap>
+
+    <select id="problemInfluence" resultMap="problemInfluencer" parameterType="java.util.HashMap">
+        select
+            count(p.id) as num,
+            p.influence
+        from
+            sepp_problem p
+        where p.product_id = #{productId}
+        <if test="responser != null and responser != ''">
+            and p.responser=#{responser}
+        </if>
+        <if test="moduleId != null and moduleId != ''">
+            and p.module_id=#{moduleId}
+        </if>
+        <choose>
+            <when test="timeType = '1'">
+                <![CDATA[and p.submit_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.submit_time <= #{qTimeEnd}]]>
+            </when>
+            <when test="timeType = '2'">
+                <![CDATA[and p.resolve_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.resolve_time <= #{qTimeEnd}]]>
+            </when>
+            <when test="timeType = '3'">
+                <![CDATA[and p.close_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.close_time <= #{qTimeEnd}]]>
+            </when>
+            <otherwise>
+                and 1 = 2
+            </otherwise>
+        </choose>
+        group by p.influence
+        order by num
+    </select>
+    <resultMap type="java.util.HashMap" id="problemInfluencer">
+        <result column="num" property="num" javaType="Integer"/>
+        <result column="influence" property="influence" javaType="Integer"/>
+    </resultMap>
+
+    <select id="problemTypeOne" resultMap="problemTypeOner" parameterType="java.util.HashMap">
+        select
+            count(p.id) as num,
+            p.type_first as typeOne
+        from
+            sepp_problem p
+        where p.product_id = #{productId}
+        <if test="responser != null and responser != ''">
+            and p.responser=#{responser}
+        </if>
+        <if test="moduleId != null and moduleId != ''">
+            and p.module_id=#{moduleId}
+        </if>
+        <choose>
+            <when test="timeType = '1'">
+                <![CDATA[and p.submit_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.submit_time <= #{qTimeEnd}]]>
+            </when>
+            <when test="timeType = '2'">
+                <![CDATA[and p.resolve_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.resolve_time <= #{qTimeEnd}]]>
+            </when>
+            <when test="timeType = '3'">
+                <![CDATA[and p.close_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.close_time <= #{qTimeEnd}]]>
+            </when>
+            <otherwise>
+                and 1 = 2
+            </otherwise>
+        </choose>
+        group by p.type_first
+        order by num
+    </select>
+    <resultMap type="java.util.HashMap" id="problemTypeOner">
+        <result column="num" property="num" javaType="Integer"/>
+        <result column="typeOne" property="typeOne" javaType="Integer"/>
+    </resultMap>
+
+    <select id="problemTypeTwo" resultMap="problemTypeTwor" parameterType="java.util.HashMap">
+        select
+            count(p.id) as num,
+            concat(p.type_first, ',', p.type_second) as types
+        from
+            sepp_problem p
+        where p.product_id = #{productId}
+        <if test="responser != null and responser != ''">
+            and p.responser=#{responser}
+        </if>
+        <if test="moduleId != null and moduleId != ''">
+            and p.module_id=#{moduleId}
+        </if>
+        <choose>
+            <when test="timeType = '1'">
+                <![CDATA[and p.submit_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.submit_time <= #{qTimeEnd}]]>
+            </when>
+            <when test="timeType = '2'">
+                <![CDATA[and p.resolve_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.resolve_time <= #{qTimeEnd}]]>
+            </when>
+            <when test="timeType = '3'">
+                <![CDATA[and p.close_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.close_time <= #{qTimeEnd}]]>
+            </when>
+            <otherwise>
+                and 1 = 2
+            </otherwise>
+        </choose>
+        group by types
+        order by num
+    </select>
+    <resultMap type="java.util.HashMap" id="problemTypeTwor">
+        <result column="num" property="num" javaType="Integer"/>
+        <result column="types" property="types" javaType="String"/>
+    </resultMap>
+
+    <select id="problemImproveOne" resultMap="problemImproveOner" parameterType="java.util.HashMap">
+        select
+            count(p.id) as num,
+            ifnull(p.improve_one, '尚未明确') as improveOne
+        from
+            sepp_problem p
+        where p.product_id = #{productId}
+        <if test="responser != null and responser != ''">
+            and p.responser=#{responser}
+        </if>
+        <if test="moduleId != null and moduleId != ''">
+            and p.module_id=#{moduleId}
+        </if>
+        <choose>
+            <when test="timeType = '1'">
+                <![CDATA[and p.submit_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.submit_time <= #{qTimeEnd}]]>
+            </when>
+            <when test="timeType = '2'">
+                <![CDATA[and p.resolve_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.resolve_time <= #{qTimeEnd}]]>
+            </when>
+            <when test="timeType = '3'">
+                <![CDATA[and p.close_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.close_time <= #{qTimeEnd}]]>
+            </when>
+            <otherwise>
+                and 1 = 2
+            </otherwise>
+        </choose>
+        group by improveOne
+        order by num
+    </select>
+    <resultMap type="java.util.HashMap" id="problemImproveOner">
+        <result column="num" property="num" javaType="Integer"/>
+        <result column="improveOne" property="improveOne" javaType="String"/>
+    </resultMap>
+
+    <select id="problemImproveTwo" resultMap="problemImproveTwor" parameterType="java.util.HashMap">
+        select
+            count(p.id) as num,
+            ifnull(concat(p.improve_one, ',', p.improve_two), '尚未明确') as improves
+        from
+            sepp_problem p
+        where p.product_id = #{productId}
+        <if test="responser != null and responser != ''">
+            and p.responser=#{responser}
+        </if>
+        <if test="moduleId != null and moduleId != ''">
+            and p.module_id=#{moduleId}
+        </if>
+        <choose>
+            <when test="timeType = '1'">
+                <![CDATA[and p.submit_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.submit_time <= #{qTimeEnd}]]>
+            </when>
+            <when test="timeType = '2'">
+                <![CDATA[and p.resolve_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.resolve_time <= #{qTimeEnd}]]>
+            </when>
+            <when test="timeType = '3'">
+                <![CDATA[and p.close_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.close_time <= #{qTimeEnd}]]>
+            </when>
+            <otherwise>
+                and 1 = 2
+            </otherwise>
+        </choose>
+        group by improves
+        order by num
+    </select>
+    <resultMap type="java.util.HashMap" id="problemImproveTwor">
+        <result column="num" property="num" javaType="Integer"/>
+        <result column="improves" property="improves" javaType="String"/>
+    </resultMap>
+
+    <select id="problemResolveCost" resultMap="problemResolveCostr" parameterType="java.util.HashMap">
+        select
+            count(id) as num,
+            case
+                when ifnull(p.resolve_cost, 0) = 0
+                then '尚未解决'
+                when ifnull(resolve_cost, 0) > 0
+                and ifnull(resolve_cost, 0) <![CDATA[<=]]> 4
+                then '4工作时内解决'
+                when ifnull(resolve_cost, 0) > 4
+                and ifnull(resolve_cost, 0) <![CDATA[<=]]> 8
+                then '4到8工作时解决'
+                when ifnull(resolve_cost, 0) > 8
+                and ifnull(resolve_cost, 0) <![CDATA[<=]]> 24
+                then '1到3工作日解决'
+                else '超过3工作日解决'
+            end as resolveCosts
+        from
+            sepp_problem p
+        where p.product_id = #{productId}
+        <if test="responser != null and responser != ''">
+            and p.responser=#{responser}
+        </if>
+        <if test="moduleId != null and moduleId != ''">
+            and p.module_id=#{moduleId}
+        </if>
+        <choose>
+            <when test="timeType = '1'">
+                <![CDATA[and p.submit_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.submit_time <= #{qTimeEnd}]]>
+            </when>
+            <when test="timeType = '2'">
+                <![CDATA[and p.resolve_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.resolve_time <= #{qTimeEnd}]]>
+            </when>
+            <when test="timeType = '3'">
+                <![CDATA[and p.close_time >= #{qTimeBegin}]]>
+                <![CDATA[and p.close_time <= #{qTimeEnd}]]>
+            </when>
+            <otherwise>
+                and 1 = 2
+            </otherwise>
+        </choose>
+        group by resolveCosts
+        order by num
+    </select>
+    <resultMap type="java.util.HashMap" id="problemResolveCostr">
+        <result column="num" property="num" javaType="Integer"/>
+        <result column="resolveCosts" property="resolveCosts" javaType="String"/>
+    </resultMap>
+
+    <select id="problemCloseCost" resultMap="problemCloseCostr" parameterType="java.util.HashMap">
+        select
+            count(a.id) as num,
+            case
+                when a.closeCost = 0
+                then '尚未关闭'
+                when a.closeCost > 0
+                and a.closeCost <![CDATA[<=]]> 4
+                then '4工作时内关闭'
+                when a.closeCost > 4
+                and a.closeCost <![CDATA[<=]]> 8
+                then '4到8工作时关闭'
+                when a.closeCost > 8
+                and a.closeCost <![CDATA[<=]]> 24
+                then '1到3工作日关闭'
+                else '超过3工作日关闭'
+            end as closeCosts
+        from
+            (select
+                id,
+                ifnull(round(timestampdiff(second, submit_time, close_time) / 3600,2),0) as closeCost
+            from
+                sepp_problem p
+            where p.product_id = #{productId}
+            <if test="responser != null and responser != ''">
+                and p.responser=#{responser}
+            </if>
+            <if test="moduleId != null and moduleId != ''">
+                and p.module_id=#{moduleId}
+            </if>
+            <choose>
+                <when test="timeType = '1'">
+                    <![CDATA[and p.submit_time >= #{qTimeBegin}]]>
+                    <![CDATA[and p.submit_time <= #{qTimeEnd}]]>
+                </when>
+                <when test="timeType = '2'">
+                    <![CDATA[and p.resolve_time >= #{qTimeBegin}]]>
+                    <![CDATA[and p.resolve_time <= #{qTimeEnd}]]>
+                </when>
+                <when test="timeType = '3'">
+                    <![CDATA[and p.close_time >= #{qTimeBegin}]]>
+                    <![CDATA[and p.close_time <= #{qTimeEnd}]]>
+                </when>
+                <otherwise>
+                    and 1 = 2
+                </otherwise>
+            </choose>
+            ) a
+        group by closeCosts
+        order by num
+    </select>
+    <resultMap type="java.util.HashMap" id="problemCloseCostr">
+        <result column="num" property="num" javaType="Integer"/>
+        <result column="closeCosts" property="closeCosts" javaType="String"/>
+    </resultMap>
+
+</mapper>

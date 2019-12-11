@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.mgr.index.dao.IndexDAO">
+
+    <select id="relRequestQuery" resultMap="relRequestQueryR" parameterType="java.util.HashMap">
+        select r.id as reqId,
+               r.status
+        from sepp_requirement r
+        where r.rel_id = #{relId}
+    </select>
+    <resultMap type="java.util.HashMap" id="relRequestQueryR">
+        <id column="reqId" property="reqId" javaType="Integer"/>
+        <result column="status" property="status" javaType="Integer"/>
+    </resultMap>
+
+    <select id="relMissionQuery" resultMap="relMissionQueryR" parameterType="java.util.HashMap">
+        select cm.id as cmId,
+               cm.status
+        from sepp_requirement r,
+             sepp_code_mission cm
+        where r.id = cm.req_id
+          and r.rel_id = #{relId}
+    </select>
+    <resultMap type="java.util.HashMap" id="relMissionQueryR">
+        <id column="cmId" property="cmId" javaType="Integer"/>
+        <result column="status" property="status" javaType="Integer"/>
+    </resultMap>
+
+    <select id="relDefectsQuery" resultMap="relDefectsQueryR" parameterType="java.util.HashMap">
+        select d.id,
+               d.status
+        from sepp_requirement r,
+             sepp_defects d
+        where r.rel_id = #{relId}
+          and d.req_id = r.id
+    </select>
+    <resultMap type="java.util.HashMap" id="relDefectsQueryR">
+        <id column="id" property="id" javaType="Integer"/>
+        <result column="status" property="status" javaType="Integer"/>
+    </resultMap>
+
+    <select id="relScenarioQuery" resultMap="relScenarioQueryR" parameterType="java.util.HashMap">
+        select id as scenarioId,
+               cases
+        from sepp_test_scenario
+        where plan_id in
+              (select id
+               from sepp_test_plan
+               where rel_id = #{relId})
+    </select>
+    <resultMap type="java.util.HashMap" id="relScenarioQueryR">
+        <id column="scenarioId" property="scenarioId" javaType="Integer"/>
+        <result column="cases" property="cases" javaType="String"/>
+    </resultMap>
+
+    <select id="relCaseExecQuery" resultMap="relCaseExecQueryR" parameterType="java.util.HashMap">
+        select
+            scenario_id as scenarioId,
+            case_id as caseId,
+            max(run_id),
+            result
+        from
+            sepp_test_result
+        where scenario_id = #{scenarioId}
+        and case_id in
+        <foreach collection="cases" index="index" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+        and result = 1
+        group by scenario_id, case_id
+    </select>
+    <resultMap type="java.util.HashMap" id="relCaseExecQueryR">
+        <result column="scenarioId" property="scenarioId" javaType="Integer"/>
+        <result column="caseId" property="caseId" javaType="Integer"/>
+        <result column="result" property="result" javaType="Integer"/>
+    </resultMap>
+</mapper>

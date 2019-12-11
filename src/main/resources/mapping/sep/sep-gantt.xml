@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.work.gantt.dao.GanttDAO">
+
+    <select id="ganttMissionQuery" resultMap="ganttMissionQueryR" parameterType="java.util.HashMap">
+        select a.req_id                           as id,
+               a.req_id                           as reqId,
+               a.mission_responser                as missionResponser,
+               '产品需求'                          as missionType,
+               a.summary                          as missionTitle,
+               a.mission_status                   as missionStatus,
+               a.status                           as statusId,
+               min(a.mission_begin)               as missionBegin,
+               max(a.mission_end)                 as missionEnd,
+               timestampdiff(
+                       second,
+                       min(a.mission_begin),
+                       max(a.mission_end)
+                   ) * 1000 + 24 * 60 * 60 * 1000 as missionDuration
+        from (select t.id,
+                     t.req_id,
+                     r.summary,
+                     r.status,
+                     u.user_name    as mission_responser,
+                     rs.status_name as mission_status,
+                     t.plan_begin   as mission_begin,
+                     t.plan_to      as mission_end
+              from sepp_test_mission t,
+                   sepp_requirement r,
+                   sepp_req_status rs,
+                   sepp_user u
+              where t.req_id = r.id
+                and rs.status_id = r.status
+                and u.user_id = r.submitter
+                and r.product_id = #{productId}
+				<![CDATA[and t.plan_begin >= #{planBeginBegin}]]>
+				<![CDATA[and t.plan_begin <= #{planBeginEnd}]]>
+				<![CDATA[and t.plan_to >= #{planEndBegin}]]>
+				<![CDATA[and t.plan_to <= #{planEndEnd}]]>
+              union
+              select t.id           as id,
+                     t.req_id,
+                     r.summary,
+                     r.status,
+                     u.user_name    as mission_responser,
+                     rs.status_name as mission_status,
+                     t.plan_begin   as mission_begin,
+                     t.plan_to      as mission_end
+              from sepp_code_mission t,
+                   sepp_requirement r,
+                   sepp_req_status rs,
+                   sepp_user u
+              where t.req_id = r.id
+                and rs.status_id = r.status
+                and u.user_id = r.submitter
+                and r.product_id = #{productId}
+				<![CDATA[and t.plan_begin >= #{planBeginBegin}]]>
+				<![CDATA[and t.plan_begin <= #{planBeginEnd}]]>
+				<![CDATA[and t.plan_to >= #{planEndBegin}]]>
+				<![CDATA[and t.plan_to <= #{planEndEnd}]]>) a
+        group by req_id
+        union
+        select t.id,
+               t.req_id                              as reqId,
+               u.user_name                           as missionResponser,
+               '测试任务'                             as missionType,
+               concat(tp.period_name, '任务')         as missionTitle,
+               ts.status_name                        as missionStatus,
+               t.status                              as statusId,
+               date_format(t.plan_begin, '%Y-%m-%d') as missionBegin,
+               date_format(t.plan_to, '%Y-%m-%d')    as missionEnd,
+               timestampdiff(
+                       second,
+                       t.plan_begin,
+                       t.plan_to
+                   ) * 1000 + 60 * 60 * 24 * 1000    as missionDuration
+        from sepp_test_mission t,
+             sepp_requirement r,
+             sepp_test_period tp,
+             sepp_req_status rs,
+             sepp_tm_status ts,
+             sepp_user u
+        where t.req_id = r.id
+          and t.responser = u.user_id
+          and t.type = tp.period_id
+          and rs.status_id = r.status
+          and t.status = ts.status_id
+          and r.product_id = #{productId}
+			<![CDATA[and t.plan_begin >= #{planBeginBegin}]]>
+			<![CDATA[and t.plan_begin <= #{planBeginEnd}]]>
+			<![CDATA[and t.plan_to >= #{planEndBegin}]]>
+			<![CDATA[and t.plan_to <= #{planEndEnd}]]>
+        union
+        select c.id                                                                        as id,
+               c.req_id                                                                    as reqId,
+               u.user_name                                                                 as missionResponser,
+               '开发任务'                                                                   as missionType,
+               c.summary                                                                   as missionTitle,
+               cs.status_name                                                              as missionStatus,
+               c.status                                                                    as statusId,
+               date_format(c.plan_begin, '%Y-%m-%d')                                       as missionBegin,
+               date_format(c.plan_to, '%Y-%m-%d')                                          as missionEnd,
+               timestampdiff(second, c.plan_begin, c.plan_to) * 1000 + 60 * 60 * 24 * 1000 as missionDuration
+        from sepp_code_mission c,
+             sepp_requirement r,
+             sepp_req_status rs,
+             sepp_cm_status cs,
+             sepp_user u
+        where c.req_id = r.id
+          and c.responser = u.user_id
+          and rs.status_id = r.status
+          and c.status = cs.status_id
+          and r.product_id = #{productId}
+			<![CDATA[and c.plan_begin >= #{planBeginBegin}]]>
+			<![CDATA[and c.plan_begin <= #{planBeginEnd}]]>
+			<![CDATA[and c.plan_to >= #{planEndBegin}]]>
+			<![CDATA[and c.plan_to <= #{planEndEnd}
+        ]]>
+    </select>
+    <resultMap type="java.util.HashMap" id="ganttMissionQueryR">
+        <id column="id" property="id" javaType="Integer"/>
+        <result column="reqId" property="reqId" javaType="Integer"/>
+        <result column="missionResponser" property="missionResponser" javaType="String"/>
+        <result column="missionType" property="missionType" javaType="String"/>
+        <result column="missionTitle" property="missionTitle" javaType="String"/>
+        <result column="missionStatus" property="missionStatus" javaType="String"/>
+        <result column="statusId" property="statusId" javaType="Integer"/>
+        <result column="missionBegin" property="missionBegin" javaType="String"/>
+        <result column="missionEnd" property="missionEnd" javaType="String"/>
+        <result column="missionDuration" property="missionDuration" javaType="Long"/>
+    </resultMap>
+
+</mapper>

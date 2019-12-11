@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.mgr.user.dao.UserDAO">
+
+    <select id="userQuery" resultType="com.pr.sepp.mgr.user.model.User" parameterType="java.util.HashMap">
+        select distinct
+            u.user_id       as userId,
+            u.favicon_id    as faviconId,
+            u.team_id       as teamId,
+            u.user_account  as userAccount,
+            u.user_name     as userName,
+            u.password,
+            u.user_email    as userEmail,
+            u.is_valid      as isValid,
+            u.is_vendor     as isVendor
+        from
+            sepp_user u
+        where 1 = 1
+        <choose>
+            <when test="userId!=null and userId!=''">
+                and u.user_id = #{userId}
+            </when>
+            <otherwise>
+                <if test="userAccount!=null and userAccount!=''">
+                    and u.user_account = #{userAccount}
+                </if>
+                <if test="userName!=null and userName!=''">
+                    and u.user_name = #{userName}
+                </if>
+                <if test="userEmail!=null and userEmail!=''">
+                    and u.user_email = #{userEmail}
+                </if>
+                <if test="isValid!=null and isValid!=''">
+                    and u.is_valid = #{isValid}
+                </if>
+                <if test="isVendor!=null and isVendor!=''">
+                    and u.is_vendor = #{isVendor}
+                </if>
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="userQueryByIds" resultType="com.pr.sepp.mgr.user.model.User" parameterType="java.util.HashMap">
+        select distinct
+            u.user_id       as userId,
+            u.favicon_id    as faviconId,
+            u.team_id       as teamId,
+            u.user_account  as userAccount,
+            u.user_name     as userName,
+            u.password,
+            u.user_email    as userEmail,
+            u.is_valid      as isValid,
+            u.is_vendor     as isVendor
+        from
+            sepp_user u
+        where 1 = 1
+        <choose>
+            <when test="ids!=null">
+                and u.user_id in
+                <foreach collection="ids" index="index" item="userId" open="(" separator="," close=")">
+                    #{userId}
+                </foreach>
+            </when>
+            <otherwise>
+                and 1 = 2
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="userCreate" useGeneratedKeys="true" parameterType="com.pr.sepp.mgr.user.model.User">
+        <selectKey keyProperty="userId" order="AFTER" resultType="java.lang.Integer">
+            select last_insert_id()
+        </selectKey>
+        insert into
+            sepp_user(user_account, password, user_name, user_email, is_valid, is_vendor)
+        values
+            (#{userAccount}, #{password}, #{userName}, #{userEmail}, #{isValid}, #{isVendor})
+    </insert>
+
+    <update id="userUpdate" parameterType="com.pr.sepp.mgr.user.model.User">
+        update
+            sepp_user
+        set
+            user_name = #{userName},
+            user_email = #{userEmail},
+            <if test="password!=null and password!=''">
+                password = #{password},
+            </if>
+            is_valid = #{isValid},
+            favicon_id = #{faviconId},
+            is_vendor = #{isVendor}
+        where
+            user_id = #{userId}
+    </update>
+
+    <delete id="userDelete" parameterType="java.util.HashMap">
+        update
+            sepp_user
+        set
+            is_valid = 'N'
+        where
+            user_id = #{userId}
+    </delete>
+
+    <select id="userQueryProduct" resultType="com.pr.sepp.mgr.user.model.User">
+        select distinct p.user_id      as userId,
+                        u.user_account as userAccount,
+                        u.user_email   as userEmail,
+                        u.user_name    as userName
+        from sepp_privileges p,
+             sepp_user u
+        where p.user_id = u.user_id
+          and p.product_id = #{productId}
+          and u.is_valid = 'Y'
+        order by p.role_id
+    </select>
+
+    <select id="userQueryProductRole" resultType="com.pr.sepp.mgr.user.model.User">
+        select p.user_id      as userId,
+               u.user_account as userAccount,
+               u.user_email   as userEmail,
+               u.user_name    as userName
+        from sepp_privileges p,
+             sepp_user u
+        where p.user_id = u.user_id
+          and p.product_id = #{productId}
+          and p.role_id = #{roleId}
+          and u.is_valid = 'Y'
+        order by p.product_id
+    </select>
+
+    <select id="findUserByUserId" resultType="com.pr.sepp.mgr.user.model.User">
+        select u.user_id        as userId,
+               u.user_account   as userAccount,
+               u.user_email     as userEmail,
+               u.user_name      as userName
+        from sepp_user u
+        where u.user_id = #{userId}
+    </select>
+
+    <select id="userProductList" resultType="java.util.Map">
+        select distinct p.product_id    as productId,
+                        prod.product_name as productName
+        from sepp_privileges p,
+             sepp_product prod
+        where prod.product_id = p.product_id
+          and p.user_id = #{userId}
+        order by p.product_id
+    </select>
+</mapper>

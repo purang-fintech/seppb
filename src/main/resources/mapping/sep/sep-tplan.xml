@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.sep.testing.dao.TestPlanDAO">
+
+	<select id="testPlanQuery" resultType="com.pr.sepp.sep.testing.model.TestPlan" parameterType="java.util.HashMap">
+		select
+			p.id,
+			p.rel_id as relId,
+			r.rel_code as relCode,
+			p.plan_status as planStatus,
+		    case
+		        p.plan_status 
+		        when 1 
+		        then '打开' 
+		        else '关闭' 
+		    end as statusName,
+			p.submitter,
+			u1.user_name as submitterName,
+			u2.user_name as responserName,
+			p.responser,
+			p.plan_type as planType,
+			tp.period_name as typeName,
+			date_format(p.plan_begin, '%Y-%m-%d') as planBegin,
+			date_format(p.plan_end, '%Y-%m-%d') as planEnd,
+			p.report_dates as reportDates,
+			p.email_to as emailTo,
+			p.email_cc as emailCc
+		from
+			sepp_test_plan p,
+			sepp_release r,
+			sepp_test_period tp,
+			sepp_user u1,
+			sepp_user u2
+		where p.rel_id = r.id
+			and u1.user_id = p.submitter
+			and u2.user_id = p.responser
+			and tp.period_id = p.plan_type
+		<choose>
+			<when test="id!=null and id!=''">
+				and p.id = #{id}
+			</when>
+			<when test="relId!=null and relId!='' and planType!=null and planType!=''">
+				and p.rel_id = #{relId}
+				and p.plan_type = #{planType}
+				<if test="planStatus!=null and planStatus!=''">
+					and p.plan_status = #{planStatus}
+				</if>
+				<if test="responser!=null and responser!=''">
+					and p.responser = #{responser}
+				</if>
+			</when>
+			<otherwise>
+				and r.product_id = #{productId}
+				<if test="relId!=null and relId!=''">
+					and p.rel_id = #{relId}
+				</if>
+				<if test="planStatus!=null and planStatus!=''">
+					and p.plan_status = #{planStatus}
+				</if>
+				<if test="planType!=null and planType!=''">
+					and p.plan_type = #{planType}
+				</if>
+				<if test="responser!=null and responser!=''">
+					and p.responser = #{responser}
+				</if>
+				<if test="planedDateBegin!=null and planedDateBegin!=''">
+					<![CDATA[and p.plan_begin >= #{planedDateBegin}]]>
+				</if>
+				<if test="planedDateEnd!=null and planedDateEnd!=''">
+					<![CDATA[and p.plan_end <= #{planedDateEnd}]]>
+				</if>
+			</otherwise>
+		</choose>
+		order by p.id desc
+	</select>
+
+	<select id="latestPlanQuery" resultType="com.pr.sepp.sep.testing.model.TestPlan">
+		SELECT
+			p.*
+		FROM
+			sepp_test_plan p,
+			sepp_release r
+		WHERE r.id = p.rel_id
+		  AND r.id =
+			  (SELECT
+				   MAX(id)
+			   FROM
+				   sepp_release
+			   WHERE product_id = #{productId})
+		  AND p.plan_type = #{planType}
+		LIMIT 0, 1
+	</select>
+
+	<insert id="testPlanCreate" useGeneratedKeys="true" parameterType="com.pr.sepp.sep.testing.model.TestPlan">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+		insert into
+			sepp_test_plan(rel_id, plan_status, plan_type, submitter, responser, plan_begin, plan_end, report_dates, email_to, email_cc)
+		values
+			(#{relId}, #{planStatus}, #{planType}, #{submitter}, #{responser}, #{planBegin}, #{planEnd}, #{reportDates}, #{emailTo}, #{emailCc})
+	</insert>
+
+	<update id="testPlanUpdate" parameterType="com.pr.sepp.sep.testing.model.TestPlan">
+		update
+			sepp_test_plan
+		set
+			plan_status = #{planStatus},
+			rel_id = #{relId},
+			plan_type = #{planType},
+			submitter = #{submitter},
+			responser = #{responser},
+			plan_begin = #{planBegin},
+			plan_end = #{planEnd},
+			report_dates = #{reportDates},
+			email_to = #{emailTo},
+			email_cc = #{emailCc}
+		where id = #{id}
+	</update>
+
+	<delete id="testPlanDelete" parameterType="java.util.HashMap">
+		delete from 
+			sepp_test_plan
+		where 
+			id = #{id}
+	</delete>
+
+	<update id="planTmsClose"  parameterType="java.lang.Integer">
+		update
+			sepp_test_mission
+		set
+			status = 0
+		where plan_id = #{planId}
+	</update>
+</mapper>

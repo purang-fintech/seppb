@@ -1,0 +1,241 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.sqa.dao.AnalysisDAO">
+	<select id="tmsSpliter"  resultMap="tmsSpliterr" parameterType="java.util.HashMap">
+		select 
+		  count(c.id) as num,
+		  concat(u.user_name,'(', u.user_account,')') as spliter
+		from
+		  sepp_test_mission c,
+		  sepp_user u
+		where u.user_id = c.spliter
+		<choose>
+			<when test="relId!=null and relId!=''">
+				and exists
+				(select 'X' 
+					from 
+						sepp_test_plan p
+				 where p.rel_id = #{relId}
+				 	and p.plan_type = c.type 
+				 	and p.id = c.plan_id)
+			</when>
+			<otherwise>
+				and c.req_id in 
+				  (select 
+				    r.id
+				  from
+				    sepp_requirement r
+				  where r.product_id = #{productId})
+				<![CDATA[and c.split_date >= #{qTimeBegin}]]>
+				<![CDATA[and c.split_date <= #{qTimeEnd}]]>
+			</otherwise>
+		</choose>
+		group by c.spliter 
+		order by num 
+	</select>
+	<resultMap type="java.util.HashMap" id="tmsSpliterr">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="spliter" property="spliter" javaType="String" />
+	</resultMap>
+	
+	<select id="tmsResponser"  resultMap="tmsResponserr" parameterType="java.util.HashMap">
+		select 
+		  count(c.id) as num,
+		  concat(u.user_name,'(', u.user_account,')') as responser
+		from
+		  sepp_test_mission c,
+		  sepp_user u
+		where u.user_id = c.responser
+		<choose>
+			<when test="relId!=null and relId!=''">
+				and exists
+				(select 'X' 
+					from 
+						sepp_test_plan p
+				 where p.rel_id = #{relId}
+				 	and p.plan_type = c.type 
+				 	and p.id = c.plan_id)
+			</when>
+			<otherwise>
+				and c.req_id in 
+				  (select 
+				    r.id
+				  from
+				    sepp_requirement r
+				  where r.product_id = #{productId})
+				<![CDATA[and c.split_date >= #{qTimeBegin}]]>
+				<![CDATA[and c.split_date <= #{qTimeEnd}]]>
+			</otherwise>
+		</choose>
+		group by c.responser 
+		order by num 
+	</select>
+	<resultMap type="java.util.HashMap" id="tmsResponserr">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="responser" property="responser" javaType="String" />
+	</resultMap>
+	
+	<select id="tmsStatus"  resultMap="tmsStatusR" parameterType="java.util.HashMap">
+		select 
+		  count(c.req_id) as num,
+		  c.status 
+		from
+		  sepp_test_mission c
+		where 1 = 1
+		<choose>
+			<when test="relId!=null and relId!=''">
+				and exists
+				(select 'X' 
+					from 
+						sepp_test_plan p
+				 where p.rel_id = #{relId}
+				 	and p.plan_type = c.type 
+				 	and p.id = c.plan_id)
+			</when>
+			<otherwise>
+				and c.req_id in 
+				  (select 
+				    req_id 
+				  from
+				    sepp_requirement
+				  where product_id = #{productId})
+				<![CDATA[and c.split_date >= #{qTimeBegin}]]>
+				<![CDATA[and c.split_date <= #{qTimeEnd}]]>
+			</otherwise>
+		</choose>
+		group by c.status 
+		order by num 
+	</select>
+	<resultMap type="java.util.HashMap" id="tmsStatusR">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="status" property="status" javaType="Integer" />
+	</resultMap>
+	
+	<select id="tmsType"  resultMap="tmsTypeR" parameterType="java.util.HashMap">
+		select 
+		  count(c.req_id) as num,
+		  c.type 
+		from
+		  sepp_test_mission c
+		where 1 = 1
+		<choose>
+			<when test="relId!=null and relId!=''">
+				and exists
+				(select 'X' 
+					from 
+						sepp_test_plan p
+				 where p.rel_id = #{relId}
+				 	and p.plan_type = c.type 
+				 	and p.id = c.plan_id)
+			</when>
+			<otherwise>
+				and c.req_id in 
+				  (select 
+				    req_id 
+				  from
+				    sepp_requirement
+				  where product_id = #{productId})
+				<![CDATA[and c.split_date >= #{qTimeBegin}]]>
+				<![CDATA[and c.split_date <= #{qTimeEnd}]]>
+			</otherwise>
+		</choose>
+		group by c.type 
+		order by num 
+	</select>
+	<resultMap type="java.util.HashMap" id="tmsTypeR">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="type" property="type" javaType="Integer" />
+	</resultMap>
+	
+	<select id="tmsManPower" resultMap="tmsManPowerr" parameterType="java.util.HashMap">
+		select 
+		  case
+		    when <![CDATA[c.manpower <= 1]]> then '1个人日以内' 
+		    when <![CDATA[c.manpower > 1 and c.manpower <= 3]]>  then '1~3个人日' 
+		    when <![CDATA[c.manpower > 3 and c.manpower <= 5]]>  then '3~5个人日' 
+		    else '5个人日以上' 
+		  end as tmCost,
+		  count(c.id) as num
+		from
+		  sepp_test_mission c
+		where 1 = 1
+		<choose>
+			<when test="relId!=null and relId!=''">
+				and exists
+				(select 'X' 
+					from 
+						sepp_test_plan p
+				 where p.rel_id = #{relId}
+				 	and p.plan_type = c.type 
+				 	and p.id = c.plan_id)
+			</when>
+			<otherwise>
+				and c.req_id in 
+				  (select 
+				    r.id
+				  from
+				    sepp_requirement r
+				  where r.product_id = #{productId})
+				<![CDATA[and c.split_date >= #{qTimeBegin}]]>
+				<![CDATA[and c.split_date <= #{qTimeEnd}]]>
+			</otherwise>
+		</choose>
+		group by tmCost
+		order by tmCost
+	</select>
+	<resultMap type="java.util.HashMap" id="tmsManPowerr">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="tmCost" property="tmCost" javaType="String" />
+	</resultMap>
+	
+	<select id="tmsDevOffset"  resultMap="tmsDevOffsetr" parameterType="java.util.HashMap">
+		select 
+		  case 
+		    when <![CDATA[a.period_offset < 0]]> then '提前完成' 
+		    when <![CDATA[a.period_offset = 0]]> then '按时完成' 
+		    when <![CDATA[a.period_offset > 0 and a.period_offset <= 1]]>  then '1天之内' 
+		    when <![CDATA[a.period_offset > 1 and a.period_offset <= 3]]>  then '1~3天' 
+		    when <![CDATA[a.period_offset > 3 and a.period_offset <= 7]]>  then '3天~1周' 
+		    when <![CDATA[a.period_offset > 7 and a.period_offset <= 30]]>  then '1周到1个月' 
+		    else '1个月以上' 
+		  end as devOffset,
+		  count(a.id) as num 
+		from
+		  (select 
+		    datediff(h.oper_time, c.plan_to) as period_offset,
+		    c.id 
+		  from
+		    sepp_test_mission c,
+		    sepp_history h
+		  where h.obj_type = 18 
+		    and c.id = h.obj_id
+			and c.status = 0
+		    and h.obj_key = 'status' 
+		    and h.new_value in ('0', '3')
+			<choose>
+				<when test="relId!=null and relId!=''">
+					and exists
+					(select 'X' 
+						from 
+							sepp_test_plan p
+					 where p.rel_id = #{relId}
+					 	and p.plan_type = c.type 
+					 	and p.id = c.plan_id)
+				</when>
+				<otherwise>
+		    		and h.product_id = #{productId}
+					<![CDATA[and h.oper_time >= #{qTimeBegin}]]>
+					<![CDATA[and h.oper_time <= #{qTimeEnd}]]>
+				</otherwise>
+			</choose>) a 
+		group by devOffset
+		order by num 
+	</select>
+	<resultMap type="java.util.HashMap" id="tmsDevOffsetr">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="devOffset" property="devOffset" javaType="String" />
+	</resultMap>
+</mapper>

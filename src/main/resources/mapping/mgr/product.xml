@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.mgr.product.dao.ProductDAO">
+
+    <select id="productQuery" resultType="com.pr.sepp.mgr.product.model.Product" parameterType="java.util.HashMap">
+        select
+            product_id      as productId,
+            product_code    as productCode,
+            product_name    as productName,
+            product_desc    as productDesc,
+            is_valid        as isValid,
+            owner
+        from
+            sepp_product
+        where 1 = 1
+        <choose>
+            <when test="productId!=null and productId!=''">
+                and product_id = #{productId}
+            </when>
+            <otherwise>
+                <if test="productCode!=null and productCode!=''">
+                    and product_code = #{productCode}
+                </if>
+                <if test="productName!=null and productName!=''">
+                    and product_name like concat(#{productName}, '%')
+                </if>
+                <if test="productNameFull!=null and productNameFull!=''">
+                    and product_name = #{productNameFull}
+                </if>
+                <if test="owner!=null and owner!=''">
+                    and owner = #{owner}
+                </if>
+                <if test="isValid!=null and isValid!=''">
+                    and is_valid = #{isValid}
+                </if>
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="productCreate" useGeneratedKeys="true" parameterType="com.pr.sepp.mgr.product.model.Product">
+        <selectKey keyProperty="productId" order="AFTER" resultType="java.lang.Integer">
+            select last_insert_id()
+        </selectKey>
+        insert into
+            sepp_product(product_code, product_name, product_desc, owner)
+        values
+            (#{productCode}, #{productName}, #{productDesc}, #{owner})
+    </insert>
+
+    <update id="productUpdate" parameterType="com.pr.sepp.mgr.product.model.Product">
+        update
+            sepp_product
+        set
+            product_code = #{productCode},
+            product_name = #{productName},
+            product_desc = #{productDesc},
+            owner = #{owner},
+            is_valid = #{isValid}
+        where product_id = #{productId}
+    </update>
+
+    <update id="updateReleaseAlias" parameterType="java.util.HashMap">
+        update
+            sepp_release
+        set
+            rel_code = concat(#{newProductCode}, substr(rel_code, length(#{oldProductCode}) + 1, length(rel_code) - locate(#{oldProductCode}, rel_code)))
+        where
+            product_id = #{productId}
+    </update>
+
+    <delete id="productDelete" parameterType="java.util.HashMap">
+        update
+            sepp_product
+        set
+            is_valid = 'N'
+        where
+            product_id = #{productId}
+    </delete>
+
+    <select id="productConfigQuery" resultType="com.pr.sepp.mgr.product.model.ProductConfig" parameterType="java.lang.Integer">
+        select product_id       as productId,
+               member_config    as memberConfig,
+               change_auditor   as changeAuditor,
+               gompertz_define  as gompertzDefine,
+               gompertz_params  as gompertzParams,
+               dre_target       as dreTarget
+        from sepp_product_config
+        where product_id = #{productId}
+    </select>
+
+    <update id="productConfigUpdate" parameterType="com.pr.sepp.mgr.product.model.ProductConfig">
+        replace into
+            sepp_product_config(product_id, member_config, change_auditor, gompertz_define, gompertz_params, dre_target)
+        values
+            (#{productId}, #{memberConfig}, #{changeAuditor}, #{gompertzDefine}, #{gompertzParams}, #{dreTarget})
+    </update>
+
+    <select id="productDocQuery" resultType="com.pr.sepp.mgr.product.model.ProductDoc" parameterType="java.util.HashMap">
+        select
+            pc.id,
+            pc.parent_id as parentId,
+            pc.label,
+            pc.type,
+            pc.module_id as moduleId,
+            pc.product_id as productId,
+            pc.attachment_id as attachmentId,
+            pc.maintain_user as maintainUser,
+            pc.keyword,
+            pc.summary,
+            pc.version,
+            sa.file_name as fileName,
+            sa.upload_user as uploadUser,
+            date_format(sa.created_date, '%Y-%m-%d %T') as uploadDate,
+            sa.url
+        from
+        (
+        <choose>
+            <when test="id !=null and id !=''">
+                select distinct
+                    pd.*
+                from
+                    sepp_product_docs pd,
+                    sepp_requirement r
+                where pd.id = #{id}
+                  and find_in_set(pd.attachment_id, r.attachment) > 0
+                  and pd.type = 'doc'
+                union
+                select
+                    pd.*
+                from
+                    sepp_product_docs pd
+                where pd.id = #{id}
+                  and pd.type = 'folder'
+            </when>
+            <when test="attachmentId !=null and attachmentId !=''">
+                select distinct
+                    pd.*
+                from
+                    sepp_product_docs pd,
+                    sepp_requirement r
+                where pd.attachment_id = #{attachmentId}
+                  and pd.product_id = #{productId}
+                  and pd.parent_id = #{parentId}
+                  and find_in_set(pd.attachment_id, r.attachment) > 0
+                  and pd.type = 'doc'
+            </when>
+            <when test="parentId !=null and parentId !=''">
+                select distinct
+                    pd.*
+                from
+                    sepp_product_docs pd,
+                    sepp_requirement r
+                where pd.parent_id = #{parentId}
+                  and pd.product_id = #{productId}
+                  and find_in_set(pd.attachment_id, r.attachment) > 0
+                  and pd.type = 'doc'
+            </when>
+            <otherwise>
+                select
+                    pd.*
+                from
+                    sepp_product_docs pd
+                where pd.product_id = #{productId}
+                  and pd.module_id = #{moduleId}
+                  and pd.type = 'folder'
+                union
+                select distinct
+                    pd.*
+                from
+                    sepp_product_docs pd,
+                    sepp_requirement r
+                where pd.parent_id = #{moduleId}
+                  and pd.product_id = #{productId}
+                  and find_in_set(pd.attachment_id, r.attachment) > 0
+                  and pd.type = 'doc'
+            </otherwise>
+        </choose>
+        ) pc
+        left join sepp_attachment sa
+        on sa.id = pc.attachment_id
+        order by sa.updated_date desc, pc.id asc
+    </select>
+
+    <select id="documentVersionQuery" resultType="java.lang.String" parameterType="java.lang.Integer">
+        SELECT DISTINCT LEFT(rel_code, LENGTH(rel_code) - LOCATE('.', REVERSE(rel_code)))
+        FROM sepp_release
+        WHERE product_id = #{productId}
+        ORDER BY id DESC
+    </select>
+
+    <select id="documentReqQuery" resultMap="documentReqQueryR">
+        SELECT id as reqId,
+               summary as reqSummary
+        FROM sepp_requirement
+        WHERE product_id = #{productId}
+          and find_in_set(#{attachmentId}, attachment) > 0
+    </select>
+    <resultMap type="java.util.HashMap" id="documentReqQueryR">
+        <result column="reqId" property="reqId" javaType="Integer"/>
+        <result column="reqSummary" property="reqSummary" javaType="String"/>
+    </resultMap>
+
+    <select id="documentFuzzQuery" resultType="com.pr.sepp.mgr.product.model.ProductDoc" parameterType="java.util.HashMap">
+        select pc.id,
+               pc.parent_id                                as parentId,
+               pc.label,
+               pc.type,
+               pc.req_id                                   as reqId,
+               pc.req_summary                              as reqSummary,
+               pc.module_id                                as moduleId,
+               pc.product_id                               as productId,
+               pc.attachment_id                            as attachmentId,
+               pc.maintain_user                            as maintainUser,
+               pc.keyword,
+               pc.summary,
+               pc.version,
+               sa.file_name                                as fileName,
+               sa.upload_user                              as uploadUser,
+               date_format(sa.created_date, '%Y-%m-%d %T') as uploadDate,
+               sa.url
+        from (select pd.*,
+                     r.id as req_id,
+                     r.summary as req_summary
+              from sepp_product_docs pd,
+                   sepp_requirement r
+              where find_in_set(pd.attachment_id, r.attachment) > 0
+                and pd.type = 'doc'
+                and pd.product_id = #{productId}
+                and (find_in_set(#{searchText}, pd.keyword) > 0
+                  or upper(r.summary) like concat('%', upper(#{searchText}), '%')
+                  or upper(pd.label) like concat('%', upper(#{searchText}), '%')
+                  or upper(pd.summary) like concat('%', upper(#{searchText}), '%'))) pc
+                 left join sepp_attachment sa
+                           on sa.id = pc.attachment_id
+        order by sa.updated_date desc, pc.id asc
+    </select>
+
+    <insert id="productDocCreate" useGeneratedKeys="true" parameterType="com.pr.sepp.mgr.product.model.ProductDoc">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            select last_insert_id()
+        </selectKey>
+        insert into
+            sepp_product_docs(parent_id, label, product_id, module_id, type, version, attachment_id, maintain_user, keyword, summary)
+        values
+            (#{parentId}, #{label}, #{productId}, #{moduleId}, #{type}, #{version}, #{attachmentId}, #{maintainUser}, #{keyword}, #{summary})
+    </insert>
+
+    <update id="productDocUpdate" parameterType="com.pr.sepp.mgr.product.model.ProductDoc">
+        update
+            sepp_product_docs
+        set
+            parent_id = #{parentId},
+            label = #{label},
+            version = #{version},
+            maintain_user = #{maintainUser},
+            keyword = #{keyword},
+            summary = #{summary}
+        where id = #{id}
+    </update>
+
+    <delete id="productDocDelete" parameterType="java.lang.Integer">
+        delete from
+            sepp_product_docs
+        where attachment_id = #{attachmentId}
+    </delete>
+
+    <select id="productBranchQuery" resultType="com.pr.sepp.mgr.product.model.ProductBranch" parameterType="java.util.Map">
+        select
+            branch_id       as branchId,
+            is_valid        as isValid,
+            branch_name     as branchName,
+            creator         as creator,
+            product_id      as productId
+        from
+            sepp_product_branch
+        where 1 = 1
+        <choose>
+            <when test="branchId !=null and branchId !=''">
+                and branch_id = #{branchId}
+            </when>
+            <otherwise>
+                and product_id = #{productId}
+                <if test="isValid!=null and isValid!=''">
+                    and is_valid = #{isValid}
+                </if>
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="productBranchCreate" useGeneratedKeys="true" parameterType="com.pr.sepp.mgr.product.model.ProductBranch">
+        <selectKey keyProperty="branchId" order="AFTER" resultType="java.lang.Integer">
+            select last_insert_id()
+        </selectKey>
+        insert into
+            sepp_product_branch(branch_name, product_id, is_valid, creator)
+        values
+            (#{branchName}, #{productId}, #{isValid}, #{creator})
+    </insert>
+
+    <update id="productBranchUpdate" parameterType="com.pr.sepp.mgr.product.model.ProductBranch">
+        update
+            sepp_product_branch
+        set
+            branch_name = #{branchName},
+            is_valid = #{isValid}
+        where
+            branch_id = #{branchId}
+    </update>
+
+    <delete id="productBranchDelete" parameterType="java.lang.Integer">
+        update
+            sepp_product_branch
+        set
+            is_valid = 0
+        where
+            branch_id = #{branchId}
+    </delete>
+
+    <select id="findProductBranch" resultType="com.pr.sepp.mgr.product.model.ProductBranch">
+        select branch_id   as branchId,
+               is_valid    as isValid,
+               branch_name as branchName,
+               creator     as creator,
+               product_id  as productId
+        from sepp_product_branch
+        where branch_id = #{branchId}
+    </select>
+</mapper>

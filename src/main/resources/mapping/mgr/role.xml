@@ -1,0 +1,138 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.mgr.role.dao.RoleDAO">
+
+    <select id="roleQuery" resultType="com.pr.sepp.mgr.role.model.Role" parameterType="java.util.HashMap">
+        select
+            role_id as roleId,
+            role_code as roleCode,
+            role_name as roleName,
+            is_valid as isValid
+        from
+            sepp_user_role
+        where 1 = 1
+        <choose>
+            <when test="roleId!=null and roleId!=''">
+                and role_id = #{roleId}
+            </when>
+            <otherwise>
+                <if test="roleCode!=null and roleCode!=''">
+                    and role_code = #{roleCode}
+                </if>
+                <if test="roleName!=null and roleName!=''">
+                    and role_name like concat(#{roleName}, '%')
+                </if>
+                <if test="isValid!=null and isValid!=''">
+                    and is_valid = #{isValid}
+                </if>
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="privQuery" resultMap="privQueryr">
+        select
+            p.priv_id       as privId,
+            u.user_id       as userId,
+            u.user_account  as userAccount,
+            u.user_name     as userName,
+            pr.product_id   as productId,
+            pr.product_code as productCode,
+            pr.product_name as productName,
+            r.role_id       as roleId,
+            r.role_code     as roleCode,
+            r.role_name     as roleName
+        from
+            sepp_privileges p,
+            sepp_product pr,
+            sepp_user_role r,
+            sepp_user u
+        where p.product_id = pr.product_id
+          and p.role_id = r.role_id
+          and p.user_id = u.user_id
+          and pr.is_valid = 'Y'
+        <choose>
+            <when test="privId!=null and privId!=''">
+                and p.priv_id = #{privId}
+            </when>
+            <otherwise>
+                <if test="userId!=null and userId!=''">
+                    and p.user_id = #{userId}
+                </if>
+                <if test="productId!=null and productId!=''">
+                    and p.product_id = #{productId}
+                </if>
+                <if test="roleId!=null and roleId!=''">
+                    and r.role_id = #{roleId}
+                </if>
+                <if test="isValid!=null and isValid!=''">
+                    and u.is_valid = #{isValid}
+                </if>
+            </otherwise>
+        </choose>
+    </select>
+    <resultMap type="java.util.HashMap" id="privQueryr">
+        <id column="privId" property="privId" javaType="Integer"/>
+        <result column="userId" property="userId" javaType="Integer"/>
+        <result column="userAccount" property="userAccount" javaType="String"/>
+        <result column="userName" property="userName" javaType="String"/>
+        <result column="productId" property="productId" javaType="Integer"/>
+        <result column="productCode" property="productCode" javaType="String"/>
+        <result column="productName" property="productName" javaType="String"/>
+        <result column="roleId" property="roleId" javaType="Integer"/>
+        <result column="roleCode" property="roleCode" javaType="String"/>
+        <result column="roleName" property="roleName" javaType="String"/>
+    </resultMap>
+
+    <update id="privUpdate" parameterType="java.util.HashMap">
+        insert into
+            sepp_privileges(user_id, product_id, role_id)
+        values
+        <foreach collection="products" index="index" item="productId" separator=",">
+            <foreach collection="roles" index="index" item="roleId" separator=",">
+                (#{userId}, #{productId}, #{roleId})
+            </foreach>
+        </foreach>
+        on duplicate key update updated_date = now()
+    </update>
+
+    <delete id="privDelete" parameterType="java.util.HashMap">
+        delete from
+            sepp_privileges
+        where priv_id in
+        <foreach collection="privId" index="index" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+    <select id="productRoleQueryUser" resultMap="productRoleQueryUser_result">
+        select pr.product_id   as productId,
+               pr.product_code as productCode,
+               pr.product_name as productName,
+               pr.is_valid     as isValid,
+               r.role_id       as roleId,
+               r.role_name     as roleName
+        from sepp_privileges p,
+             sepp_product pr,
+             sepp_user_role r
+        where p.product_id = pr.product_id
+          and p.role_id = r.role_id
+          and p.user_id = #{userId}
+          and pr.is_valid = 'Y'
+    </select>
+    <resultMap type="java.util.HashMap" id="productRoleQueryUser_result">
+        <result column="productId" property="productId" javaType="Integer"/>
+        <result column="productCode" property="productCode" javaType="String"/>
+        <result column="productName" property="productName" javaType="String"/>
+        <result column="roleId" property="roleId" javaType="Integer"/>
+        <result column="roleName" property="roleName" javaType="String"/>
+    </resultMap>
+
+    <select id="findRolesByRoleId" resultType="com.pr.sepp.mgr.role.model.Role">
+        SELECT *
+        FROM sepp_user_role
+        WHERE role_id = #{roleId}
+    </select>
+</mapper>

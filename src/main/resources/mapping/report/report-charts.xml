@@ -1,0 +1,538 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.sep.analysis.dao.DataGraghDAO">
+
+	<select id="relInfoQuery" resultMap="relInfoQueryr" parameterType="java.lang.Integer">
+		select
+		  id as relId,
+		  rel_code as relCode,
+		  date_format(sit_begin_date, '%Y-%m-%d') as sitBeginDate,
+		  date_format(uat_begin_date, '%Y-%m-%d') as uatBeginDate,
+		  date_format(rel_date, '%Y-%m-%d') as relDate
+		from
+		  sepp_release
+		where id = #{relId}
+	</select>
+	<resultMap type="java.util.HashMap" id="relInfoQueryr">
+		<result column="relId" property="relId" javaType="Integer" />
+		<result column="relCode" property="relCode" javaType="String" />
+		<result column="sitBeginDate" property="sitBeginDate" javaType="String" />
+		<result column="uatBeginDate" property="uatBeginDate" javaType="String" />
+		<result column="relDate" property="relDate" javaType="String" />
+	</resultMap>
+
+	<select id="defectFound" resultMap="defectFoundr" parameterType="java.util.HashMap">
+		select
+		  d.found_times as foundTime,
+		  d.dailyFound,
+		  (@num := @num + d.dailyFound) as totalFound
+		from
+		  (select
+		    date_format(a.found_time, '%Y-%m-%d') as found_times,
+		    count(a.id) as dailyFound
+		  from
+            sepp_requirement r,
+		    sepp_defects a
+		  where a.rel_id = #{relId}
+            and r.id = a.req_id
+			<if test="planType!=null and planType!=0 and planType!='0'">
+				and a.found_period = #{planType}
+			</if>
+		  group by found_times) d,
+		  (select
+		    @num := 0) init ;
+	</select>
+	<resultMap type="java.util.HashMap" id="defectFoundr">
+		<result column="foundTime" property="foundTime" javaType="String" />
+		<result column="dailyFound" property="dailyFound" javaType="Integer" />
+		<result column="totalFound" property="totalFound" javaType="Integer" />
+	</resultMap>
+
+	<select id="defectResponse" resultMap="defectResponser" parameterType="java.util.HashMap">
+		select
+		  d.response_time as responseTime,
+		  d.dailyResponse,
+		  (@num := @num + d.dailyResponse) as totalResponse
+		from
+		  (select
+			date_format(a.response_time, '%Y-%m-%d') as response_time,
+			count(a.id) as dailyResponse
+		  from
+            sepp_requirement r,
+			sepp_defects a
+		  where a.rel_id = #{relId}
+            and r.id = a.req_id
+			<if test="planType!=null and planType!=0 and planType!='0'">
+				and a.found_period = #{planType}
+			</if>
+		  and a.response_time is not null
+		  group by date_format(a.response_time, '%Y-%m-%d')) d,
+		  (select
+			@num := 0) init ;
+	</select>
+	<resultMap type="java.util.HashMap" id="defectResponser">
+		<result column="responseTime" property="responseTime" javaType="String" />
+		<result column="dailyResponse" property="dailyResponse" javaType="Integer" />
+		<result column="totalResponse" property="totalResponse" javaType="Integer" />
+	</resultMap>
+
+	<select id="defectFix" resultMap="defectFixr" parameterType="java.util.HashMap">
+		select
+		  d.fixedTime,
+		  d.dailyFixed,
+		  (@num := @num + d.dailyFixed) as totalFixed
+		from
+		  (select
+			date_format(a.fixed_time, '%Y-%m-%d') as fixedTime,
+			count(a.id) as dailyFixed
+		  from
+            sepp_requirement r,
+			sepp_defects a
+		  where a.rel_id = #{relId}
+            and r.id = a.req_id
+			<if test="planType!=null and planType!=0 and planType!='0'">
+				and a.found_period = #{planType}
+			</if>
+		  and a.fixed_time is not null
+		  group by date_format(a.fixed_time, '%Y-%m-%d')) d,
+		  (select
+			@num := 0) init ;
+	</select>
+	<resultMap type="java.util.HashMap" id="defectFixr">
+		<result column="fixedTime" property="fixedTime" javaType="String" />
+		<result column="dailyFixed" property="dailyFixed" javaType="Integer" />
+		<result column="totalFixed" property="totalFixed" javaType="Integer" />
+	</resultMap>
+
+	<select id="defectDeploy" resultMap="defectDeployr" parameterType="java.util.HashMap">
+		select
+		  d.deployedTime,
+		  d.dailyDeployed,
+		  (@num := @num + d.dailyDeployed) as totalDeployed
+		from
+		  (select
+			date_format(a.deployed_time, '%Y-%m-%d') as deployedTime,
+			count(a.id) as dailyDeployed
+		  from
+            sepp_requirement r,
+			sepp_defects a
+		  where a.rel_id = #{relId}
+            and r.id = a.req_id
+			<if test="planType!=null and planType!=0 and planType!='0'">
+				and a.found_period = #{planType}
+			</if>
+		  and a.deployed_time is not null
+		  group by date_format(a.deployed_time, '%Y-%m-%d')) d,
+		  (select
+			@num := 0) init ;
+	</select>
+	<resultMap type="java.util.HashMap" id="defectDeployr">
+		<result column="deployedTime" property="deployedTime" javaType="String" />
+		<result column="dailyDeployed" property="dailyDeployed" javaType="Integer" />
+		<result column="totalDeployed" property="totalDeployed" javaType="Integer" />
+	</resultMap>
+
+	<select id="defectVerify" resultMap="defectVerifyr" parameterType="java.util.HashMap">
+		select
+		  d.closedTime,
+		  d.dailyClosed,
+		  (@num := @num + d.dailyClosed) as totalClosed
+		from
+		  (select
+			date_format(a.closed_time, '%Y-%m-%d') as closedTime,
+			count(a.id) as dailyClosed
+		  from
+            sepp_requirement r,
+			sepp_defects a
+		  where a.rel_id = #{relId}
+            and r.id = a.req_id
+			<if test="planType!=null and planType!=0 and planType!='0'">
+				and a.found_period = #{planType}
+			</if>
+		  and a.closed_time is not null
+		  group by date_format(a.closed_time, '%Y-%m-%d')) d,
+		  (select
+			@num := 0) init ;
+	</select>
+	<resultMap type="java.util.HashMap" id="defectVerifyr">
+		<result column="closedTime" property="closedTime" javaType="String" />
+		<result column="dailyClosed" property="dailyClosed" javaType="Integer" />
+		<result column="totalClosed" property="totalClosed" javaType="Integer" />
+	</resultMap>
+
+	<select id="defectModule" resultMap="defectModuler" parameterType="java.util.HashMap">
+		select
+			count(d.id) as num,
+			d.influence,
+			m.module_name as moduleName
+		from
+		  sepp_prod_module m,
+		  sepp_requirement r,
+		  sepp_defects d
+		where d.rel_id = #{relId}
+		  and r.id = d.req_id
+		<if test="planType!=null and planType!=0 and planType!='0'">
+			and d.found_period = #{planType}
+		</if>
+		  and d.prod_module = m.module_id
+		group by d.prod_module, d.influence
+		order by num
+	</select>
+	<resultMap type="java.util.HashMap" id="defectModuler">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="moduleName" property="moduleName" javaType="String" />
+	</resultMap>
+
+	<select id="defectReqirements" resultMap="defectReqirementsr" parameterType="java.util.HashMap">
+		select
+            count(d.id) as num,
+            d.influence,
+            r.id as reqId,
+            concat('#', r.id, ' - ', r.summary) as reqSummary
+		from
+            sepp_requirement r,
+            sepp_defects d
+		where d.rel_id = #{relId}
+		  and r.id = d.req_id
+		<if test="planType!=null and planType!=0 and planType!='0'">
+			and d.found_period = #{planType}
+		</if>
+		group by d.req_id, d.influence
+		order by num, reqSummary
+	</select>
+	<resultMap type="java.util.HashMap" id="defectReqirementsr">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="reqId" property="reqId" javaType="Integer" />
+		<result column="reqSummary" property="reqSummary" javaType="String" />
+	</resultMap>
+
+	<select id="defectFounder" resultMap="defectFounderr" parameterType="java.util.HashMap">
+		select
+            count(d.id) as num,
+            d.influence,
+            u.user_name as founder
+		from
+		  sepp_defects d,
+          sepp_requirement r,
+		  sepp_user u
+		where u.user_id = d.submitter
+		  and d.rel_id = #{relId}
+          and r.id = d.req_id
+		<if test="planType!=null and planType!=0 and planType!='0'">
+			and d.found_period = #{planType}
+		</if>
+		group by d.submitter, d.influence
+		order by num
+	</select>
+	<resultMap type="java.util.HashMap" id="defectFounderr">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="founder" property="founder" javaType="String" />
+	</resultMap>
+
+	<select id="defectResponser" resultMap="defectResponserr" parameterType="java.util.HashMap">
+		select
+		    count(d.id) as num,
+            d.influence,
+		    u.user_name as responser
+		from
+            sepp_user u,
+            sepp_requirement r,
+            sepp_defects d
+		where d.rel_id = #{relId}
+          and r.id = d.req_id
+		<if test="planType!=null and planType!=0 and planType!='0'">
+			and d.found_period = #{planType}
+		</if>
+		  and d.responser = u.user_id
+		group by d.responser, d.influence
+        union
+		select
+            count(d.id) as num,
+            d.influence,
+            '尚未分配' as responser
+		from
+          sepp_requirement r,
+		  sepp_defects d
+		where d.rel_id = #{relId}
+          and r.id = d.req_id
+		<if test="planType!=null and planType!=0 and planType!='0'">
+			and d.found_period = #{planType}
+		</if>
+		  and d.responser is null
+        group by responser, d.influence
+		order by num
+	</select>
+	<resultMap type="java.util.HashMap" id="defectResponserr">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="responser" property="responser" javaType="String" />
+	</resultMap>
+
+	<select id="defectPriority" resultMap="defectPriorityr" parameterType="java.util.HashMap">
+		select
+		  count(d.id) as num,
+          d.priority
+		from
+          sepp_requirement r,
+		  sepp_defects d
+		where d.rel_id = #{relId}
+          and r.id = d.req_id
+		<if test="planType!=null and planType!=0 and planType!='0'">
+			and d.found_period = #{planType}
+		</if>
+		group by d.priority
+		order by d.priority
+	</select>
+	<resultMap type="java.util.HashMap" id="defectPriorityr">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="priority" property="priority" javaType="Integer" />
+	</resultMap>
+
+	<select id="defectInfluence" resultMap="defectInfluencer" parameterType="java.util.HashMap">
+		select
+		  count(d.id) as num,
+          d.influence
+		from
+          sepp_requirement r,
+		  sepp_defects d
+		where d.rel_id = #{relId}
+          and r.id = d.req_id
+		<if test="planType!=null and planType!=0 and planType!='0'">
+			and d.found_period = #{planType}
+		</if>
+		group by d.influence
+		order by d.influence
+	</select>
+	<resultMap type="java.util.HashMap" id="defectInfluencer">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="influence" property="influence" javaType="Integer" />
+	</resultMap>
+
+	<select id="defectType" resultMap="defectTyper" parameterType="java.util.HashMap">
+		select
+            count(d.id) as num,
+            ifnull(d.defect_type, 0) as defectType
+		from
+            sepp_requirement r,
+            sepp_defects d
+        where d.rel_id = #{relId}
+          and r.id = d.req_id
+		<if test="planType!=null and planType!=0 and planType!='0'">
+			and d.found_period = #{planType}
+		</if>
+		group by defectType
+		order by defectType
+	</select>
+	<resultMap type="java.util.HashMap" id="defectTyper">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="defectType" property="defectType" javaType="Integer" />
+	</resultMap>
+
+	<select id="defectFoundPeriod" resultMap="defectFoundPeriodr" parameterType="java.util.HashMap">
+		select
+		  count(d.id) as num,
+		  ifnull(d.found_period, 0) as foundPeriod
+		from
+            sepp_requirement r,
+            sepp_defects d
+        where d.rel_id = #{relId}
+          and r.id = d.req_id
+		<if test="planType!=null and planType!=0 and planType!='0'">
+			and d.found_period = #{planType}
+		</if>
+		group by foundPeriod
+		order by foundPeriod
+	</select>
+	<resultMap type="java.util.HashMap" id="defectFoundPeriodr">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="foundPeriod" property="foundPeriod" javaType="Integer" />
+	</resultMap>
+
+	<select id="defectExpectPeriod" resultMap="defectExpectPeriodr" parameterType="java.util.HashMap">
+		select
+		  count(d.id) as num,
+		  ifnull(d.defect_period, 0) as defectPeriod
+		from
+            sepp_requirement r,
+            sepp_defects d
+        where d.rel_id = #{relId}
+          and r.id = d.req_id
+		<if test="planType!=null and planType!=0 and planType!='0'">
+			and d.found_period = #{planType}
+		</if>
+		group by defectPeriod
+		order by defectPeriod
+	</select>
+	<resultMap type="java.util.HashMap" id="defectExpectPeriodr">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="defectPeriod" property="defectPeriod" javaType="Integer" />
+	</resultMap>
+
+	<select id="defectFixTimes" resultMap="defectFixTimesr" parameterType="java.util.HashMap">
+		select
+		  count(d.id) as num,
+		  case
+			ifnull(d.fix_times, 0)
+			when 0
+			then '无修复记录'
+			when 1
+			then '修复1次(正常)'
+			when 2
+			then '修复2次'
+			when 3
+			then '修复3次'
+			else '修复3次以上'
+		  end as fixedTimes
+		from
+            sepp_requirement r,
+            sepp_defects d
+        where d.rel_id = #{relId}
+          and r.id = d.req_id
+		<if test="planType!=null and planType!=0 and planType!='0'">
+			and d.found_period = #{planType}
+		</if>
+		group by fixedTimes
+		order by fixedTimes
+	</select>
+	<resultMap type="java.util.HashMap" id="defectFixTimesr">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="fixedTimes" property="fixedTimes" javaType="String" />
+	</resultMap>
+
+	<select id="defectResponseCost" resultMap="defectResponseCostr" parameterType="java.util.HashMap">
+		select
+		  count(d.id) as num,
+		  case
+			when ifnull(d.response_cost, 0) = 0
+			then '尚未响应'
+			when ifnull(d.response_cost, 0) > 0
+			and ifnull(d.response_cost, 0) <![CDATA[<=]]> 4
+			then '4小时内响应'
+			when ifnull(d.response_cost, 0) > 4
+			and ifnull(d.response_cost, 0) <![CDATA[<=]]> 8
+			then '4小时到8小时响应'
+			when ifnull(d.response_cost, 0) > 8
+			and ifnull(d.response_cost, 0) <![CDATA[<=]]> 24
+			then '8小时到72小时响应'
+			else '大于72小时响应'
+		  end as responseCosts
+		from
+            sepp_requirement r,
+            sepp_defects d
+        where d.rel_id = #{relId}
+          and r.id = d.req_id
+		<if test="planType!=null and planType!=0 and planType!='0'">
+			and d.found_period = #{planType}
+		</if>
+		group by responseCosts
+		order by responseCosts
+	</select>
+	<resultMap type="java.util.HashMap" id="defectResponseCostr">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="responseCosts" property="responseCosts" javaType="String" />
+	</resultMap>
+
+	<select id="defectFixCost" resultMap="defectFixCostr" parameterType="java.util.HashMap">
+		select
+		  count(d.id) as num,
+		  case
+			when ifnull(fix_cost, 0) = 0
+			then '无修复记录'
+			when ifnull(d.fix_cost, 0) > 0
+			and ifnull(d.fix_cost, 0) <![CDATA[<=]]> 4
+			then '4小时内修复'
+			when ifnull(d.fix_cost, 0) > 4
+			and ifnull(d.fix_cost, 0) <![CDATA[<=]]> 8
+			then '4小时到8小时修复'
+			when ifnull(fix_cost, 0) > 8
+			and ifnull(d.fix_cost, 0) <![CDATA[<=]]> 24
+			then '8小时到72小时修复'
+			else '大于72小时修复'
+		  end as fixCosts
+		from
+            sepp_requirement r,
+            sepp_defects d
+        where d.rel_id = #{relId}
+          and r.id = d.req_id
+		<if test="planType!=null and planType!=0 and planType!='0'">
+			and d.found_period = #{planType}
+		</if>
+		group by fixCosts
+		order by fixCosts
+	</select>
+	<resultMap type="java.util.HashMap" id="defectFixCostr">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="fixCosts" property="fixCosts" javaType="String" />
+	</resultMap>
+
+	<select id="defectDeployCost" resultMap="defectDeployCostr" parameterType="java.util.HashMap">
+		select
+		  count(d.id) as num,
+		  case
+			when ifnull(d.deploy_cost, 0) = 0
+			then '尚未部署'
+			when ifnull(d.deploy_cost, 0) > 0
+			and ifnull(d.deploy_cost, 0) <![CDATA[<=]]> 4
+			then '4小时内部署'
+			when ifnull(d.deploy_cost, 0) > 4
+			and ifnull(d.deploy_cost, 0) <![CDATA[<=]]> 8
+			then '4小时到8小时部署'
+			when ifnull(d.deploy_cost, 0) > 8
+			and ifnull(d.deploy_cost, 0) <![CDATA[<=]]> 24
+			then '8小时到72小时部署'
+			else '大于72小时部署'
+		  end as deployCosts
+		from
+            sepp_requirement r,
+            sepp_defects d
+        where d.rel_id = #{relId}
+          and r.id = d.req_id
+		<if test="planType!=null and planType!=0 and planType!='0'">
+			and d.found_period = #{planType}
+		</if>
+		   and fixed_time is not null
+		group by deployCosts
+		order by deployCosts
+	</select>
+	<resultMap type="java.util.HashMap" id="defectDeployCostr">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="deployCosts" property="deployCosts" javaType="String" />
+	</resultMap>
+
+	<select id="defectVerifyCost" resultMap="defectVerifyCostr" parameterType="java.util.HashMap">
+		select
+		  count(d.id) as num,
+		  case
+			when d.verify_cost is null
+			then '尚未验证'
+			when ifnull(d.verify_cost, 0) <![CDATA[>=]]> 0
+			and ifnull(d.verify_cost, 0) <![CDATA[<]]> 4
+			then '4小时内验证'
+			when ifnull(d.verify_cost, 0) <![CDATA[>=]]> 4
+			and ifnull(d.verify_cost, 0) <![CDATA[<]]> 8
+			then '4小时到8小时验证'
+			when ifnull(d.verify_cost, 0) <![CDATA[>=]]> 8
+			and ifnull(d.verify_cost, 0) <![CDATA[<]]> 24
+			then '8小时到72小时验证'
+			else '大于72小时验证'
+		  end as verifyCosts
+		from
+            sepp_requirement r,
+            sepp_defects d
+        where d.rel_id = #{relId}
+          and r.id = d.req_id
+		<if test="planType!=null and planType!=0 and planType!='0'">
+			and d.found_period = #{planType}
+		</if>
+		   and d.closed_time is not null
+		group by verifyCosts
+		order by verifyCosts
+	</select>
+	<resultMap type="java.util.HashMap" id="defectVerifyCostr">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="verifyCosts" property="verifyCosts" javaType="String" />
+	</resultMap>
+
+</mapper>

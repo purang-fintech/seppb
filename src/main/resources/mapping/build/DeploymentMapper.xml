@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.sep.build.dao.DeploymentDAO">
+    <insert id="insertDeploymentHistory">
+        INSERT INTO sepp_deployment_history (
+        instance,
+        job_name,
+        env_type,
+        branch_id,
+        instance_type,
+        build_version,
+        deploy_status,
+        username,
+        deploy_type,
+        deploy_version,
+        deploy_job_name
+        )
+        VALUES
+        (#{instance}, #{jobName}, #{envType}, #{branchId}, #{instanceType}, #{buildVersion}, #{deployStatus},
+        #{userName}, #{deployType}, #{deployVersion}, #{deployJobName});
+    </insert>
+
+    <update id="createOrUpdate">
+
+        <selectKey keyProperty="id" resultType="int" order="BEFORE">
+            select count(*)
+            from sepp_deployment_history
+            where deploy_job_name = #{deployJobName}
+            and deploy_version=#{deployVersion}
+        </selectKey>
+        <if test="id > 0">
+            UPDATE
+            sepp_deployment_history
+            SET
+            deploy_status=#{deployStatus},
+            pipeline_step=#{pipelineStep}
+            WHERE deploy_job_name= #{deployJobName}
+            AND deploy_version=#{deployVersion}
+            AND deploy_status NOT IN('SUCCESS','FAILURE','UNSTABLE','ABORTED')
+        </if>
+        <if test="id==0">
+            INSERT INTO sepp_deployment_history
+            (instance, deploy_job_name,job_name, env_type, branch_id, instance_type, build_version, deploy_status,
+            username,
+            deploy_type,pipeline_step,deploy_version)
+            VALUES (#{instance}, #{deployJobName},#{jobName}, #{envType}, #{branchId}, #{instanceType}, #{buildVersion},
+            #{deployStatus},
+            #{userName}, #{deployType},#{pipelineStep},#{deployVersion});
+        </if>
+
+    </update>
+
+    <select id="maxBuildVersion" resultType="java.lang.Integer">
+        select max(deploy_version)
+        from sepp_deployment_history
+        where deploy_job_name = #{deployJobName}
+    </select>
+
+    <select id="deploymentHistories" resultType="com.pr.sepp.sep.build.model.DeploymentHistory">
+        SELECT id,
+               instance,
+               job_name        jobName,
+               env_type        envType,
+               branch_id       branchId,
+               instance_type   instanceType,
+               build_version   buildVersion,
+               deploy_status   deployStatus,
+               username        userName,
+               deploy_type     deployType,
+               deploy_version  deployVersion,
+               deploy_job_name deployJobName,
+               pipeline_step   pipelineStep,
+               created_date    createdDate
+        FROM sepp_deployment_history
+        WHERE job_name = #{jobName}
+          AND env_type = #{envType}
+          AND branch_id = #{branchId}
+        ORDER BY id DESC
+        limit 0,10
+    </select>
+
+    <update id="deploymentStatusReset">
+        update
+            sepp_deployment_history
+        set
+            deploy_status = #{status}
+        where job_name = #{jobName}
+          and env_type = #{envType}
+          and branch_id = #{branchId}
+          and deploy_status = 'DEPLOYING'
+    </update>
+
+    <select id="selectDeploymentHistories" resultType="com.pr.sepp.sep.build.model.DeploymentHistory">
+        SELECT id
+        FROM sepp_deployment_history
+        WHERE job_name = #{jobName}
+          AND env_type = #{envType}
+          AND branch_id = #{branchId}
+          AND deploy_status = #{status}
+    </select>
+
+    <update id="updateDeploymentRsult">
+        UPDATE
+            sepp_deployment_history
+        SET deploy_status = #{deployStatus},
+            pipeline_step=#{pipelineStep}
+        WHERE job_name = #{jobName}
+          AND build_version = #{buildVersion}
+          AND deploy_job_name = #{deployJobName}
+          AND deploy_status NOT IN ('SUCCESS', 'FAILURE', 'UNSTABLE', 'ABORTED')
+    </update>
+</mapper>

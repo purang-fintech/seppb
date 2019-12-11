@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.sep.testing.dao.TestingDAO">
+
+    <select id="treeQuery" resultType="com.pr.sepp.sep.testing.model.CaseFolder" parameterType="java.util.HashMap">
+        select
+            id,
+            parent_id as parentId,
+            product_id as productId,
+            name,
+            type,
+            creator
+        from
+            sepp_case_tree
+        where 1 = 1
+        <choose>
+            <when test="id!=null and id!=''">
+                and id = #{id}
+            </when>
+            <otherwise>
+                and parent_id = #{parentId}
+                <if test="currentProduct!=null and currentProduct!=''">
+                    and product_id = #{currentProduct}
+                </if>
+            </otherwise>
+        </choose>
+    </select>
+
+    <select id="caseFolderQuery" resultType="java.lang.Integer" parameterType="java.util.HashMap">
+        select min(id)
+        from sepp_case_tree
+        where product_id = #{productId}
+          and type = #{type}
+          and name = #{folderName}
+          and parent_id = #{parentId}
+    </select>
+
+    <insert id="caseFolderCreate" useGeneratedKeys="true" parameterType="com.pr.sepp.sep.testing.model.CaseFolder">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            select last_insert_id()
+        </selectKey>
+        insert into sepp_case_tree
+            (parent_id, product_id, name, type, creator)
+        values
+            (#{parentId}, #{productId}, #{name}, #{type}, #{creator})
+    </insert>
+
+    <delete id="caseFolderDelete" parameterType="java.lang.Integer">
+        delete from sepp_case_tree where id = #{id} and id > 0
+    </delete>
+
+    <update id="caseFolderUpdate" parameterType="com.pr.sepp.sep.testing.model.CaseFolder">
+        update
+            sepp_case_tree
+        set
+            name = #{name},
+            parent_id=#{parentId},
+            type=#{type}
+        where id = #{id}
+    </update>
+
+    <select id="caseStepQuery" resultMap="stepQuery_result">
+        select case_id       as caseId,
+               step_id       as stepId,
+               operation,
+               input_data    as inputData,
+               expect_result as expectResult
+        from sepp_case_step
+        where case_id = #{caseId}
+        order by step_id
+    </select>
+    <resultMap type="java.util.HashMap" id="stepQuery_result">
+        <result column="caseId" property="caseId" javaType="Integer"/>
+        <result column="stepId" property="stepId" javaType="Integer"/>
+        <result column="operation" property="operation" javaType="String"/>
+        <result column="inputData" property="inputData" javaType="String"/>
+        <result column="expectResult" property="expectResult" javaType="String"/>
+    </resultMap>
+
+    <insert id="caseStepSave" useGeneratedKeys="true" parameterType="java.util.HashMap">
+        replace into sepp_case_step
+            (case_id, step_id, operation, input_data, expect_result)
+        values
+            (#{caseId}, #{stepId}, #{operation}, #{inputData}, #{expectResult})
+    </insert>
+
+    <delete id="caseStepDelete">
+        delete from sepp_case_step where case_id = #{caseId} and step_id = #{stepId}
+    </delete>
+
+    <delete id="caseStepsDelete">
+        delete from sepp_case_step where case_id = #{caseId}
+    </delete>
+
+    <delete id="caseResultDelete">
+        delete from sepp_test_result where case_id = #{caseId}
+    </delete>
+
+    <insert id="caseMindSave" parameterType="com.pr.sepp.sep.testing.model.CaseMind">
+        replace into
+            sepp_case_mind(case_id, mind_text)
+        values
+            (#{caseId}, #{mindText})
+    </insert>
+
+    <delete id="caseMindDelete">
+        delete from sepp_case_mind where case_id = #{caseId}
+    </delete>
+
+    <update id="reduceStepIdOnDel">
+        update sepp_case_step set step_id = step_id - 1 where case_id = #{caseId} and step_id > #{stepId}
+    </update>
+
+    <insert id="caseStepUpdate" parameterType="java.util.HashMap">
+        replace into
+            sepp_case_step(case_id, step_id, operation, input_data, expect_result)
+        values
+        <foreach collection="steps" index="index" item="item" separator=",">
+            (#{item.caseId}, #{item.stepId}, #{item.operation}, #{item.inputData}, #{item.expectResult})
+        </foreach>
+    </insert>
+
+    <select id="caseInfoQuery" resultType="com.pr.sepp.sep.testing.model.CaseInfo">
+        select ci.case_id       as caseId,
+               ci.status,
+               ci.designer,
+               ci.priority,
+               ci.test_period   as testPeriod,
+               ci.test_type     as testType,
+               ci.prod_module   as prodModule,
+               ci.regress_mark  as regressMark,
+               ci.auto_path     as autoPath,
+               ci.pre_condition as preCondition,
+               ci.summary,
+               u.user_name      as designerName,
+               ts.status_name   as statusName,
+               tp.priority_name as priorityName,
+               tpd.period_name  as testPeriodName,
+               tt.type_name     as testTypeName,
+               m.module_name    as prodModuleName
+        from sepp_case_info ci,
+             sepp_prod_module m,
+             sepp_test_status ts,
+             sepp_test_type tt,
+             sepp_test_priority tp,
+             sepp_test_period tpd,
+             sepp_user u
+        where ci.case_id = #{caseId}
+          and m.module_id = ci.prod_module
+          and u.user_id = ci.designer
+          and ci.status = ts.status_id
+          and ci.priority = tp.priority_id
+          and ci.test_period = tpd.period_id
+          and ci.test_type = tt.type_id
+    </select>
+
+    <insert id="caseInfoSave" parameterType="com.pr.sepp.sep.testing.model.CaseInfo">
+        insert into sepp_case_info
+            (case_id, status, designer, priority, test_period,
+            test_type, prod_module, regress_mark, auto_path, pre_condition, summary)
+        values
+            (#{caseId}, #{status}, #{designer}, #{priority}, #{testPeriod},
+            #{testType}, #{prodModule}, #{regressMark}, #{autoPath}, #{preCondition}, #{summary})
+        on duplicate key update
+            case_id = #{caseId},
+            status = #{status},
+            designer = #{designer},
+            priority = #{priority},
+            test_period = #{testPeriod},
+            test_type = #{testType},
+            prod_module = #{prodModule},
+            regress_mark = #{regressMark},
+            auto_path = #{autoPath},
+            pre_condition = #{preCondition},
+            summary = #{summary}
+    </insert>
+
+    <update id="caseStatusUpdate">
+        update
+            sepp_case_info
+        set
+            status = #{status}
+        where
+            case_id = #{caseId}
+    </update>
+
+    <insert id="caseInfoPaste" useGeneratedKeys="true" parameterType="java.util.HashMap">
+        <selectKey keyProperty="case_id" order="AFTER" resultType="java.lang.Integer">
+            select last_insert_id()
+        </selectKey>
+        replace into sepp_case_info
+            (case_id, status, designer, priority, test_period,
+            test_type, prod_module, regress_mark, auto_path, pre_condition, summary)
+        (select
+            #{caseId},
+            1,
+            #{designer},
+            priority,
+            test_period,
+            test_type,
+            prod_module,
+            regress_mark,
+            auto_path,
+            pre_condition,
+            summary
+        from
+            sepp_case_info
+        where case_id = #{originId})
+    </insert>
+
+    <insert id="caseStepPaste" useGeneratedKeys="true">
+        replace into sepp_case_step
+            (case_id, step_id, operation, input_data, expect_result)
+        (select
+            #{caseId}, step_id, operation, input_data, expect_result
+        from
+            sepp_case_step
+        where case_id = #{originId})
+    </insert>
+
+    <select id="caseMindQuery" resultType="java.lang.String">
+        select mind_text
+          from sepp_case_mind
+         where case_id = #{caseId}
+    </select>
+
+    <insert id="caseMindPaste" useGeneratedKeys="true">
+        replace into sepp_case_mind
+            (case_id, mind_text)
+        (select
+            #{caseId}, mind_text
+        from
+            sepp_case_mind
+        where case_id = #{originId})
+    </insert>
+
+    <delete id="caseInfoDelete" parameterType="java.lang.Integer">
+        delete from sepp_case_info where case_id = #{caseId}
+    </delete>
+
+    <select id="caseRelateInfoQuery" resultMap="caseRelateInfoQuery_result">
+        select case
+                   when relate_type = 1
+                       then 'relatedBug'
+                   when relate_type in (2, 3, 4)
+                       then 'relatedReq'
+                   else 'other'
+                   end          as objectType,
+               count(relate_id) as objectNum
+        from sepp_case_related
+        where case_id = #{caseId}
+        group by objectType
+    </select>
+    <resultMap type="java.util.HashMap" id="caseRelateInfoQuery_result">
+        <result column="objectType" property="objectType" javaType="String"/>
+        <result column="objectNum" property="objectNum" javaType="Integer"/>
+    </resultMap>
+
+    <select id="caseReadQuery" resultMap="caseReadQuery_result">
+        SELECT date_format(base.created_date, '%Y-%m-%d %T') as designDate,
+               base.result                                   as testResult,
+               run.executedTimes                             as executedTimes,
+               date_format(run.lastExecuted, '%Y-%m-%d %T')  as lastExecuted
+        from (select *
+              from (select created_date
+                    from sepp_case_info
+                    where case_id = #{caseId}) ci
+                       left join
+                   (select result
+                    from sepp_test_result
+                    where id =
+                          (select max(id)
+                           from sepp_test_result
+                           where case_id = #{caseId})) res
+                   on 1 = 1) base
+                 left join
+             (select count(distinct run_id) as executedTimes,
+                     max(run_date)          as lastExecuted
+              from sepp_test_result
+              where case_id = #{caseId}) run
+             on 1 = 1
+    </select>
+    <resultMap type="java.util.HashMap" id="caseReadQuery_result">
+        <result column="designDate" property="designDate" javaType="String"/>
+        <result column="lastExecuted" property="lastExecuted" javaType="String"/>
+        <result column="testResult" property="testResult" javaType="Integer"/>
+        <result column="executedTimes" property="executedTimes" javaType="Integer"/>
+    </resultMap>
+
+    <select id="caseRelateQuery" resultMap="caseRelateQuery_result">
+        select
+            relate_id as relateId,
+            id
+        from
+            sepp_case_related
+        where 1 = 1
+        <choose>
+            <when test="relateId!=null and relateId!=''">
+                and relate_id=#{relateId}
+            </when>
+            <when test="caseId!=null and caseId!=''">
+                and case_id = #{caseId}
+                and relate_type = #{relateType}
+            </when>
+            <otherwise>
+                and 1 = 2
+            </otherwise>
+        </choose>
+    </select>
+    <resultMap type="java.util.HashMap" id="caseRelateQuery_result">
+        <id column="id" property="id" javaType="Integer"/>
+        <result column="relateId" property="relateId" javaType="Integer"/>
+    </resultMap>
+
+    <insert id="caseRelateSave" useGeneratedKeys="true" parameterType="java.util.HashMap">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            select last_insert_id()
+        </selectKey>
+        insert into
+            sepp_case_related(case_id, relate_id, relate_type)
+        values
+        <foreach collection="ids" index="index" item="item" separator=",">
+            (#{item.caseId}, #{item.id}, #{item.relateType})
+        </foreach>
+        on duplicate key update updated_date = now()
+    </insert>
+
+    <delete id="caseRelateDelete" parameterType="java.util.HashMap">
+        delete from
+            sepp_case_related
+        where case_id = #{caseId}
+          and relate_id = #{id}
+          and relate_type = #{relateType}
+    </delete>
+
+    <select id="relatedDefectQuery" resultMap="relatedDefectQueryR">
+        select rs.*,
+               r.id       as relId,
+               r.rel_code as relCode
+        from (select d.id,
+                     d.status,
+                     d.rel_id       as relId,
+                     ds.status_name as statusName,
+                     d.summary
+              from sepp_defects d,
+                   sepp_requirement req,
+                   sepp_case_related cr,
+                   (select distinct status_id, status_name from sepp_defect_status) ds
+              where req.id = d.req_id
+                and cr.case_id = #{caseId}
+                and cr.relate_type = 1
+                and cr.relate_id = d.id
+                and d.status = ds.status_id) rs
+             left join sepp_release r on rs.relId = r.id
+        order by rs.relId, rs.id
+    </select>
+    <resultMap type="java.util.HashMap" id="relatedDefectQueryR">
+        <result column="relId" property="relId" javaType="Integer"/>
+        <result column="relCode" property="relCode" javaType="String"/>
+        <result column="id" property="id" javaType="Integer"/>
+        <result column="status" property="status" javaType="Integer"/>
+        <result column="statusName" property="statusName" javaType="String"/>
+        <result column="summary" property="summary" javaType="String"/>
+    </resultMap>
+
+    <select id="relatedReqQuery" resultMap="relatedReqQueryR">
+        select rs.*,
+               r.id       as relId,
+               r.rel_code as relCode
+        from (select r.id,
+                     r.status,
+                     r.rel_id     as relId,
+                     s.status_name as statusName,
+                     r.summary
+              from sepp_requirement r,
+                   sepp_case_related cr,
+                   sepp_req_status s
+              where cr.case_id = #{caseId}
+                and cr.relate_type = 2
+                and cr.relate_id = r.id
+                and r.status = s.status_id) rs
+                 left join sepp_release r on rs.relId = r.id
+        order by rs.relId, rs.id
+    </select>
+    <resultMap type="java.util.HashMap" id="relatedReqQueryR">
+        <result column="relId" property="relId" javaType="Integer"/>
+        <result column="relCode" property="relCode" javaType="String"/>
+        <result column="id" property="id" javaType="Integer"/>
+        <result column="status" property="status" javaType="Integer"/>
+        <result column="statusName" property="statusName" javaType="String"/>
+        <result column="summary" property="summary" javaType="String"/>
+    </resultMap>
+</mapper>

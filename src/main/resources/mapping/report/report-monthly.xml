@@ -1,0 +1,240 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.reports.monthly.dao.MonthlyDAO">
+
+    <select id="monthDefectCount" resultMap="monthDefectCountR">
+        SELECT COUNT(d.id)    AS defectCount,
+               ds.status_name AS defectStatus,
+               p.product_code as productCode,
+               p.product_name as productName
+        FROM sepp_defects d,
+             sepp_product p,
+             (SELECT DISTINCT status_id,
+                              status_name
+              FROM sepp_defect_status) ds
+        WHERE d.product_id = p.product_id
+          AND ds.status_id = d.status
+			<![CDATA[and d.found_time >= #{qTimeBegin}]]>
+			<![CDATA[and d.found_time < #{qTimeEnd}]]>
+        GROUP BY d.product_id, d.status
+        ORDER BY productCode, defectStatus DESC
+    </select>
+    <resultMap type="java.util.HashMap" id="monthDefectCountR">
+        <result column="productCode" property="productCode" javaType="String"/>
+        <result column="groupKey" property="groupKey" javaType="String"/>
+        <result column="defectCount" property="defectCount" javaType="Integer"/>
+        <result column="defectStatus" property="defectStatus" javaType="String"/>
+    </resultMap>
+
+    <select id="monthReqCount" resultMap="monthReqCountR">
+        SELECT COUNT(r.id)    AS reqCount,
+               rs.status_name AS reqStatus,
+               p.product_code as productCode,
+               p.product_name as productName
+        FROM sepp_requirement r,
+             sepp_product p,
+             sepp_req_status rs
+        WHERE r.product_id = p.product_id
+          AND rs.status_id = r.status
+			<![CDATA[and r.submit_date >= #{qTimeBegin}]]>
+			<![CDATA[and r.submit_date < #{qTimeEnd}]]>
+        GROUP BY r.product_id, r.status
+        ORDER BY productCode, reqStatus DESC
+    </select>
+    <resultMap type="java.util.HashMap" id="monthReqCountR">
+        <result column="productCode" property="productCode" javaType="String"/>
+        <result column="groupKey" property="groupKey" javaType="String"/>
+        <result column="reqCount" property="reqCount" javaType="Integer"/>
+        <result column="reqStatus" property="reqStatus" javaType="String"/>
+    </resultMap>
+
+    <select id="monthDefectCost" resultMap="monthDefectCostR">
+        SELECT ROUND(SUM(IFNULL(d.response_cost, 0) + IFNULL(d.fix_cost, 0) + IFNULL(d.deploy_cost, 0) + IFNULL(d.verify_cost, 0)) / 24,
+                     2)       AS defectCostSum,
+               COUNT(d.id)    as defectCount,
+               p.product_code as productCode,
+               p.product_name as productName
+        FROM sepp_defects d,
+             sepp_product p
+        WHERE d.product_id = p.product_id
+          and d.status = 0
+		<![CDATA[and d.found_time >= #{qTimeBegin}]]>
+		<![CDATA[and d.found_time < #{qTimeEnd}]]>
+        GROUP BY d.product_id
+        ORDER BY d.product_id
+    </select>
+    <resultMap type="java.util.HashMap" id="monthDefectCostR">
+        <result column="productCode" property="productCode" javaType="String"/>
+        <result column="groupKey" property="groupKey" javaType="String"/>
+        <result column="defectCount" property="defectCount" javaType="Float"/>
+        <result column="defectCostSum" property="defectCostSum" javaType="Float"/>
+    </resultMap>
+
+    <select id="monthReqCost" resultMap="monthReqCostR">
+        SELECT SUM(DATEDIFF(h.oper_time, r.submit_date)) as reqCostSum,
+               COUNT(r.id)                               as reqCount,
+               p.product_code                            as productCode,
+               p.product_name                            as productName
+        FROM sepp_requirement r,
+             sepp_product p,
+             sepp_history h
+        WHERE h.obj_type = 2
+          AND r.id = h.obj_id
+          AND h.obj_key = 'status'
+          AND h.new_value in ('0', '6')
+          AND NOT EXISTS(
+                SELECT
+                    'X'
+                FROM
+                    sepp_history hh
+                WHERE hh.obj_id = h.obj_id
+                  AND hh.obj_key = 'status'
+                  AND hh.obj_type = 2
+                  AND hh.id > h.id)
+		<![CDATA[and r.submit_date >= #{qTimeBegin}]]>
+		<![CDATA[and r.submit_date < #{qTimeEnd}]]>
+          AND r.product_id = p.product_id
+        GROUP BY r.product_id
+    </select>
+    <resultMap type="java.util.HashMap" id="monthReqCostR">
+        <result column="productCode" property="productCode" javaType="String"/>
+        <result column="productName" property="productName" javaType="String"/>
+        <result column="reqCount" property="reqCount" javaType="Float"/>
+        <result column="reqCostSum" property="reqCostSum" javaType="Float"/>
+    </resultMap>
+
+    <select id="defectCostTrendR" resultMap="defectCostTrendRR">
+        SELECT ROUND(SUM(TIMESTAMPDIFF(SECOND, d.found_time, d.closed_time) / 3600 / 24) / COUNT(d.id), 2) AS defectCostAvg,
+               ROUND(SUM(TIMESTAMPDIFF(SECOND, d.found_time, d.closed_time) / 3600 / 24), 2)               as defectCost,
+               COUNT(d.id)                                                                                 as defectCount,
+               p.product_code                                                                              as productCode,
+               p.product_name                                                                              as productName,
+               r.rel_code                                                                                  as groupKey
+        FROM sepp_defects d,
+             sepp_product p,
+             sepp_release r,
+             sepp_requirement req
+        WHERE d.product_id = p.product_id
+          AND d.status = 0
+          AND r.id = req.rel_id
+          and req.id = d.req_id
+          and d.product_id = #{productId}
+        <![CDATA[and d.found_time >= #{qTimeBegin}]]>
+        <![CDATA[and d.found_time < #{qTimeEnd}]]>
+        GROUP BY r.product_id, r.id
+        ORDER BY r.product_id, r.id
+    </select>
+    <resultMap type="java.util.HashMap" id="defectCostTrendRR">
+        <result column="productCode" property="productCode" javaType="String"/>
+        <result column="groupKey" property="groupKey" javaType="String"/>
+        <result column="groupKey" property="groupKey" javaType="String"/>
+        <result column="defectCost" property="defectCost" javaType="Float"/>
+        <result column="defectCount" property="defectCount" javaType="Integer"/>
+        <result column="defectCostAvg" property="defectCostAvg" javaType="Float"/>
+    </resultMap>
+
+    <select id="defectCostTrendM" resultMap="defectCostTrendMR">
+        SELECT ROUND(SUM(TIMESTAMPDIFF(SECOND, d.found_time, d.closed_time) / 3600 / 24) / COUNT(d.id), 2) AS defectCostAvg,
+               ROUND(SUM(TIMESTAMPDIFF(SECOND, d.found_time, d.closed_time) / 3600 / 24), 2)               as defectCost,
+               COUNT(d.id)                                                                                 as defectCount,
+               p.product_code                                                                              as productCode,
+               p.product_name                                                                              as productName,
+               DATE_FORMAT(d.found_time, '%Y-%m')                                                          AS groupKey
+        FROM sepp_defects d,
+             sepp_product p
+        WHERE d.product_id = p.product_id
+          AND d.status = 0
+          and d.product_id = #{productId}
+        <![CDATA[and d.found_time >= #{qTimeBegin}]]>
+        <![CDATA[and d.found_time < #{qTimeEnd}]]>
+        GROUP BY d.product_id, groupKey
+        ORDER BY d.product_id, groupKey
+    </select>
+    <resultMap type="java.util.HashMap" id="defectCostTrendMR">
+        <result column="productCode" property="productCode" javaType="String"/>
+        <result column="productName" property="productName" javaType="String"/>
+        <result column="groupKey" property="groupKey" javaType="String"/>
+        <result column="defectCost" property="defectCost" javaType="Float"/>
+        <result column="defectCount" property="defectCount" javaType="Integer"/>
+        <result column="defectCostAvg" property="defectCostAvg" javaType="Float"/>
+    </resultMap>
+
+    <select id="reqCostTrend" resultMap="reqCostTrendR">
+        SELECT ROUND(SUM(DATEDIFF(h.oper_time, r.submit_date)) / COUNT(r.id), 2) AS reqCostAvg,
+               SUM(DATEDIFF(h.oper_time, r.submit_date))                         as reqCost,
+               COUNT(r.id)                                                       as reqCount,
+               p.product_code                                                    as productCode,
+               p.product_name                                                    as productName,
+               DATE_FORMAT(r.submit_date, '%Y-%m')                               AS groupKey
+        FROM sepp_requirement r,
+             sepp_product p,
+             sepp_history h
+        WHERE h.obj_type = 2
+          AND r.id = h.obj_id
+          AND h.obj_key = 'status'
+          AND h.new_value = 0
+          AND r.product_id = p.product_id
+          AND r.product_id = #{productId}
+		<![CDATA[and r.submit_date >= #{qTimeBegin}]]>
+		<![CDATA[and r.submit_date < #{qTimeEnd}]]>
+        GROUP BY r.product_id, groupKey
+        ORDER BY r.product_id, groupKey
+    </select>
+    <resultMap type="java.util.HashMap" id="reqCostTrendR">
+        <result column="productCode" property="productCode" javaType="String"/>
+        <result column="productName" property="productName" javaType="String"/>
+        <result column="groupKey" property="groupKey" javaType="String"/>
+        <result column="reqCost" property="reqCost" javaType="Integer"/>
+        <result column="reqCount" property="reqCount" javaType="Integer"/>
+        <result column="reqCostAvg" property="reqCostAvg" javaType="Float"/>
+    </resultMap>
+
+    <select id="reqChangeTrend" resultMap="reqChangeTrendR">
+        SELECT p.product_code                                             as productCode,
+               p.product_name                                             as productName,
+               DATE_FORMAT(res.submit_date, '%Y-%m')                      AS groupKey,
+               COUNT(res.id)                                              AS reqCount,
+               COUNT(res.changed_req)                                     AS changedReqsTotal,
+               SUM(IFNULL(res.change_times, 0))                           AS changeTimesTotal,
+               ROUND(SUM(IFNULL(res.change_times, 0)) / COUNT(res.id), 2) AS changeTimesAvg,
+               ROUND(COUNT(res.changed_req) / COUNT(res.id), 2)           AS changeRatioAvg
+        FROM (SELECT ch.req_id       AS changed_req,
+                     ch.change_times AS change_times,
+                     r.*
+              FROM (select *
+                    FROM sepp_requirement
+                    WHERE product_id = #{productId}
+                    <![CDATA[AND submit_date >= #{qTimeBegin}]]>
+                    <![CDATA[AND submit_date < #{qTimeEnd}]]>) r
+                       LEFT JOIN
+                   (SELECT COUNT(id) AS change_times,
+                           req_id
+                    FROM sepp_req_change
+                    WHERE req_id IN
+                          (SELECT id
+                           FROM sepp_requirement
+                           WHERE product_id = #{productId}
+                    <![CDATA[AND submit_date >= #{qTimeBegin}]]>
+                    <![CDATA[AND submit_date < #{qTimeEnd}]]>)
+                    GROUP BY req_id) ch
+                   ON r.id = ch.req_id) res,
+             sepp_product p
+        WHERE res.product_id = p.product_id
+        GROUP BY p.product_id, groupKey
+        ORDER BY p.product_id, groupKey
+    </select>
+    <resultMap type="java.util.HashMap" id="reqChangeTrendR">
+        <result column="productCode" property="productCode" javaType="String"/>
+        <result column="productName" property="productName" javaType="String"/>
+        <result column="groupKey" property="groupKey" javaType="String"/>
+        <result column="reqCount" property="reqCount" javaType="Integer"/>
+        <result column="changedReqsTotal" property="changedReqsTotal" javaType="Integer"/>
+        <result column="changeTimesTotal" property="changeTimesTotal" javaType="Integer"/>
+        <result column="changeTimesAvg" property="changeTimesAvg" javaType="Float"/>
+        <result column="changeRatioAvg" property="changeRatioAvg" javaType="Float"/>
+    </resultMap>
+
+</mapper>

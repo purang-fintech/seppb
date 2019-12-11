@@ -1,0 +1,191 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.sqa.dao.AnalysisDAO">
+	<select id="cmsSpliter"  resultMap="cmsSpliterr" parameterType="java.util.HashMap">
+		select
+		  count(c.id) as num,
+		  concat(u.user_name,'(', u.user_account,')') as spliter
+		from
+		  sepp_code_mission c,
+		  sepp_user u,
+		  sepp_requirement r
+		where u.user_id = c.spliter
+		  and r.id = c.req_id
+		<choose>
+			<when test="relId!=null and relId!=''">
+				and r.rel_id = #{relId}
+			</when>
+			<otherwise>
+				and r.product_id = #{productId}
+				<![CDATA[and c.split_date >= #{qTimeBegin}]]>
+				<![CDATA[and c.split_date <= #{qTimeEnd}]]>
+			</otherwise>
+		</choose>
+		group by c.spliter
+		order by num
+	</select>
+	<resultMap type="java.util.HashMap" id="cmsSpliterr">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="spliter" property="spliter" javaType="String" />
+	</resultMap>
+
+	<select id="cmsResponser"  resultMap="cmsResponserr" parameterType="java.util.HashMap">
+		select
+		  count(c.id) as num,
+		  concat(u.user_name,'(', u.user_account,')') as responser
+		from
+			sepp_code_mission c,
+			sepp_user u,
+			sepp_requirement r
+		where u.user_id = c.responser
+		  and r.id = c.req_id
+		<choose>
+			<when test="relId!=null and relId!=''">
+				and r.rel_id = #{relId}
+			</when>
+			<otherwise>
+				and r.product_id = #{productId}
+				<![CDATA[and c.split_date >= #{qTimeBegin}]]>
+				<![CDATA[and c.split_date <= #{qTimeEnd}]]>
+			</otherwise>
+		</choose>
+		group by c.responser
+		order by num
+	</select>
+	<resultMap type="java.util.HashMap" id="cmsResponserr">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="responser" property="responser" javaType="String" />
+	</resultMap>
+
+	<select id="cmsStatus"  resultMap="cmsStatusR" parameterType="java.util.HashMap">
+		select
+		  count(c.id) as num,
+		  c.status
+		from
+		  sepp_code_mission c,
+		  sepp_requirement r
+		where r.id = c.req_id
+		<choose>
+			<when test="relId!=null and relId!=''">
+				and r.rel_id = #{relId}
+			</when>
+			<otherwise>
+				and r.product_id = #{productId}
+				<![CDATA[and c.split_date >= #{qTimeBegin}]]>
+				<![CDATA[and c.split_date <= #{qTimeEnd}]]>
+			</otherwise>
+		</choose>
+		group by c.status
+		order by num
+	</select>
+	<resultMap type="java.util.HashMap" id="cmsStatusR">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="status" property="status" javaType="Integer" />
+	</resultMap>
+
+	<select id="cmsModule" resultMap="cmsModuleR" parameterType="java.util.HashMap">
+		select
+            count(c.id) as num,
+            m.module_name as moduleName
+		from
+            sepp_prod_module m,
+            sepp_code_mission c,
+            sepp_requirement r
+		where c.module_id = m.module_id
+          and r.id = c.req_id
+		<choose>
+            <when test="relId!=null and relId!=''">
+                and r.rel_id = #{relId}
+            </when>
+            <otherwise>
+                and r.product_id = #{productId}
+				<![CDATA[and c.split_date >= #{qTimeBegin}]]>
+				<![CDATA[and c.split_date <= #{qTimeEnd}]]>
+			</otherwise>
+		</choose>
+		group by c.module_id
+		order by num
+	</select>
+	<resultMap type="java.util.HashMap" id="cmsModuleR">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="moduleName" property="moduleName" javaType="String" />
+	</resultMap>
+
+	<select id="cmsManPower"  resultMap="cmsManPowerr" parameterType="java.util.HashMap">
+		select
+		  case
+		    when <![CDATA[c.manpower <= 1]]> then '1个人日以内'
+		    when <![CDATA[c.manpower > 1 and c.manpower <= 3]]>  then '1~3个人日'
+		    when <![CDATA[c.manpower > 3 and c.manpower <= 5]]>  then '3~5个人日'
+		    else '5个人日以上'
+		  end as cmCost,
+		  count(c.id) as num
+		from
+            sepp_code_mission c,
+            sepp_requirement r
+        where r.id = c.req_id
+        <choose>
+            <when test="relId!=null and relId!=''">
+                and r.rel_id = #{relId}
+            </when>
+            <otherwise>
+                and r.product_id = #{productId}
+				<![CDATA[and c.split_date >= #{qTimeBegin}]]>
+				<![CDATA[and c.split_date <= #{qTimeEnd}]]>
+			</otherwise>
+		</choose>
+		group by cmCost
+		order by cmCost
+	</select>
+	<resultMap type="java.util.HashMap" id="cmsManPowerr">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="cmCost" property="cmCost" javaType="String" />
+	</resultMap>
+
+	<select id="cmsDevOffset"  resultMap="cmsDevOffsetr" parameterType="java.util.HashMap">
+		select
+		  case
+		    when <![CDATA[a.period_offset < 0]]> then '提前完成'
+		    when <![CDATA[a.period_offset = 0]]> then '按时完成'
+		    when <![CDATA[a.period_offset > 0 and a.period_offset <= 1]]>  then '1天之内'
+		    when <![CDATA[a.period_offset > 1 and a.period_offset <= 3]]>  then '1~3天'
+		    when <![CDATA[a.period_offset > 3 and a.period_offset <= 7]]>  then '3天~1周'
+		    when <![CDATA[a.period_offset > 7 and a.period_offset <= 30]]>  then '1周到1个月'
+		    else '1个月以上'
+		  end as devOffset,
+		  count(a.id) as num
+		from
+		  (select
+		    datediff(h.oper_time, c.plan_to) as period_offset,
+		    c.id
+		  from
+		    sepp_code_mission c,
+		    sepp_history h,
+            sepp_requirement r
+		  where r.id = c.req_id
+		    and h.obj_type = 6
+		    and c.id = h.obj_id
+		    and h.obj_key = 'status'
+		    and c.status IN (0, 3, 4, 5, 6)
+		    and h.new_value >= 3
+			<choose>
+                <when test="relId!=null and relId!=''">
+                    and r.rel_id = #{relId}
+                </when>
+                <otherwise>
+                    and r.product_id = #{productId}
+					<![CDATA[and h.oper_time >= #{qTimeBegin}]]>
+					<![CDATA[and h.oper_time <= #{qTimeEnd}]]>
+				</otherwise>
+			</choose>) a
+		group by devOffset
+		order by num
+	</select>
+	<resultMap type="java.util.HashMap" id="cmsDevOffsetr">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="devOffset" property="devOffset" javaType="String" />
+	</resultMap>
+</mapper>

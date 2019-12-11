@@ -1,0 +1,275 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.base.dao.BaseQueryDAO">
+
+    <select id="autotestType" resultType="com.pr.sepp.base.model.AutotestType">
+        select type_id   as typeId,
+               type_name as typeName
+        from sepp_auto_type
+    </select>
+
+    <select id="releaseNoteStatus" resultType="com.pr.sepp.base.model.ReleaseNoteStatus">
+        select status_id   as statusId,
+               status_name as statusName
+        from sepp_releasenote_status
+    </select>
+
+    <select id="buildStatus" resultType="com.pr.sepp.base.model.BuildStatus">
+        select status_id   as statusId,
+               status_name as statusName
+        from sepp_build_status
+    </select>
+
+    <select id="caseRelateType" resultType="com.pr.sepp.base.model.CaseRelateType">
+        select type_id   as typeId,
+               type_name as typeName
+        from sepp_relate_type
+    </select>
+
+    <select id="codeMissionStatus" resultType="com.pr.sepp.base.model.CodeMissionStatus">
+        select status_id   as statusId,
+               status_name as statusName
+        from sepp_cm_status
+    </select>
+
+    <select id="dataUnit" resultType="com.pr.sepp.base.model.DataUnit">
+        select unit_id    as unitId,
+               unit_value as unitValue,
+               unit_desc  as unitDesc
+        from sepp_data_unit
+    </select>
+
+    <select id="defectFoundMeans" resultType="com.pr.sepp.base.model.DefectFoundMeans">
+        select means_id   as meansId,
+               means_name as meansName
+        from sepp_found_means
+    </select>
+
+    <select id="defectFoundPeriod" resultType="com.pr.sepp.base.model.DefectFoundPeriod">
+        select period_id   as periodId,
+               period_name as periodName
+        from sepp_found_period
+    </select>
+
+    <select id="defectInfluence" resultType="com.pr.sepp.base.model.DefectInfluence">
+        select influence_id   as influenceId,
+               influence_name as influenceName
+        from sepp_defect_influence
+    </select>
+
+    <select id="defectPeriod" resultType="com.pr.sepp.base.model.DefectPeriod">
+        select period_id   as periodId,
+               period_name as periodName
+        from sepp_defect_period
+    </select>
+
+    <select id="defectPriority" resultType="com.pr.sepp.base.model.DefectPriority">
+        select priority_id   as priorityId,
+               priority_name as priorityName
+        from sepp_defect_priority
+    </select>
+
+    <select id="defectStatus" resultType="com.pr.sepp.base.model.DefectStatus">
+        select status_id       as statusId,
+               status_name     as statusName,
+               new_status_id   as newStatusId,
+               new_status_name as newStatusName,
+               status_tips     as statusTips
+        from sepp_defect_status
+        order by status_id, new_status_id
+    </select>
+
+    <select id="defectType" resultType="com.pr.sepp.base.model.DefectType">
+        select type_id   as typeId,
+               type_name as typeName
+        from sepp_defect_type
+    </select>
+
+    <select id="defectRefuseReason" resultType="com.pr.sepp.base.model.DefectRefuseReason">
+        select reason_id   as reasonId,
+               reason_name as reasonName
+        from sepp_defect_refuse_reason
+    </select>
+
+    <select id="environmentType" resultType="com.pr.sepp.base.model.EnvironmentType">
+        select type_id   as typeId,
+               type_name as typeName
+        from sepp_env_type
+    </select>
+
+    <select id="messageGateway" resultType="com.pr.sepp.base.model.MessageGateway">
+        select id, name
+        from sepp_message_gateway
+    </select>
+
+    <select id="objectType" resultType="com.pr.sepp.base.model.ObjectType">
+        select type_id    as typeId,
+               type_name  as typeName,
+               table_name as tableName
+        from sepp_object_type
+    </select>
+
+    <select id="problemImprove" resultType="com.pr.sepp.base.model.ProblemImprove">
+        select id        as id,
+               type      as type,
+               type_desc as typeDesc,
+               sub_type  as subType,
+               sub_desc  as subDesc
+        from sepp_problem_improve
+        where type > 0
+    </select>
+
+    <select id="problemResolve" resultType="com.pr.sepp.base.model.ProblemResolve">
+        select method_id   as methodId,
+               method_name as methodName
+        from sepp_problem_resolve
+    </select>
+
+    <select id="problemStatus" resultType="com.pr.sepp.base.model.ProblemStatus">
+        select status_id   as statusId,
+               status_name as statusName
+        from sepp_problem_status
+    </select>
+
+    <select id="problemType" resultType="com.pr.sepp.base.model.ProblemType">
+        select id        as id,
+               type      as type,
+               type_desc as typeDesc,
+               sub_type  as subType,
+               sub_desc  as subDesc
+        from sepp_problem_type
+    </select>
+
+    <select id="releaseStatus" resultType="com.pr.sepp.base.model.ReleaseStatus">
+        select status_id   as statusId,
+               status_name as statusName
+        from sepp_rel_status
+    </select>
+
+    <select id="productBranch" resultType="com.pr.sepp.mgr.product.model.ProductBranch" parameterType="java.lang.Integer">
+        select branch_id   as branchId,
+               is_valid    as isValid,
+               branch_name as branchName,
+               creator     as creator,
+               product_id  as productId
+        from sepp_product_branch
+        where product_id = #{productId}
+          and is_valid = 1
+    </select>
+
+    <select id="reportType" resultType="com.pr.sepp.base.model.ReportType">
+        select type_id   as typeId,
+               type_name as typeName
+        from sepp_report_type
+    </select>
+
+    <select id="prStatus" resultType="com.pr.sepp.base.model.PRStatus">
+        select status_id   as statusId,
+               status_name as statusName
+        from sepp_pr_status
+    </select>
+
+    <select id="requirementPriority" resultType="com.pr.sepp.base.model.RequirementPriority">
+        select priority_id   as priorityId,
+               priority_name as priorityName
+        from sepp_req_priority
+    </select>
+
+    <select id="requirementStatus" resultType="com.pr.sepp.base.model.RequirementStatus">
+        select status_id   as statusId,
+               status_name as statusName
+        from sepp_req_status
+    </select>
+
+    <select id="requirementType" resultType="com.pr.sepp.base.model.RequirementType">
+        select type_id   as typeId,
+               type_name as typeName
+        from sepp_req_type
+    </select>
+
+    <select id="requirementClose" resultType="com.pr.sepp.base.model.RequirementClose">
+        select style_id   as styleId,
+               style_name as styleName
+        from sepp_req_close_style
+    </select>
+
+    <select id="testMissionStatus" resultType="com.pr.sepp.base.model.TestMissionStatus">
+        select status_id   as statusId,
+               status_name as statusName
+        from sepp_tm_status
+    </select>
+
+    <select id="testMeans" resultType="com.pr.sepp.base.model.TestMeans">
+        select means_id   as meansId,
+               means_name as meansName
+        from sepp_test_means
+    </select>
+
+    <select id="testPeriod" resultType="com.pr.sepp.base.model.TestPeriod">
+        select period_id   as periodId,
+               period_name as periodName,
+               alias
+        from sepp_test_period
+    </select>
+
+    <select id="testPriority" resultType="com.pr.sepp.base.model.TestPriority">
+        select priority_id   as priorityId,
+               priority_name as priorityName
+        from sepp_test_priority
+    </select>
+
+    <select id="testStatus" resultType="com.pr.sepp.base.model.TestStatus">
+        select status_id   as statusId,
+               status_name as statusName
+        from sepp_test_status
+    </select>
+
+    <select id="testResultStatus" resultType="com.pr.sepp.base.model.TestResultStatus">
+        select status_id   as statusId,
+               status_name as statusName
+        from sepp_test_result_status
+    </select>
+
+    <select id="testType" resultType="com.pr.sepp.base.model.TestType">
+        select type_id   as typeId,
+               type_name as typeName
+        from sepp_test_type
+    </select>
+
+    <select id="userRoles" resultType="com.pr.sepp.base.model.UserRoles">
+        select role_id   as roleId,
+               role_code as roleCode,
+               role_name as roleName,
+               is_valid  as isValid
+        from sepp_user_role
+    </select>
+
+    <select id="warningLevel" resultType="com.pr.sepp.base.model.WarningLevel">
+        select level_id   as levelId,
+               level_name as levelName
+        from sepp_warning_level
+    </select>
+
+    <select id="warningType" resultType="com.pr.sepp.base.model.WarningType">
+        select id        as id,
+               type      as type,
+               type_desc as typeDesc,
+               sub_type  as subType,
+               sub_desc  as subDesc
+        from sepp_warning_type
+    </select>
+
+    <select id="product" resultType="com.pr.sepp.base.model.Product">
+        select product_id   as productId,
+               owner,
+               product_code as productCode,
+               product_name as productName,
+               product_desc as productDesc,
+               is_valid     as isValid
+        from sepp_product
+        where is_valid = 'Y'
+    </select>
+</mapper>

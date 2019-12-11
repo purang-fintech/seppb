@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.sep.change.dao.ChangeDAO">
+
+    <select id="changeQuery" resultType="com.pr.sepp.sep.change.model.Change" parameterType="java.lang.Integer">
+        select id,
+               req_id                                  as reqId,
+               date_format(change_time, '%Y-%m-%d %T') as changeTime,
+               change_status                           as changeStatus,
+               change_user                             as changeUser,
+               u.user_name                             as changeUserName,
+               audit_user                              as auditUser,
+               auditted_user                           as audittedUser,
+               change_desc                             as changeDesc,
+               change_detail                           as changeDetail
+        from sepp_req_change,
+             sepp_user u
+        where req_id = #{reqId}
+          and u.user_id = change_user
+        order by id desc
+    </select>
+
+    <select id="changeAuditQuery" resultType="com.pr.sepp.sep.change.model.Change" parameterType="java.util.HashMap">
+        select
+            id,
+            req_id as reqId,
+            date_format(change_time, '%Y-%m-%d %T') as changeTime,
+            change_status as changeStatus,
+            change_user as changeUser,
+            u.user_name as changeUserName,
+            audit_user as auditUser,
+            auditted_user as audittedUser,
+            change_desc as changeDesc,
+            change_detail as changeDetail
+        from
+            sepp_req_change rc,
+            sepp_user u
+        where rc.req_id in (select id from sepp_requirement where product_id = #{productId})
+          and rc.change_user = u.user_id
+        <choose>
+            <when test="id!=null and id!=''">
+                and rc.id = #{id}
+            </when>
+            <when test="cmId !=null and cmId !=''">
+                and exists (select 'X' from sepp_code_mission cm where cm.id = #{cmId} and rc.req_id = cm.req_id)
+            </when>
+            <when test="tmId !=null and tmId !=''">
+                and exists (select 'X' from sepp_test_mission tm where tm.id = #{tmId} and rc.req_id = tm.req_id)
+            </when>
+            <when test="relId !=null and relId !=''">
+                and exists (select 'X' from sepp_requirement r where r.rel_id = #{relId} and rc.req_id = r.id)
+            </when>
+            <otherwise>
+                <if test="reqId!=null and reqId!=''">
+                    and rc.req_id = #{reqId}
+                </if>
+                <if test="changeStatus!=null and changeStatus!=''">
+                    and rc.change_status = #{changeStatus}
+                </if>
+                <if test="changeUser!=null and changeUser!=''">
+                    and rc.change_user = #{changeUser}
+                </if>
+                <if test="auditUser!=null and auditUser!=''">
+                    and find_in_set(#{auditUser}, rc.audit_user) > 0
+                </if>
+                <if test="audittedUser!=null and audittedUser!=''">
+                    and find_in_set(#{audittedUser}, auditted_user) > 0
+                </if>
+                <if test="changeTimeBegin!=null and changeTimeBegin!=''">
+                    <![CDATA[and rc.change_time >= #{changeTimeBegin}]]>
+                </if>
+                <if test="changeTimeEnd!=null and changeTimeEnd!=''">
+                    <![CDATA[and rc.change_time <= #{changeTimeEnd}]]>
+                </if>
+            </otherwise>
+        </choose>
+        order by rc.id desc
+    </select>
+
+    <insert id="changeInfoCreate" useGeneratedKeys="true" parameterType="com.pr.sepp.sep.change.model.Change">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            select last_insert_id()
+        </selectKey>
+        insert into
+            sepp_req_change(req_id, change_time, change_status, change_user, audit_user, auditted_user, change_desc, change_detail)
+        values
+            (#{reqId}, #{changeTime}, #{changeStatus}, #{changeUser}, #{auditUser}, #{audittedUser}, #{changeDesc}, #{changeDetail})
+    </insert>
+
+    <update id="changeInfoUpdate" parameterType="com.pr.sepp.sep.change.model.Change">
+        update
+            sepp_req_change
+        <trim prefix="set" suffixOverrides=",">
+            req_id = #{reqId},
+            change_status = #{changeStatus},
+            <if test="changeTime!=null and changeTime!=''">
+                change_time = #{changeTime},
+            </if>
+            <if test="auditUser!=null and auditUser!=''">
+                audit_user = #{auditUser},
+            </if>
+            <if test="audittedUser!=null and audittedUser!=''">
+                auditted_user = #{audittedUser},
+            </if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <select id="changeAuditorRolesQuery" resultType="java.lang.String" parameterType="java.lang.Integer">
+        select change_auditor
+        from sepp_product_config
+        where product_id = #{productId}
+    </select>
+
+    <select id="changeDeverQuery" resultType="java.lang.String" parameterType="java.lang.Integer">
+        select group_concat(distinct cm.responser)
+        from sepp_code_mission cm
+        where cm.req_id = #{reqId}
+    </select>
+
+    <select id="changeTesterQuery" resultType="java.lang.String" parameterType="java.lang.Integer">
+        select group_concat(distinct tm.responser)
+        from sepp_test_mission tm
+        where tm.req_id = #{reqId}
+    </select>
+
+    <select id="changeDevMgrQuery" resultType="java.lang.String" parameterType="java.lang.Integer">
+        select group_concat(distinct o.responser)
+        from sepp_organization o,
+             sepp_user u
+        where o.id = u.team_id
+          and u.user_id in
+              (select cm.responser
+               from sepp_code_mission cm
+               where cm.req_id = #{reqId})
+    </select>
+
+    <select id="changeTestMgrQuery" resultType="java.lang.String" parameterType="java.lang.Integer">
+        select group_concat(distinct o.responser)
+        from sepp_organization o,
+             sepp_user u
+        where o.id = u.team_id
+          and u.user_id in
+              (select responser
+               from sepp_test_plan tp
+               where exists
+                         (select 'X'
+                          from sepp_code_mission cm
+                          where cm.rel_id = tp.rel_id
+                            and cm.req_id = #{reqId}))
+    </select>
+
+    <select id="productDirectorQuery" resultType="java.lang.String" parameterType="java.lang.Integer">
+        select group_concat(distinct responser)
+        from sepp_organization o,
+             sepp_user u
+        where o.id = u.team_id
+          and u.user_id in
+              (select submitter
+               from sepp_requirement
+               where id = #{reqId})
+    </select>
+
+    <select id="projectManagerQuery" resultType="java.lang.String" parameterType="java.lang.Integer">
+        select group_concat(distinct user_id)
+        from sepp_privileges
+        where product_id = #{productId}
+          and role_id = 10
+    </select>
+
+    <select id="changeOnWay" resultType="java.lang.Integer" parameterType="java.util.HashMap">
+        select
+            count(rc.id)
+        from
+            sepp_req_change rc
+        where rc.change_status > 0
+        <choose>
+            <when test="reqId !=null and reqId !=''">
+                and rc.req_id = #{reqId}
+                and rc.audit_user is not null
+            </when>
+            <when test="cmId !=null and cmId !=''">
+                and exists (
+                select
+                'X'
+                from
+                sepp_code_mission cm
+                where cm.id = #{cmId}
+                and rc.req_id = cm.req_id
+                <![CDATA[and (find_in_set(cm.responser, rc.auditted_user) <= 0 or rc.auditted_user is null)]]>)
+            </when>
+            <when test="tmId !=null and tmId !=''">
+                and exists (select 'X' from sepp_test_mission tm where tm.id = #{tmId} and rc.req_id = tm.req_id)
+                and exists (
+                select
+                'X'
+                from
+                sepp_test_mission tm
+                where tm.id = #{tmId}
+                and rc.req_id = tm.req_id
+                <![CDATA[and (find_in_set(tm.responser, rc.auditted_user) <= 0 or rc.auditted_user is null)]]>)
+            </when>
+            <when test="relId !=null and relId !=''">
+                and exists (select 'X' from sepp_requirement r where r.rel_id = #{relId} and rc.req_id = r.id)
+            </when>
+            <otherwise>
+                and 1 = 2
+            </otherwise>
+        </choose>
+    </select>
+</mapper>

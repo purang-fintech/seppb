@@ -1,0 +1,310 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.sqa.dao.AnalysisDAO">
+	<select id="reqType"  resultMap="reqTyper" parameterType="java.util.HashMap">
+		select 
+		  count(r.id) as num,
+		  r.type 
+		from
+		  sepp_requirement r
+		where r.product_id = #{productId}
+		<choose>
+			<when test="relId!=null and relId!=''">
+				and r.rel_id = #{relId}
+			</when>
+			<otherwise>
+				<if test="qTimeBegin!=null and qTimeBegin!=''">
+					<![CDATA[and r.submit_date >= #{qTimeBegin}]]>
+				</if>
+				<if test="qTimeEnd!=null and qTimeEnd!=''">
+					<![CDATA[and r.submit_date <= #{qTimeEnd}]]>
+				</if>
+			</otherwise>
+		</choose>
+		group by r.type 
+		order by num 
+	</select>
+	<resultMap type="java.util.HashMap" id="reqTyper">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="type" property="type" javaType="Integer" />
+	</resultMap>
+	
+	<select id="reqPriority"  resultMap="reqPriorityr"  parameterType="java.util.HashMap">
+		select 
+		  count(r.id) as num,
+		  r.priority 
+		from
+		  sepp_requirement r
+		where r.product_id = #{productId}
+		<choose>
+			<when test="relId!=null and relId!=''">
+				and r.rel_id = #{relId}
+			</when>
+			<otherwise>
+				<if test="qTimeBegin!=null and qTimeBegin!=''">
+					<![CDATA[and r.submit_date >= #{qTimeBegin}]]>
+				</if>
+				<if test="qTimeEnd!=null and qTimeEnd!=''">
+					<![CDATA[and r.submit_date <= #{qTimeEnd}]]>
+				</if>
+			</otherwise>
+		</choose>
+		group by r.priority 
+		order by num 
+	</select>
+	<resultMap type="java.util.HashMap" id="reqPriorityr">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="priority" property="priority" javaType="Integer" />
+	</resultMap>
+	
+	<select id="reqStatus"  resultMap="reqStatusr" parameterType="java.util.HashMap">
+		select 
+		  count(r.id) as num,
+		  r.status 
+		from
+		  sepp_requirement r
+		where r.product_id = #{productId}
+		<choose>
+			<when test="relId!=null and relId!=''">
+				and r.rel_id = #{relId}
+			</when>
+			<otherwise>
+				<if test="qTimeBegin!=null and qTimeBegin!=''">
+					<![CDATA[and r.submit_date >= #{qTimeBegin}]]>
+				</if>
+				<if test="qTimeEnd!=null and qTimeEnd!=''">
+					<![CDATA[and r.submit_date <= #{qTimeEnd}]]>
+				</if>
+			</otherwise>
+		</choose>
+		group by r.status 
+		order by num 
+	</select>
+	<resultMap type="java.util.HashMap" id="reqStatusr">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="status" property="status" javaType="Integer" />
+	</resultMap>
+
+	<select id="reqChange" resultMap="reqChanger" parameterType="java.util.HashMap">
+		select 
+		    case
+		        a.times 
+		        when 0 
+		        then '没有变更记录' 
+		        when 1 
+		        then '变更1次' 
+		        when 2 
+		        then '变更2次' 
+		        when 3 
+		        then '变更3次' 
+		        else '变更3次以上' 
+		    end as changeTimes,
+		    count(a.req_id) as num
+		from
+		    (select 
+		        ifnull(rc.change_times, 0) as times,
+		        req.id as req_id
+		    from
+		        (select 
+		            r.id
+		        from
+		            sepp_requirement r
+		        where r.product_id = #{productId}
+				<choose>
+					<when test="relId!=null and relId!=''">
+						and r.rel_id = #{relId}
+					</when>
+					<otherwise>
+						<if test="qTimeBegin!=null and qTimeBegin!=''">
+							<![CDATA[and r.submit_date >= #{qTimeBegin}]]>
+						</if>
+						<if test="qTimeEnd!=null and qTimeEnd!=''">
+							<![CDATA[and r.submit_date <= #{qTimeEnd}]]>
+						</if>
+					</otherwise>
+				</choose>) req
+		        left join 
+				(select
+					count(id) as change_times,
+					req_id
+				from
+					sepp_req_change
+				where req_id in
+					(select
+						r.id
+					from
+						sepp_requirement r
+					where product_id = #{productId}
+					<choose>
+						<when test="relId!=null and relId!=''">
+							and r.rel_id = #{relId}
+						</when>
+						<otherwise>
+							<if test="qTimeBegin!=null and qTimeBegin!=''">
+								<![CDATA[and r.submit_date >= #{qTimeBegin}]]>
+							</if>
+							<if test="qTimeEnd!=null and qTimeEnd!=''">
+								<![CDATA[and r.submit_date <= #{qTimeEnd}]]>
+							</if>
+						</otherwise>
+					</choose>)
+				group by req_id) rc
+				on req.id = rc.req_id) a
+		group by changeTimes
+	</select>
+	<resultMap type="java.util.HashMap" id="reqChanger">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="changeTimes" property="changeTimes" javaType="String" />
+	</resultMap>
+
+	<select id="reqClose" resultMap="reqCloseR" parameterType="java.util.HashMap">
+		select
+			count(r.id) as num,
+			c.style_name as closeStyle
+		from
+			sepp_requirement r,
+			sepp_req_close_style c
+		where r.product_id = #{productId}
+		  and r.close_style = c.style_id
+			<choose>
+				<when test="relId!=null and relId!=''">
+					and r.rel_id = #{relId}
+				</when>
+				<otherwise>
+					<if test="qTimeBegin!=null and qTimeBegin!=''">
+						<![CDATA[and r.submit_date >= #{qTimeBegin}]]>
+					</if>
+					<if test="qTimeEnd!=null and qTimeEnd!=''">
+						<![CDATA[and r.submit_date <= #{qTimeEnd}]]>
+					</if>
+				</otherwise>
+			</choose>
+		group by r.close_style
+		order by r.close_style
+	</select>
+	<resultMap type="java.util.HashMap" id="reqCloseR">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="closeStyle" property="closeStyle" javaType="String" />
+	</resultMap>
+
+	<select id="reqModule" resultMap="reqModuleR" parameterType="java.util.HashMap">
+		select
+			count(r.id) as num,
+			m.module_name as moduleName,
+			r.priority
+		from
+			sepp_requirement r,
+			sepp_prod_module m
+		where r.product_id = #{productId}
+		  and r.module_id = m.module_id
+		<choose>
+			<when test="relId!=null and relId!=''">
+				and r.rel_id = #{relId}
+			</when>
+			<otherwise>
+				<if test="qTimeBegin!=null and qTimeBegin!=''">
+					<![CDATA[and r.submit_date >= #{qTimeBegin}]]>
+				</if>
+				<if test="qTimeEnd!=null and qTimeEnd!=''">
+					<![CDATA[and r.submit_date <= #{qTimeEnd}]]>
+				</if>
+			</otherwise>
+		</choose>
+		group by r.module_id, r.priority
+		order by r.module_id, num
+	</select>
+	<resultMap type="java.util.HashMap" id="reqModuleR">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="moduleName" property="moduleName" javaType="String" />
+	</resultMap>
+	
+	<select id="reqSubmitter" resultMap="reqSubmitterr" parameterType="java.util.HashMap">
+		select 
+		  count(r.id) as num,
+		  concat(u.user_name,'(', u.user_account,')') as submitter,
+		  r.priority
+		from
+		  sepp_requirement r,
+		  sepp_user u
+		where r.product_id = #{productId}
+		   and r.submitter = u.user_id
+		<choose>
+			<when test="relId!=null and relId!=''">
+				and r.rel_id = #{relId}
+			</when>
+			<otherwise>
+				<if test="qTimeBegin!=null and qTimeBegin!=''">
+					<![CDATA[and r.submit_date >= #{qTimeBegin}]]>
+				</if>
+				<if test="qTimeEnd!=null and qTimeEnd!=''">
+					<![CDATA[and r.submit_date <= #{qTimeEnd}]]>
+				</if>
+			</otherwise>
+		</choose>
+		group by r.submitter, r.priority
+		order by num 
+	</select>
+	<resultMap type="java.util.HashMap" id="reqSubmitterr">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="submitter" property="submitter" javaType="String" />
+	</resultMap>
+	
+	<select id="reqDevOffset"  resultMap="reqDevOffsetr" parameterType="java.util.HashMap">
+		select 
+		  case 
+		    when <![CDATA[a.period_offset < 0]]> then '提前完成' 
+		    when <![CDATA[a.period_offset = 0]]> then '按时完成' 
+		    when <![CDATA[a.period_offset > 0 and a.period_offset <= 1]]>  then '一天之内' 
+		    when <![CDATA[a.period_offset > 1 and a.period_offset <= 3]]>  then '一到三天' 
+		    when <![CDATA[a.period_offset > 3 and a.period_offset <= 7]]>  then '三天到一周' 
+		    when <![CDATA[a.period_offset > 7 and a.period_offset <= 30]]>  then '一周到一月' 
+		    else '一个月以上' 
+		  end as devOffset,
+		  count(a.id) as num
+		from
+		  (select 
+		    datediff(h.oper_time, r.expect_date) as period_offset,
+		    r.id
+		  from
+		    sepp_requirement r,
+		    sepp_history h
+		  where h.obj_type = 2 
+		    and r.id = h.obj_id
+		    and h.obj_key = 'status' 
+		    and h.new_value in ('0','6')
+		    and NOT EXISTS(
+		        SELECT
+					'X'
+				FROM
+					sepp_history hh
+				WHERE hh.obj_id = h.obj_id
+				  AND hh.obj_key = 'status'
+				  AND hh.obj_type = 2
+				  AND hh.id > h.id)
+		    and r.status in (0, 6)
+		    and r.close_style = 1
+		    and r.product_id = #{productId}
+			<choose>
+				<when test="relId!=null and relId!=''">
+					and r.rel_id = #{relId}
+				</when>
+				<otherwise>
+					<if test="qTimeBegin!=null and qTimeBegin!=''">
+						<![CDATA[and r.submit_date >= #{qTimeBegin}]]>
+					</if>
+					<if test="qTimeEnd!=null and qTimeEnd!=''">
+						<![CDATA[and r.submit_date <= #{qTimeEnd}]]>
+					</if>
+				</otherwise>
+			</choose>) a
+		group by devOffset
+		order by num 
+	</select>
+	<resultMap type="java.util.HashMap" id="reqDevOffsetr">
+		<result column="num" property="num" javaType="Integer" />
+		<result column="devOffset" property="devOffset" javaType="String" />
+	</resultMap>
+</mapper>

@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.mgr.system.dao.SettingDAO">
+
+    <select id="listConfig" resultMap="listConfigR">
+        select id,
+               setting_name  as settingName,
+               setting_limit as settingLimit,
+               setting_keys  as settingKeys
+        from sepp_setting_config
+    </select>
+    <resultMap type="java.util.HashMap" id="listConfigR">
+        <id column="id" property="id" javaType="Integer"/>
+        <result column="settingName" property="settingName" javaType="String"/>
+        <result column="settingLimit" property="settingLimit" javaType="Integer"/>
+        <result column="settingKeys" property="settingKeys" javaType="String"/>
+    </resultMap>
+
+    <insert id="configCreate" useGeneratedKeys="true" parameterType="com.pr.sepp.mgr.system.model.SettingConfig">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            select last_insert_id()
+        </selectKey>
+        insert into
+            sepp_setting_config(setting_name, setting_limit, setting_keys)
+        values
+            (#{settingName}, #{settingLimit}, #{settingKeys})
+    </insert>
+
+    <update id="configUpdate" parameterType="com.pr.sepp.mgr.system.model.SettingConfig">
+        update
+            sepp_setting_config
+        set
+            setting_name = #{settingName},
+            setting_limit = #{settingLimit},
+            setting_keys = #{settingKeys}
+        where id = #{id}
+    </update>
+
+    <delete id="configDelete" parameterType="java.lang.Integer">
+        delete from
+            sepp_setting_config
+        where
+            id = #{id}
+    </delete>
+
+    <select id="listSetting" resultMap="listSettingR">
+        select s.id,
+               s.setting_type  as settingType,
+               s.create_user   as createUser,
+               s.setting_value as settingValue,
+               c.setting_name  as settingName
+        from sepp_settings s,
+             sepp_setting_config c
+        where s.setting_type = c.id
+    </select>
+    <resultMap type="java.util.HashMap" id="listSettingR">
+        <id column="id" property="id" javaType="Integer"/>
+        <result column="settingType" property="settingType" javaType="Integer"/>
+        <result column="createUser" property="createUser" javaType="Integer"/>
+        <result column="settingValue" property="settingValue" javaType="String"/>
+        <result column="settingName" property="settingName" javaType="String"/>
+    </resultMap>
+
+    <insert id="settingCreate" useGeneratedKeys="true" parameterType="com.pr.sepp.mgr.system.model.SystemSetting">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            select last_insert_id()
+        </selectKey>
+        insert into
+            sepp_settings(setting_type, create_user, setting_value)
+        values
+            (#{settingType}, #{createUser}, #{settingValue})
+    </insert>
+
+    <update id="settingUpdate" parameterType="com.pr.sepp.mgr.system.model.SystemSetting">
+        update
+            sepp_settings
+        set
+            setting_value = #{settingValue}
+        where
+            id = #{id}
+    </update>
+
+    <delete id="settingDelete" parameterType="java.lang.Integer">
+        delete from
+            sepp_settings
+        where
+            id = #{id}
+    </delete>
+
+    <select id="findSetting" resultType="com.pr.sepp.mgr.system.model.SystemSetting">
+        SELECT *
+        FROM sepp_settings s
+                 INNER JOIN (SELECT * FROM sepp_setting_config WHERE setting_type = #{settingType}) c
+                            ON s.setting_type = c.id
+    </select>
+</mapper>

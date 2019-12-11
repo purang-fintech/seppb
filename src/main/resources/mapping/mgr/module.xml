@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.mgr.module.dao.ModuleDAO">
+
+    <select id="moduleQuery" resultType="com.pr.sepp.mgr.module.model.Module" parameterType="java.util.HashMap">
+        select
+            m.module_id as moduleId,
+            m.product_id as productId,
+            p.product_code as productCode,
+            m.pd_responser as pdResponser,
+            m.dev_responser as devResponser,
+            m.test_responser as testResponser,
+            u1.user_name as proderName,
+            u2.user_name as deverName,
+            u3.user_name as testerName,
+            m.module_name as moduleName,
+            m.module_desc as moduleDesc,
+            m.code_package as codePackage,
+            m.is_valid as isValid
+        from
+            sepp_prod_module m,
+            sepp_product p,
+            sepp_user u1,
+            sepp_user u2,
+            sepp_user u3
+        where module_id > 0
+          and u1.user_id =  m.pd_responser
+          and u2.user_id =  m.dev_responser
+          and u3.user_id =  m.test_responser
+          and p.product_id = m.product_id
+        <choose>
+            <when test="moduleId!=null and moduleId!=''">
+                and m.module_id = #{moduleId}
+            </when>
+            <otherwise>
+                <if test="productId!=null and productId!=''">
+                    and m.product_id = #{productId}
+                </if>
+                <if test="moduleName!=null and moduleName!=''">
+                    and m.module_name like concat(#{moduleName}, '%')
+                </if>
+                <if test="moduleNameFull!=null and moduleNameFull!=''">
+                    and m.module_name = #{moduleNameFull}
+                </if>
+                <if test="isValid!=null and isValid!=''">
+                    and m.is_valid = #{isValid}
+                </if>
+            </otherwise>
+        </choose>
+    </select>
+
+    <insert id="moduleCreate" useGeneratedKeys="true" parameterType="com.pr.sepp.mgr.module.model.Module">
+        <selectKey keyProperty="moduleId" order="AFTER" resultType="java.lang.Integer">
+            select last_insert_id()
+        </selectKey>
+        insert into
+            sepp_prod_module(product_id, module_name, pd_responser, dev_responser, test_responser, module_desc, code_package)
+        values
+            (#{productId}, #{moduleName}, #{pdResponser}, #{devResponser}, #{testResponser}, #{moduleDesc}, #{codePackage})
+    </insert>
+
+    <update id="moduleUpdate" parameterType="com.pr.sepp.mgr.module.model.Module">
+        update
+            sepp_prod_module
+        set
+            product_id = #{productId},
+            pd_responser = #{pdResponser},
+            dev_responser = #{devResponser},
+            test_responser = #{testResponser},
+            module_name = #{moduleName},
+            module_desc = #{moduleDesc},
+            code_package = #{codePackage},
+            is_valid = #{isValid}
+        where module_id = #{moduleId}
+    </update>
+
+    <delete id="moduleDelete" parameterType="java.util.HashMap">
+        update
+            sepp_prod_module
+        set
+            is_valid = 'N'
+        where
+            module_id = #{moduleId}
+    </delete>
+</mapper>

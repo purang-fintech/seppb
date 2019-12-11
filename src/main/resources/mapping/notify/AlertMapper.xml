@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pr.sepp.notify.dao.AlertDAO">
+
+    <select id="findAlertsByUser" resultType="com.pr.sepp.notify.model.Alert">
+        SELECT w.id,w.warning_date warningDate,w.category, w.type,w.level level,w.summary,content FROM sepp_warning w
+        WHERE product_id = #{productId} AND  warning_date &gt;= DATE(NOW())
+        AND warning_date &lt; DATE_ADD(DATE(NOW()),INTERVAL 1 DAY)
+    </select>
+
+    <select id="findAllAlertsOfToday" resultType="com.pr.sepp.notify.model.AlertNotice">
+        SELECT u.user_id userId,u.user_name userName,u.user_email userEmail,m.id warningId,m.type,m.sub_type subType,m.category,
+        m.warning_date warningDate,m.level,m.summary,m.content
+        FROM sepp_user u INNER JOIN  (
+        SELECT p.`user_id`,p.`product_id`,w.type,w.sub_type,w.category,w.id,w.warning_date,w.level,w.summary,w.content
+            FROM  sepp_privileges p INNER JOIN ( SELECT * FROM sepp_warning
+            WHERE TO_DAYS(NOW()) - TO_DAYS(warning_date) = 1) w ON w.product_id = p.product_id GROUP BY p.user_id,w.id
+        ) m ON u.user_id = m.user_id ORDER BY m.level DESC
+    </select>
+
+    <insert id="insertWarningNotify">
+        INSERT INTO sepp_warning_notify
+          (`warning_ids`,`send_gateway`,`from`,`to`,`send_time`,`sent_time`,`is_sent`,`send_success`,`is_read`)
+        VALUES (#{noticeLog.warningIds},#{noticeLog.sendGateway},#{noticeLog.from},#{noticeLog.to},
+                #{noticeLog.sendTime},now(),#{noticeLog.isSent},#{noticeLog.sendSuccess},#{noticeLog.isRead})
+    </insert>
+</mapper>

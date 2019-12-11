@@ -1,0 +1,382 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.reports.fuzz.dao.FuzzQueryDAO">
+
+    <select id="releaseQuery" resultType="com.pr.sepp.sep.release.model.Release" parameterType="java.util.HashMap">
+        SELECT r.id,
+               r.rel_code                                  as relCode,
+               r.branch_id                                 as branchId,
+               rt.branch_name                              as branchName,
+               r.status,
+               rs.status_name                              as statusName,
+               r.creator,
+               u1.user_name                                AS creatorName,
+               r.responser,
+               u2.user_name                                AS responsername,
+               date_format(r.rel_date, '%Y-%m-%d')         AS relDate,
+               date_format(r.req_confirm_date, '%Y-%m-%d') AS reqConfirmDate,
+               date_format(r.sit_begin_date, '%Y-%m-%d')   AS sitBeginDate,
+               date_format(r.uat_begin_date, '%Y-%m-%d')   AS uatBeginDate,
+               date_format(r.ready_date, '%Y-%m-%d')       AS readyDate,
+               date_format(r.rel_date_act, '%Y-%m-%d')     AS relDateAct,
+               r.environment
+        FROM sepp_release r,
+             sepp_rel_status rs,
+             sepp_product_branch rt,
+             sepp_user u1,
+             sepp_user u2
+        WHERE r.product_id = #{productId}
+          AND rs.status_id = r.status
+          AND r.creator = u1.user_id
+          AND r.branch_id = rt.branch_id
+          AND r.responser = u2.user_id
+          AND upper(concat(
+                r.id,
+                r.rel_code,
+                r.rel_date,
+                IFNULL(r.req_confirm_date, ''),
+                r.sit_begin_date,
+                r.uat_begin_date,
+                r.ready_date,
+                u1.user_name,
+                u1.user_account,
+                u2.user_name,
+                u2.user_account
+            )) LIKE concat('%', upper(#{searchText}), '%')
+    </select>
+
+    <select id="reqQuery" resultType="com.pr.sepp.sep.requirement.model.Requirement"
+            parameterType="java.util.HashMap">
+        SELECT r.id,
+               r.type,
+               rt.type_name                           as typeName,
+               r.status,
+               rs.status_name                         as statusName,
+               r.priority,
+               rp.priority_name                       as priorityName,
+               r.module_id                            as moduleId,
+               pm.module_name                         as moduleName,
+               r.submitter,
+               u.user_name                            AS submitterName,
+               r.attachment,
+               date_format(r.submit_date, '%Y-%m-%d') AS submitDate,
+               date_format(r.expect_date, '%Y-%m-%d') AS expectDate,
+               date_format(r.uat_date, '%Y-%m-%d')    AS uatDate,
+               date_format(r.sit_date, '%Y-%m-%d')    AS sitDate,
+               r.summary,
+               r.detail
+        FROM sepp_requirement r,
+             sepp_req_priority rp,
+             sepp_req_status rs,
+             sepp_req_type rt,
+             sepp_prod_module pm,
+             sepp_user u
+        WHERE r.id > 0
+          AND r.product_id = #{productId}
+          AND r.status = rs.status_id
+          AND r.priority = rp.priority_id
+          AND r.module_id = pm.module_id
+          AND r.type = rt.type_id
+          AND r.submitter = u.user_id
+          AND upper(concat(
+                r.id,
+                r.summary,
+                u.user_name,
+                u.user_account
+            )) LIKE concat('%', upper(#{searchText}), '%')
+        UNION
+        SELECT r.id,
+               r.type,
+               rt.type_name                           as typeName,
+               r.status,
+               rs.status_name                         as statusName,
+               r.priority,
+               rp.priority_name                       as priorityName,
+               r.module_id                            as moduleId,
+               pm.module_name                         as moduleName,
+               r.submitter,
+               u.user_name                            AS submitterName,
+               r.attachment,
+               date_format(r.submit_date, '%Y-%m-%d') AS submitDate,
+               date_format(r.expect_date, '%Y-%m-%d') AS expectDate,
+               date_format(r.uat_date, '%Y-%m-%d')    AS uatDate,
+               date_format(r.sit_date, '%Y-%m-%d')    AS sitDate,
+               r.summary,
+               r.detail
+        FROM sepp_requirement r,
+             sepp_req_priority rp,
+             sepp_req_status rs,
+             sepp_req_type rt,
+             sepp_prod_module pm,
+             sepp_user u,
+             sepp_attachment a
+        WHERE r.status = rs.status_id
+          AND r.priority = rp.priority_id
+          AND r.module_id = pm.module_id
+          AND r.type = rt.type_id
+          AND r.submitter = u.user_id
+          AND r.product_id = #{productId}
+          AND find_in_set(a.id, r.attachment) > 0
+          AND upper(concat(r.summary, left(a.file_name, locate(' @ ', a.file_name)))) LIKE
+              concat('%', upper(#{searchText}), '%')
+    </select>
+
+    <select id="cmsQuery" resultType="com.pr.sepp.sep.coding.model.CodeMission"
+            parameterType="java.util.HashMap">
+        SELECT a.*,
+               date_format(rel.rel_date, '%Y-%m-%d') AS relDate,
+               rel.rel_code                          as relCode
+        FROM (SELECT c.id,
+                     c.req_id                              as reqId,
+                     r.rel_id                              as relId,
+                     c.module_id                           as moduleId,
+                     m.module_name                         as moduleName,
+                     c.status,
+                     cs.status_name                        as statusName,
+                     r.summary                             AS reqDesc,
+                     c.manpower,
+                     c.spliter,
+                     u1.user_name                          AS spliterName,
+                     c.attachment,
+                     date_format(c.split_date, '%Y-%m-%d') AS splitDate,
+                     c.responser,
+                     u2.user_name                          AS responserName,
+                     date_format(c.plan_begin, '%Y-%m-%d') AS planBegin,
+                     date_format(c.plan_to, '%Y-%m-%d')    AS planTo,
+                     c.summary,
+                     c.detail
+              FROM sepp_code_mission c,
+                   sepp_requirement r,
+                   sepp_user u1,
+                   sepp_user u2,
+                   sepp_cm_status cs,
+                   sepp_prod_module m
+              WHERE c.req_id = r.id
+                AND c.spliter = u1.user_id
+                AND c.responser = u2.user_id
+                AND cs.status_id = c.status
+                AND m.module_id = c.module_id
+                AND r.product_id = #{productId}
+                AND upper(concat(
+                      c.id,
+                      c.summary,
+                      u1.user_name,
+                      u1.user_account,
+                      u2.user_name,
+                      u2.user_account
+                  )) LIKE concat('%', upper(#{searchText}), '%')) AS a
+                 LEFT JOIN sepp_release rel
+                           ON a.relId = rel.id
+    </select>
+
+    <select id="defectQuery" resultType="com.pr.sepp.sep.defect.model.Defect" parameterType="java.util.HashMap">
+        SELECT d.id,
+               d.status,
+               d.req_id                                    as reqId,
+               d.priority,
+               d.influence,
+               d.submitter,
+               d.responser,
+               r.submitter                                 AS productor,
+               d.defect_type                               as defectType,
+               d.found_period                              as foundPeriod,
+               d.found_means                               as foundMeans,
+               d.defect_period                             as defectPeriod,
+               d.product_id                                as productId,
+               d.prod_module                               as prodModule,
+               d.fix_times                                 as fixTimes,
+               d.summary,
+               d.detail,
+               ds.status_name                              AS statusName,
+               dp.priority_name                            AS priorityName,
+               di.influence_name                           AS influenceName,
+               u1.user_name                                AS submitterName,
+               u2.user_name                                AS responserName,
+               u3.user_name                                AS productorName,
+               dt.type_name                                AS defectTypeName,
+               fp.period_name                              AS foundPeriodName,
+               fm.means_name                               AS foundMeansName,
+               dpd.period_name                             AS defectPeriodName,
+               m.module_name                               AS prodModuleName,
+               date_format(d.found_time, '%Y-%m-%d %T')    AS foundTime,
+               date_format(d.response_time, '%Y-%m-%d %T') AS responseTime,
+               date_format(d.fixed_time, '%Y-%m-%d %T')    AS fixedTime,
+               date_format(d.deployed_time, '%Y-%m-%d %T') AS deployedTime,
+               date_format(d.closed_time, '%Y-%m-%d %T')   AS closedTime,
+               d.response_cost                             as responseCost,
+               d.fix_cost                                  as fixCost,
+               d.deploy_cost                               as deployCost,
+               d.verify_cost                               as verifyCost
+        FROM sepp_defects d,
+             sepp_requirement r,
+             sepp_defect_influence di,
+             sepp_defect_period dpd,
+             sepp_defect_priority dp,
+             (SELECT DISTINCT status_id,
+                              status_name
+              FROM sepp_defect_status) ds,
+             sepp_defect_type dt,
+             sepp_found_means fm,
+             sepp_found_period fp,
+             sepp_user u1,
+             sepp_user u2,
+             sepp_user u3,
+             sepp_prod_module m
+        WHERE r.id = d.req_id
+          AND d.status = ds.status_id
+          AND d.priority = dp.priority_id
+          AND d.influence = di.influence_id
+          AND d.submitter = u1.user_id
+          AND d.responser = u2.user_id
+          AND r.submitter = u3.user_id
+          AND d.defect_type = dt.type_id
+          AND d.found_period = fp.period_id
+          AND d.defect_period = dpd.period_id
+          AND d.found_means = fm.means_id
+          AND d.prod_module = m.module_id
+          AND d.product_id = #{productId}
+          AND upper(concat(
+                d.id,
+                d.summary,
+                u1.user_name,
+                u1.user_account,
+                u2.user_name,
+                u2.user_account,
+                u3.user_name,
+                u3.user_account
+            )) LIKE concat('%', upper(#{searchText}), '%')
+    </select>
+
+    <select id="problemQuery" resultType="com.pr.sepp.sep.problem.model.Problem" parameterType="java.util.HashMap">
+        SELECT p.id,
+               p.status,
+               p.priority,
+               p.influence,
+               p.submitter,
+               p.responser,
+               p.type_first                               as typeFirst,
+               p.type_second                              as typeSecond,
+               p.resolve_method                           as resolveMethod,
+               p.trans_id                                 as transId,
+               p.product_id                               as productId,
+               p.module_id                                as moduleId,
+               p.summary,
+               p.detail,
+               p.attachment,
+               date_format(p.submit_time, '%Y-%m-%d %T')  AS submitTime,
+               date_format(p.resolve_time, '%Y-%m-%d %T') AS resolveTime,
+               date_format(p.close_time, '%Y-%m-%d %T')   AS closeTime,
+               p.resolve_cost                             as resolveCost,
+               p.improve_one                              as improveOne,
+               p.improve_two                              as improveTwo,
+               date_format(p.improve_plan_to, '%Y-%m-%d') AS improvePlanTo,
+               p.improve_detail                           as improveDetail,
+               ps.status_name                             AS statusName,
+               dp.priority_name                           AS priorityName,
+               di.influence_name                          AS influenceName,
+               u1.user_name                               AS submitterName,
+               u2.user_name                               AS responserName,
+               pt.type_desc                               AS typeFirstName,
+               pt.sub_desc                                AS typeSecondName,
+               pr.method_name                             AS resolveMethodName,
+               pm.module_name                             AS moduleName,
+               pi.type_desc                               AS improveOneName,
+               pi.sub_desc                                AS improveTwoName
+        FROM sepp_problem p,
+             sepp_problem_type pt,
+             sepp_problem_status ps,
+             sepp_problem_resolve pr,
+             sepp_problem_improve pi,
+             sepp_defect_priority dp,
+             sepp_defect_influence di,
+             sepp_user u1,
+             sepp_user u2,
+             sepp_prod_module pm
+        WHERE p.product_id = #{productId}
+          AND p.status = ps.status_id
+          AND p.priority = dp.priority_id
+          AND p.influence = di.influence_id
+          AND p.submitter = u1.user_id
+          AND p.responser = u2.user_id
+          AND p.type_first = pt.type
+          AND p.type_second = pt.sub_type
+          AND p.resolve_method = pr.method_id
+          AND p.module_id = pm.module_id
+          AND ifnull(p.improve_one, 0) = pi.type
+          AND ifnull(p.improve_two, 0) = pi.sub_type
+          AND upper(concat(
+                p.id,
+                p.summary,
+                p.detail,
+                u1.user_name,
+                u1.user_account,
+                u2.user_name,
+                u2.user_account
+            )) LIKE concat('%', upper(#{searchText}), '%')
+        UNION
+        SELECT p.id,
+               p.status,
+               p.priority,
+               p.influence,
+               p.submitter,
+               p.responser,
+               p.type_first                               as typeFirst,
+               p.type_second                              as typeSecond,
+               p.resolve_method                           as resolveMethod,
+               p.trans_id                                 as transId,
+               p.product_id                               as productId,
+               p.module_id                                as moduleId,
+               p.summary,
+               p.detail,
+               p.attachment,
+               date_format(p.submit_time, '%Y-%m-%d %T')  AS submitTime,
+               date_format(p.resolve_time, '%Y-%m-%d %T') AS resolveTime,
+               date_format(p.close_time, '%Y-%m-%d %T')   AS closeTime,
+               p.resolve_cost                             as resolveCost,
+               p.improve_one                              as improveOne,
+               p.improve_two                              as improveTwo,
+               date_format(p.improve_plan_to, '%Y-%m-%d') AS improvePlanTo,
+               p.improve_detail                           as improveDetail,
+               ps.status_name                             AS statusName,
+               dp.priority_name                           AS priorityName,
+               di.influence_name                          AS influenceName,
+               u1.user_name                               AS submitterName,
+               u2.user_name                               AS responserName,
+               pt.type_desc                               AS typeFirstName,
+               pt.sub_desc                                AS typeSecondName,
+               pr.method_name                             AS resolveMethodName,
+               pm.module_name                             AS moduleName,
+               pi.type_desc                               AS improveOneName,
+               pi.sub_desc                                AS improveTwoName
+        FROM sepp_problem p,
+             sepp_problem_type pt,
+             sepp_problem_status ps,
+             sepp_problem_resolve pr,
+             sepp_problem_improve pi,
+             sepp_defect_priority dp,
+             sepp_defect_influence di,
+             sepp_user u1,
+             sepp_user u2,
+             sepp_prod_module pm,
+             sepp_attachment a
+        WHERE find_in_set(a.id, p.attachment) > 0
+          AND upper(concat(p.summary, left(a.file_name, locate(' @ ', a.file_name)))) LIKE
+              concat('%', upper(#{searchText}), '%')
+          AND p.product_id = #{productId}
+          AND p.status = ps.status_id
+          AND p.priority = dp.priority_id
+          AND p.influence = di.influence_id
+          AND p.submitter = u1.user_id
+          AND p.responser = u2.user_id
+          AND p.type_first = pt.type
+          AND p.type_second = pt.sub_type
+          AND p.resolve_method = pr.method_id
+          AND p.module_id = pm.module_id
+          AND ifnull(p.improve_one, 0) = pi.type
+          AND ifnull(p.improve_two, 0) = pi.sub_type
+    </select>
+
+</mapper>

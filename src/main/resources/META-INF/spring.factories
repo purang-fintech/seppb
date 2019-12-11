@@ -1,0 +1,5 @@
+org.springframework.boot.env.EnvironmentPostProcessor=com.pr.sepp.common.config.factory.DefinitionPropertySourceFactory
+org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
+  com.pr.sepp.common.schedule.ScheduleEndpointConfiguration,\
+  com.pr.sepp.common.config.PerformanceInterceptorAutoConfiguration
+

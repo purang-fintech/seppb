@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.sep.testing.dao.TestExecDAO">
+	<select id="testScenarioQuery" resultType="com.pr.sepp.sep.testing.model.TestScenario"  parameterType="java.util.HashMap">
+		select
+			id,
+			plan_id as planId,
+			name,
+			cases,
+			creator
+		from
+			sepp_test_scenario
+		where 1 = 1
+		<choose>
+			<when test="id!=null and id!=''">
+				and id = #{id}
+			</when>
+			<when test="planId!=null and planId!=''">
+				and plan_id = #{planId}
+			</when>
+			<when test="relId!=null and relId!=''">
+				and plan_id in (select id from sepp_test_plan where rel_id = #{relId}
+				<if test="plan_type!=null and plan_type!=''">
+					and plan_type = #{plan_type}
+				</if>
+				)
+			</when>
+			<otherwise>
+				and 1 = 2
+			</otherwise>
+		</choose>
+	</select>
+
+	<insert id="testScenarioCreate" useGeneratedKeys="true" parameterType="com.pr.sepp.sep.testing.model.TestScenario">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+		insert into
+			sepp_test_scenario(plan_id, name, cases, creator)
+		values
+			(#{planId}, #{name}, #{cases}, #{creator})
+	</insert>
+
+	<update id="testScenarioUpdate" parameterType="com.pr.sepp.sep.testing.model.TestScenario">
+		update
+			sepp_test_scenario
+		set
+			name = #{name},
+			cases = #{cases}
+		where id = #{id}
+	</update>
+
+	<delete id="testScenarioDelete" parameterType="java.lang.Integer">
+		delete from 
+			sepp_test_scenario
+		where 
+			id = #{id}
+	</delete>
+	
+	<select id="scenarioCaseQuery" resultMap="scenarioCaseQuery_Res"  parameterType="java.util.HashMap">
+		<foreach collection="cases" index="index" item="caseId" separator="union all">
+		select 
+		 cf.id,
+		 cf.name,
+		 cf.type,
+		 ifnull(tr.result, 0) as result
+		from
+		  (select 
+		    c.name,
+		    c.id,
+			c.type
+		  from
+		    sepp_case_tree c
+		  where c.id  =  #{caseId}) cf 
+		  left join 
+		    (select 
+		      case_id,
+		      result
+		    from
+		      sepp_test_result
+		    where scenario_id = #{scenarioId}
+		      and id = 
+		      (select 
+		        max(id) 
+		      from
+		        sepp_test_result
+		      where scenario_id = #{scenarioId}
+		      	  and case_id = #{caseId})) tr 
+		    on tr.case_id = cf.id
+		</foreach>
+	</select>
+	<resultMap type="java.util.HashMap" id="scenarioCaseQuery_Res">
+		<result column="id" property="id" javaType="Integer" />
+		<result column="result" property="result" javaType="Integer" />
+		<result column="type" property="type" javaType="String" />
+		<result column="name" property="name" javaType="String" />
+	</resultMap>
+	
+	<select id="caseRunHisQuery" resultMap="caseRunHisQuery_Res"  parameterType="java.lang.Integer">
+		select 
+		  r.rel_code as relCode,
+		  tp.plan_type as planType,
+		  res.scenario_id as scenarioId,
+		  ts.name, 
+		  res.run_id as runId,
+		  date_format(tr.run_date_s, '%Y-%m-%d %T') as runBegin,
+		  date_format(tr.run_date_e, '%Y-%m-%d %T') as runEnd,
+		  timediff(ifnull(tr.run_date_e, current_timestamp()), tr.run_date_s) as runDuration,
+		  res.result 
+		from
+		  sepp_test_run tr,
+		  (select 
+		    * 
+		  from
+		    sepp_test_result
+		  where id in 
+		    (select 
+		      max(id) 
+		    from
+		      sepp_test_result
+		    where case_id = #{caseId} 
+		    group by run_id)) res,
+		  sepp_test_scenario ts,
+		  sepp_test_plan tp,
+		  sepp_release r
+		where tr.id = res.run_id 
+		  and tr.scenario_id = ts.id
+		  and ts.plan_id = tp.id 
+		  and tp.rel_id = r.id
+		  and res.case_id = #{caseId}
+		 order by res.run_id desc
+	</select>
+	<resultMap type="java.util.HashMap" id="caseRunHisQuery_Res">
+		<result column="relCode" property="relCode" javaType="String" />
+		<result column="planType" property="planType" javaType="Integer" />
+		<result column="scenarioId" property="scenarioId" javaType="Integer" />
+		<result column="name" property="name" javaType="String" />
+		<result column="runId" property="runId" javaType="Integer" />
+		<result column="runBegin" property="runBegin" javaType="String" />
+		<result column="runEnd" property="runEnd" javaType="String" />
+		<result column="runDuration" property="runDuration" javaType="String" />
+		<result column="result" property="result" javaType="Integer" />
+	</resultMap>
+	
+	<insert id="testRunBegin" useGeneratedKeys="true" parameterType="com.pr.sepp.sep.testing.model.TestRun">
+		<selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+			select last_insert_id()
+		</selectKey>
+		insert into
+			sepp_test_run(scenario_id, run_date_s)
+		values
+			(#{scenarioId}, #{runBeginTime})
+	</insert>
+
+	<update id="testRunEnd" parameterType="com.pr.sepp.sep.testing.model.TestRun">
+		update
+			sepp_test_run
+		set
+			run_date_e = #{runEndTime}
+		where id = #{id}
+	</update>
+	
+	<insert id="caseResultRecord" useGeneratedKeys="true" parameterType="java.util.HashMap">
+		insert into
+			sepp_test_result(scenario_id, run_id, case_id, run_date, result)
+		values
+		<foreach collection="cases" index="index" item="item" separator="," >
+			(#{scenarioId}, #{runId}, #{item.caseId}, #{runBeginTime}, #{item.result})
+		</foreach>
+	</insert>
+	
+	<insert id="caseRunCancel" useGeneratedKeys="true" parameterType="com.pr.sepp.sep.testing.model.CaseResult">
+		insert into
+			sepp_test_result(scenario_id, run_id, case_id, run_date, result)
+		values
+			(#{scenarioId}, #{runId}, #{caseId}, #{runEndTime}, #{result})
+	</insert>
+	
+	<insert id="stepResultRecord" useGeneratedKeys="true" parameterType="java.util.HashMap">
+		insert into
+			sepp_test_result(scenario_id, run_id, case_id, step_id, step_actual, run_date, result)
+		values
+		<foreach collection="steps" index="index" item="item" separator="," >
+			(#{scenarioId}, #{runId}, #{item.caseId}, #{item.stepId}, #{item.stepActual}, #{runEndTime}, #{item.result})
+		</foreach>
+	</insert>
+</mapper>

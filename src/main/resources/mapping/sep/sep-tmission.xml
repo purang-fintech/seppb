@@ -1,0 +1,216 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.sep.testing.dao.TestMissionDAO">
+
+    <select id="testMissionQuery" resultType="com.pr.sepp.sep.testing.model.TestMission">
+        select
+            t.id,
+            t.req_id        as reqId,
+            r.summary       as reqSummary,
+            t.plan_id       as planId,
+            t.type,
+            p.period_name   as typeName,
+            t.status,
+            s.status_name   as statusName,
+            t.spliter,
+            u1.user_name    as spliterName,
+            t.responser,
+            u2.user_name    as responserName,
+            t.assistant,
+            t.manpower,
+            date_format(t.split_date, '%Y-%m-%d')   as splitDate,
+            date_format(t.plan_begin, '%Y-%m-%d')   as planBegin,
+            date_format(t.plan_to, '%Y-%m-%d')      as planTo
+        from
+            sepp_test_mission t,
+            sepp_requirement r,
+            sepp_user u1,
+            sepp_user u2,
+            sepp_test_period p,
+            sepp_tm_status s
+        where t.req_id = r.id
+          and t.spliter = u1.user_id
+          and t.responser = u2.user_id
+          and p.period_id = t.type
+          and s.status_id = t.status
+        <choose>
+            <when test="id !=null and id !=''">
+                and t.id = #{id}
+            </when>
+            <when test="reqId !=null and reqId !=''">
+                and t.req_id = #{reqId}
+            </when>
+            <otherwise>
+                and r.product_id = #{productId}
+                <if test="planId !=null and planId !=''">
+                    and t.plan_id=#{planId}
+                </if>
+                <if test="relId !=null and relId !=''">
+                    and r.rel_id = #{relId}
+                </if>
+                <if test="type !=null and type !=''">
+                    and t.type=#{type}
+                </if>
+                <if test="sts!=null">
+                    and t.status in
+                    <foreach collection="sts" index="index" item="status" open="(" separator="," close=")">
+                        #{status}
+                    </foreach>
+                </if>
+                <if test="spliter !=null and spliter !=''">
+                    and t.spliter=#{spliter}
+                </if>
+                <if test="responser !=null and responser !=''">
+                    and t.responser=#{responser}
+                </if>
+                <if test="splitDateBegin!=null and splitDateBegin!=''">
+                    <![CDATA[and t.split_date >= #{splitDateBegin}]]>
+                </if>
+                <if test="splitDateEnd!=null and splitDateEnd!=''">
+                    <![CDATA[and t.split_date <= #{splitDateEnd}]]>
+                </if>
+                <if test="planToBegin!=null and planToBegin!=''">
+                    <![CDATA[and t.plan_to >= #{planToBegin}]]>
+                </if>
+                <if test="planToEnd!=null and planToEnd!=''">
+                    <![CDATA[and t.plan_to <= #{planToEnd}]]>
+                </if>
+            </otherwise>
+        </choose>
+        order by t.id desc
+    </select>
+
+    <select id="planTMSQuery" resultType="com.pr.sepp.sep.testing.model.TestMission" parameterType="java.lang.Integer">
+        select t.id,
+               t.req_id                              as reqId,
+               r.summary                             as reqSummary,
+               t.plan_id                             as planId,
+               t.type,
+               tp.period_name                        as typeName,
+               t.status,
+               s.status_name                         as statusName,
+               t.spliter,
+               u1.user_name                          as spliterName,
+               t.responser,
+               u2.user_name                          as responserName,
+               t.assistant,
+               t.manpower,
+               date_format(t.split_date, '%Y-%m-%d') as splitDate,
+               date_format(t.plan_begin, '%Y-%m-%d') as planBegin,
+               date_format(t.plan_to, '%Y-%m-%d')    as planTo
+        from sepp_test_mission t,
+             sepp_requirement r,
+             sepp_user u1,
+             sepp_user u2,
+             sepp_test_period tp,
+             sepp_tm_status s
+        where t.req_id = r.id
+          and t.spliter = u1.user_id
+          and t.responser = u2.user_id
+          and tp.period_id = t.type
+          and s.status_id = t.status
+          and t.plan_id = #{planId}
+        order by t.id desc
+    </select>
+
+    <select id="notPlanedTMQuery" resultType="com.pr.sepp.sep.testing.model.TestMission">
+        select
+            t.id,
+            t.req_id as reqId,
+            r.summary as reqSummary,
+            t.plan_id as planId,
+            t.type,
+            p.period_name as typeName,
+            t.status,
+            s.status_name as statusName,
+            t.spliter,
+            u1.user_name as spliterName,
+            t.responser,
+            u2.user_name as responserName,
+            t.assistant,
+            t.manpower,
+            date_format(t.split_date, '%Y-%m-%d') as splitDate,
+            date_format(t.plan_begin, '%Y-%m-%d') as planBegin,
+            date_format(t.plan_to, '%Y-%m-%d') as planTo
+        from
+            sepp_test_mission t,
+            sepp_requirement r,
+            sepp_user u1,
+            sepp_user u2,
+            sepp_test_period p,
+            sepp_tm_status s
+        where t.req_id = r.id
+          and t.spliter = u1.user_id
+          and t.responser = u2.user_id
+          and r.product_id = #{productId}
+          and p.period_id = t.type
+          and s.status_id = t.status
+          and t.plan_id is null
+          and t.type = #{type}
+        <if test="relId !=null and relId !=''">
+            and r.rel_id = #{relId}
+        </if>
+        order by t.id desc
+    </select>
+
+    <insert id="testMissionCreate" useGeneratedKeys="true" parameterType="com.pr.sepp.sep.testing.model.TestMission">
+        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
+            select last_insert_id()
+        </selectKey>
+        insert into sepp_test_mission
+            (req_id, plan_id, type, status, spliter, split_date, responser, assistant, manpower, plan_begin, plan_to)
+        values
+            (#{reqId}, #{planId}, #{type}, #{status}, #{spliter}, #{splitDate}, #{responser}, #{assistant}, #{manpower}, #{planBegin}, #{planTo})
+    </insert>
+
+    <update id="testMissionUpdate" parameterType="com.pr.sepp.sep.testing.model.TestMission">
+        update
+            sepp_test_mission
+        set
+            plan_id=#{planId},
+            status=#{status},
+            responser=#{responser},
+            assistant=#{assistant},
+            plan_begin=#{planBegin},
+            plan_to=#{planTo},
+            manpower=#{manpower}
+        where id=#{id}
+    </update>
+
+    <update id="testMissionStatusUpdate" parameterType="java.util.HashMap">
+        update
+            sepp_test_mission
+        set
+            status=#{status}
+        where id=#{id}
+    </update>
+
+    <update id="testMissionPlanUpdate" parameterType="java.util.HashMap">
+        update
+            sepp_test_mission
+        set
+            plan_id=#{planId}
+        where id in
+        <foreach collection="ids" index="index" item="id" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </update>
+
+    <update id="testMissionDelete" parameterType="java.lang.Integer">
+        delete from
+            sepp_test_mission
+        where id=#{id}
+    </update>
+
+    <update id="clearTestPlanMission" parameterType="java.lang.Integer">
+        update
+            sepp_test_mission
+        set
+            plan_id = null
+        where plan_id = #{id}
+    </update>
+
+</mapper>

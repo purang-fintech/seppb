@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<!-- 该xml需先在mybatis.xml中注册 -->
+<mapper namespace="com.pr.sepp.sep.build.dao.BuildInstanceDAO">
+
+    <insert id="save">
+        INSERT INTO sepp_build_instance (
+            product_id,
+            instance,
+            type,
+            description,
+            user,
+            params
+        )
+        VALUES
+            (#{productId},#{instance},#{type},#{description},#{user},#{params})
+    </insert>
+
+    <select id="listBuildInstances" resultType="com.pr.sepp.sep.build.model.BuildInstance">
+        SELECT id,
+               product_id   productId,
+               instance,
+               type,
+               description,
+               user,
+               created_date createdDate,
+               updated_date updatedDate,
+               params
+        FROM sepp_build_instance
+        WHERE product_id = #{productId}
+        order by updatedDate desc
+    </select>
+
+    <select id="findInstance" resultType="com.pr.sepp.sep.build.model.BuildInstance">
+        SELECT id,
+               product_id   productId,
+               instance,
+               type,
+               description,
+               user,
+               created_date createdDate,
+               updated_date updatedDate,
+               params
+        FROM sepp_build_instance
+        WHERE product_id = #{productId}
+          and instance = #{instance}
+    </select>
+
+    <delete id="deleteInstance">
+        delete from sepp_build_instance where instance = #{instance}
+    </delete>
+
+    <update id="update">
+        UPDATE
+            sepp_build_instance
+        SET
+            TYPE = #{type},
+            user=#{user},
+            description=#{description},
+            params=#{params}
+        WHERE id = #{id}
+          and product_id = #{productId}
+    </update>
+
+    <insert id="saveEnv">
+        INSERT INTO sepp_environment (
+            product_id,
+            env_type,
+            instance,
+            job_name,
+            branch_id
+        )
+        VALUES
+        (#{productId},#{envType},#{instance},#{jobName},#{branchId})
+    </insert>
+
+    <select id="listInstanceEnvs" resultType="com.pr.sepp.sep.build.model.InstanceEnv">
+        SELECT id,
+               product_id   productId,
+               branch_id    branchId,
+               env_type     envType,
+               instance,
+               job_name     jobName,
+               created_date createdDate
+        FROM sepp_environment
+        WHERE product_id = #{productId}
+          AND instance = #{instance}
+    </select>
+
+    <update id="updateEnv">
+        UPDATE sepp_environment SET branch_id = #{branchId},job_name=#{jobName} WHERE id = #{id}
+    </update>
+
+    <select id="findEnv" resultType="com.pr.sepp.sep.build.model.InstanceEnv">
+        SELECT id,
+               product_id   productId,
+               instance,
+               type,
+               description,
+               user,
+               created_date createdDate,
+               updated_date updatedDate,
+               params
+        FROM sepp_build_instance
+        WHERE product_id = #{productId}
+          and instance = #{instance}
+          and env_type = #{envType}
+          and branch_id = #{branchId}
+    </select>
+
+    <delete id="deleteEnv">
+        delete from sepp_environment where id = #{id}
+    </delete>
+</mapper>
