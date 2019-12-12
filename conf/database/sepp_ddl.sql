@@ -56,7 +56,7 @@ DROP TABLE IF EXISTS `sepp_auto_type`;
 
 CREATE TABLE `sepp_auto_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `type_name` varchar(40) NOT NULL COMMENT '状态描述',
+  `type_name` varchar(40) NOT NULL COMMENT '描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`type_id`)
@@ -280,7 +280,7 @@ DROP TABLE IF EXISTS `sepp_defect_influence`;
 
 CREATE TABLE `sepp_defect_influence` (
   `influence_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `influence_name` varchar(40) NOT NULL COMMENT '状态描述',
+  `influence_name` varchar(40) NOT NULL COMMENT '描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`influence_id`)
@@ -292,7 +292,7 @@ DROP TABLE IF EXISTS `sepp_defect_period`;
 
 CREATE TABLE `sepp_defect_period` (
   `period_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `period_name` varchar(40) NOT NULL COMMENT '状态描述',
+  `period_name` varchar(40) NOT NULL COMMENT '描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`period_id`)
@@ -304,7 +304,7 @@ DROP TABLE IF EXISTS `sepp_defect_priority`;
 
 CREATE TABLE `sepp_defect_priority` (
   `priority_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `priority_name` varchar(40) NOT NULL COMMENT '状态描述',
+  `priority_name` varchar(40) NOT NULL COMMENT '描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`priority_id`)
@@ -343,7 +343,7 @@ DROP TABLE IF EXISTS `sepp_defect_type`;
 
 CREATE TABLE `sepp_defect_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `type_name` varchar(40) NOT NULL COMMENT '状态描述',
+  `type_name` varchar(40) NOT NULL COMMENT '描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`type_id`)
@@ -451,7 +451,7 @@ DROP TABLE IF EXISTS `sepp_env_type`;
 
 CREATE TABLE `sepp_env_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `type_name` varchar(40) NOT NULL COMMENT '状态描述',
+  `type_name` varchar(40) NOT NULL COMMENT '描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`type_id`)
@@ -483,7 +483,7 @@ DROP TABLE IF EXISTS `sepp_found_means`;
 
 CREATE TABLE `sepp_found_means` (
   `means_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `means_name` varchar(40) NOT NULL COMMENT '状态描述',
+  `means_name` varchar(40) NOT NULL COMMENT '描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`means_id`)
@@ -495,7 +495,7 @@ DROP TABLE IF EXISTS `sepp_found_period`;
 
 CREATE TABLE `sepp_found_period` (
   `period_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `period_name` varchar(40) NOT NULL COMMENT '状态描述',
+  `period_name` varchar(40) NOT NULL COMMENT '描述',
   `period_alias` varchar(10) DEFAULT NULL COMMENT '别名',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
@@ -598,7 +598,7 @@ DROP TABLE IF EXISTS `sepp_object_type`;
 
 CREATE TABLE `sepp_object_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `type_name` varchar(40) NOT NULL COMMENT '状态描述',
+  `type_name` varchar(40) NOT NULL COMMENT '描述',
   `table_name` varchar(100) NOT NULL COMMENT '数据表名称',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
@@ -740,7 +740,7 @@ DROP TABLE IF EXISTS `sepp_problem_resolve`;
 
 CREATE TABLE `sepp_problem_resolve` (
   `method_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `method_name` varchar(40) NOT NULL COMMENT '状态描述',
+  `method_name` varchar(40) NOT NULL COMMENT '描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`method_id`)
@@ -1107,7 +1107,7 @@ DROP TABLE IF EXISTS `sepp_relate_type`;
 
 CREATE TABLE `sepp_relate_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `type_name` varchar(40) NOT NULL COMMENT '状态描述',
+  `type_name` varchar(40) NOT NULL COMMENT '描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`type_id`)
@@ -1176,7 +1176,7 @@ DROP TABLE IF EXISTS `sepp_report_type`;
 
 CREATE TABLE `sepp_report_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `type_name` varchar(40) NOT NULL COMMENT '状态描述',
+  `type_name` varchar(40) NOT NULL COMMENT '描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`type_id`)
@@ -1222,7 +1222,7 @@ DROP TABLE IF EXISTS `sepp_req_priority`;
 
 CREATE TABLE `sepp_req_priority` (
   `priority_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `priority_name` varchar(40) NOT NULL COMMENT '状态描述',
+  `priority_name` varchar(40) NOT NULL COMMENT '描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`priority_id`)
@@ -1246,7 +1246,7 @@ DROP TABLE IF EXISTS `sepp_req_type`;
 
 CREATE TABLE `sepp_req_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `type_name` varchar(40) NOT NULL COMMENT '状态描述',
+  `type_name` varchar(40) NOT NULL COMMENT '描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`type_id`)
@@ -1344,7 +1344,7 @@ DROP TABLE IF EXISTS `sepp_test_means`;
 
 CREATE TABLE `sepp_test_means` (
   `means_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `means_name` varchar(40) NOT NULL COMMENT '状态描述',
+  `means_name` varchar(40) NOT NULL COMMENT '描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`means_id`)
@@ -1417,7 +1417,7 @@ DROP TABLE IF EXISTS `sepp_test_priority`;
 
 CREATE TABLE `sepp_test_priority` (
   `priority_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `priority_name` varchar(40) NOT NULL COMMENT '状态描述',
+  `priority_name` varchar(40) NOT NULL COMMENT '描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`priority_id`)
@@ -1526,7 +1526,7 @@ DROP TABLE IF EXISTS `sepp_test_type`;
 
 CREATE TABLE `sepp_test_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `type_name` varchar(40) NOT NULL COMMENT '状态描述',
+  `type_name` varchar(40) NOT NULL COMMENT '描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`type_id`)
@@ -1632,7 +1632,7 @@ DROP TABLE IF EXISTS `sepp_warning_level`;
 
 CREATE TABLE `sepp_warning_level` (
   `level_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `level_name` varchar(40) NOT NULL COMMENT '状态描述',
+  `level_name` varchar(40) NOT NULL COMMENT '描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`level_id`)
