@@ -11,9 +11,7 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/`sepp` /*!40100 DEFAULT CHARACTER SET ut
 USE `sepp`;
 
 /*Table structure for table `sepp_attachment` */
-
 DROP TABLE IF EXISTS `sepp_attachment`;
-
 CREATE TABLE `sepp_attachment` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `file_name` varchar(100) NOT NULL COMMENT '文件名',
@@ -25,9 +23,7 @@ CREATE TABLE `sepp_attachment` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_auto_results` */
-
 DROP TABLE IF EXISTS `sepp_auto_results`;
-
 CREATE TABLE `sepp_auto_results` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `system_name` varchar(32) NOT NULL COMMENT '系统名称',
@@ -51,9 +47,7 @@ CREATE TABLE `sepp_auto_results` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_auto_type` */
-
 DROP TABLE IF EXISTS `sepp_auto_type`;
-
 CREATE TABLE `sepp_auto_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `type_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -63,9 +57,7 @@ CREATE TABLE `sepp_auto_type` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_build_files` */
-
 DROP TABLE IF EXISTS `sepp_build_files`;
-
 CREATE TABLE `sepp_build_files` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `note_id` int(10) NOT NULL COMMENT 'releaseNotes编号',
@@ -79,9 +71,7 @@ CREATE TABLE `sepp_build_files` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_build_history` */
-
 DROP TABLE IF EXISTS `sepp_build_history`;
-
 CREATE TABLE `sepp_build_history` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '开发任务ID',
   `job_name` varchar(100) DEFAULT NULL COMMENT 'jenkins项目名称',
@@ -111,9 +101,7 @@ CREATE TABLE `sepp_build_history` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_build_instance` */
-
 DROP TABLE IF EXISTS `sepp_build_instance`;
-
 CREATE TABLE `sepp_build_instance` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `product_id` int(10) DEFAULT NULL,
@@ -129,9 +117,7 @@ CREATE TABLE `sepp_build_instance` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_build_status` */
-
 DROP TABLE IF EXISTS `sepp_build_status`;
-
 CREATE TABLE `sepp_build_status` (
   `status_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `status_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -141,9 +127,7 @@ CREATE TABLE `sepp_build_status` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_case_info` */
-
 DROP TABLE IF EXISTS `sepp_case_info`;
-
 CREATE TABLE `sepp_case_info` (
   `case_id` int(10) NOT NULL COMMENT 'CASE ID',
   `status` int(10) DEFAULT NULL COMMENT '用例状态',
@@ -163,9 +147,7 @@ CREATE TABLE `sepp_case_info` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_case_mind` */
-
 DROP TABLE IF EXISTS `sepp_case_mind`;
-
 CREATE TABLE `sepp_case_mind` (
   `case_id` int(10) NOT NULL COMMENT 'CASE ID',
   `mind_text` text DEFAULT NULL COMMENT '脑图测试用例文本内容',
@@ -176,9 +158,7 @@ CREATE TABLE `sepp_case_mind` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_case_related` */
-
 DROP TABLE IF EXISTS `sepp_case_related`;
-
 CREATE TABLE `sepp_case_related` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `case_id` int(10) NOT NULL COMMENT 'CASE ID',
@@ -191,9 +171,7 @@ CREATE TABLE `sepp_case_related` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_case_step` */
-
 DROP TABLE IF EXISTS `sepp_case_step`;
-
 CREATE TABLE `sepp_case_step` (
   `case_id` int(10) NOT NULL COMMENT 'CASE ID',
   `step_id` int(10) NOT NULL COMMENT 'STEP ID',
@@ -206,9 +184,7 @@ CREATE TABLE `sepp_case_step` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_case_tree` */
-
 DROP TABLE IF EXISTS `sepp_case_tree`;
-
 CREATE TABLE `sepp_case_tree` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `parent_id` int(10) NOT NULL COMMENT '父文件夹ID',
@@ -223,9 +199,7 @@ CREATE TABLE `sepp_case_tree` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_cm_status` */
-
 DROP TABLE IF EXISTS `sepp_cm_status`;
-
 CREATE TABLE `sepp_cm_status` (
   `status_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `status_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -235,9 +209,7 @@ CREATE TABLE `sepp_cm_status` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_code_mission` */
-
 DROP TABLE IF EXISTS `sepp_code_mission`;
-
 CREATE TABLE `sepp_code_mission` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '开发任务ID',
   `req_id` int(10) NOT NULL COMMENT '产品需求ID',
@@ -262,9 +234,7 @@ CREATE TABLE `sepp_code_mission` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_data_unit` */
-
 DROP TABLE IF EXISTS `sepp_data_unit`;
-
 CREATE TABLE `sepp_data_unit` (
   `unit_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `unit_value` varchar(10) NOT NULL COMMENT '单位值',
@@ -275,9 +245,7 @@ CREATE TABLE `sepp_data_unit` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_defect_influence` */
-
 DROP TABLE IF EXISTS `sepp_defect_influence`;
-
 CREATE TABLE `sepp_defect_influence` (
   `influence_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `influence_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -287,9 +255,7 @@ CREATE TABLE `sepp_defect_influence` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_defect_period` */
-
 DROP TABLE IF EXISTS `sepp_defect_period`;
-
 CREATE TABLE `sepp_defect_period` (
   `period_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `period_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -299,9 +265,7 @@ CREATE TABLE `sepp_defect_period` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_defect_priority` */
-
 DROP TABLE IF EXISTS `sepp_defect_priority`;
-
 CREATE TABLE `sepp_defect_priority` (
   `priority_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `priority_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -311,9 +275,7 @@ CREATE TABLE `sepp_defect_priority` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_defect_refuse_reason` */
-
 DROP TABLE IF EXISTS `sepp_defect_refuse_reason`;
-
 CREATE TABLE `sepp_defect_refuse_reason` (
   `reason_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `reason_name` varchar(40) NOT NULL COMMENT '原因描述',
@@ -323,9 +285,7 @@ CREATE TABLE `sepp_defect_refuse_reason` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_defect_status` */
-
 DROP TABLE IF EXISTS `sepp_defect_status`;
-
 CREATE TABLE `sepp_defect_status` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `status_id` int(10) NOT NULL COMMENT '状态ID',
@@ -338,9 +298,7 @@ CREATE TABLE `sepp_defect_status` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_defect_type` */
-
 DROP TABLE IF EXISTS `sepp_defect_type`;
-
 CREATE TABLE `sepp_defect_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `type_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -350,9 +308,7 @@ CREATE TABLE `sepp_defect_type` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_defects` */
-
 DROP TABLE IF EXISTS `sepp_defects`;
-
 CREATE TABLE `sepp_defects` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '缺陷ID',
   `rel_id` int(10) DEFAULT NULL COMMENT '所属版本ID',
@@ -398,9 +354,7 @@ CREATE TABLE `sepp_defects` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_deployment_history` */
-
 DROP TABLE IF EXISTS `sepp_deployment_history`;
-
 CREATE TABLE `sepp_deployment_history` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `instance` varchar(100) NOT NULL COMMENT '实例名称',
@@ -421,9 +375,7 @@ CREATE TABLE `sepp_deployment_history` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_device` */
-
 DROP TABLE IF EXISTS `sepp_device`;
-
 CREATE TABLE `sepp_device` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'id',
   `asset_id` varchar(20) DEFAULT NULL COMMENT '资产编码',
@@ -446,9 +398,7 @@ CREATE TABLE `sepp_device` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_env_type` */
-
 DROP TABLE IF EXISTS `sepp_env_type`;
-
 CREATE TABLE `sepp_env_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `type_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -458,9 +408,7 @@ CREATE TABLE `sepp_env_type` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_environment` */
-
 DROP TABLE IF EXISTS `sepp_environment`;
-
 CREATE TABLE `sepp_environment` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `product_id` int(10) NOT NULL COMMENT '产品代码',
@@ -478,9 +426,7 @@ CREATE TABLE `sepp_environment` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_found_means` */
-
 DROP TABLE IF EXISTS `sepp_found_means`;
-
 CREATE TABLE `sepp_found_means` (
   `means_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `means_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -490,9 +436,7 @@ CREATE TABLE `sepp_found_means` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_found_period` */
-
 DROP TABLE IF EXISTS `sepp_found_period`;
-
 CREATE TABLE `sepp_found_period` (
   `period_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `period_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -503,9 +447,7 @@ CREATE TABLE `sepp_found_period` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_history` */
-
 DROP TABLE IF EXISTS `sepp_history`;
-
 CREATE TABLE `sepp_history` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `obj_type` int(10) NOT NULL COMMENT '对象类型',
@@ -529,9 +471,7 @@ CREATE TABLE `sepp_history` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_menu` */
-
 DROP TABLE IF EXISTS `sepp_menu`;
-
 CREATE TABLE `sepp_menu` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `menu_icon` varchar(100) DEFAULT NULL COMMENT '菜单图标',
@@ -545,9 +485,7 @@ CREATE TABLE `sepp_menu` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_message` */
-
 DROP TABLE IF EXISTS `sepp_message`;
-
 CREATE TABLE `sepp_message` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `product_id` int(10) NOT NULL,
@@ -561,9 +499,7 @@ CREATE TABLE `sepp_message` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_message_flow` */
-
 DROP TABLE IF EXISTS `sepp_message_flow`;
-
 CREATE TABLE `sepp_message_flow` (
   `id` bigint(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `message_id` bigint(11) NOT NULL COMMENT '消息ID',
@@ -581,9 +517,7 @@ CREATE TABLE `sepp_message_flow` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_message_gateway` */
-
 DROP TABLE IF EXISTS `sepp_message_gateway`;
-
 CREATE TABLE `sepp_message_gateway` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `name` varchar(20) NOT NULL COMMENT '消息类型名称',
@@ -593,9 +527,7 @@ CREATE TABLE `sepp_message_gateway` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_object_type` */
-
 DROP TABLE IF EXISTS `sepp_object_type`;
-
 CREATE TABLE `sepp_object_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `type_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -606,9 +538,7 @@ CREATE TABLE `sepp_object_type` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_organization` */
-
 DROP TABLE IF EXISTS `sepp_organization`;
-
 CREATE TABLE `sepp_organization` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '团队ID',
   `parent_id` int(10) NOT NULL COMMENT '上级团队ID',
@@ -621,9 +551,7 @@ CREATE TABLE `sepp_organization` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_pr_audit` */
-
 DROP TABLE IF EXISTS `sepp_pr_audit`;
-
 CREATE TABLE `sepp_pr_audit` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `pr_id` int(10) NOT NULL COMMENT '产品需求ID',
@@ -654,9 +582,7 @@ CREATE TABLE `sepp_pr_audit` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_pr_status` */
-
 DROP TABLE IF EXISTS `sepp_pr_status`;
-
 CREATE TABLE `sepp_pr_status` (
   `status_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `status_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -666,9 +592,7 @@ CREATE TABLE `sepp_pr_status` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_privileges` */
-
 DROP TABLE IF EXISTS `sepp_privileges`;
-
 CREATE TABLE `sepp_privileges` (
   `priv_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `user_id` int(10) NOT NULL COMMENT 'USER ID',
@@ -681,9 +605,7 @@ CREATE TABLE `sepp_privileges` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_problem` */
-
 DROP TABLE IF EXISTS `sepp_problem`;
-
 CREATE TABLE `sepp_problem` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '问题ID',
   `status` int(10) NOT NULL COMMENT '问题状态',
@@ -719,9 +641,7 @@ CREATE TABLE `sepp_problem` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_problem_improve` */
-
 DROP TABLE IF EXISTS `sepp_problem_improve`;
-
 CREATE TABLE `sepp_problem_improve` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `type` int(10) NOT NULL COMMENT '问题类型ID',
@@ -735,9 +655,7 @@ CREATE TABLE `sepp_problem_improve` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_problem_resolve` */
-
 DROP TABLE IF EXISTS `sepp_problem_resolve`;
-
 CREATE TABLE `sepp_problem_resolve` (
   `method_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `method_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -747,9 +665,7 @@ CREATE TABLE `sepp_problem_resolve` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_problem_status` */
-
 DROP TABLE IF EXISTS `sepp_problem_status`;
-
 CREATE TABLE `sepp_problem_status` (
   `status_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `status_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -759,9 +675,7 @@ CREATE TABLE `sepp_problem_status` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_problem_type` */
-
 DROP TABLE IF EXISTS `sepp_problem_type`;
-
 CREATE TABLE `sepp_problem_type` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `type` int(10) NOT NULL COMMENT '问题类型ID',
@@ -775,9 +689,7 @@ CREATE TABLE `sepp_problem_type` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_prod_module` */
-
 DROP TABLE IF EXISTS `sepp_prod_module`;
-
 CREATE TABLE `sepp_prod_module` (
   `module_id` int(10) NOT NULL AUTO_INCREMENT COMMENT '模块ID',
   `product_id` int(10) NOT NULL COMMENT '产品ID',
@@ -794,9 +706,7 @@ CREATE TABLE `sepp_prod_module` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_product` */
-
 DROP TABLE IF EXISTS `sepp_product`;
-
 CREATE TABLE `sepp_product` (
   `product_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `product_code` varchar(20) DEFAULT NULL COMMENT '产品代号',
@@ -812,9 +722,7 @@ CREATE TABLE `sepp_product` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_product_branch` */
-
 DROP TABLE IF EXISTS `sepp_product_branch`;
-
 CREATE TABLE `sepp_product_branch` (
   `branch_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `branch_name` varchar(40) NOT NULL COMMENT '标记名称',
@@ -827,9 +735,7 @@ CREATE TABLE `sepp_product_branch` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_product_config` */
-
 DROP TABLE IF EXISTS `sepp_product_config`;
-
 CREATE TABLE `sepp_product_config` (
   `product_id` int(10) NOT NULL COMMENT '产品ID',
   `member_config` varchar(2048) NOT NULL COMMENT '产品各负责人',
@@ -845,9 +751,7 @@ CREATE TABLE `sepp_product_config` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_product_docs` */
-
 DROP TABLE IF EXISTS `sepp_product_docs`;
-
 CREATE TABLE `sepp_product_docs` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `product_id` int(11) NOT NULL COMMENT '产品ID',
@@ -868,9 +772,7 @@ CREATE TABLE `sepp_product_docs` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_product_requirement` */
-
 DROP TABLE IF EXISTS `sepp_product_requirement`;
-
 CREATE TABLE `sepp_product_requirement` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '产品需求ID',
   `submit_date` date NOT NULL DEFAULT '1970-01-01' COMMENT '提交日期',
@@ -897,9 +799,7 @@ CREATE TABLE `sepp_product_requirement` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_qrtz_blob_triggers` */
-
 DROP TABLE IF EXISTS `sepp_qrtz_blob_triggers`;
-
 CREATE TABLE `sepp_qrtz_blob_triggers` (
   `SCHED_NAME` varchar(120) NOT NULL,
   `TRIGGER_NAME` varchar(190) NOT NULL,
@@ -911,9 +811,7 @@ CREATE TABLE `sepp_qrtz_blob_triggers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_qrtz_calendars` */
-
 DROP TABLE IF EXISTS `sepp_qrtz_calendars`;
-
 CREATE TABLE `sepp_qrtz_calendars` (
   `SCHED_NAME` varchar(120) NOT NULL,
   `CALENDAR_NAME` varchar(190) NOT NULL,
@@ -922,9 +820,7 @@ CREATE TABLE `sepp_qrtz_calendars` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_qrtz_cron_triggers` */
-
 DROP TABLE IF EXISTS `sepp_qrtz_cron_triggers`;
-
 CREATE TABLE `sepp_qrtz_cron_triggers` (
   `SCHED_NAME` varchar(120) NOT NULL,
   `TRIGGER_NAME` varchar(190) NOT NULL,
@@ -936,9 +832,7 @@ CREATE TABLE `sepp_qrtz_cron_triggers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_qrtz_fired_triggers` */
-
 DROP TABLE IF EXISTS `sepp_qrtz_fired_triggers`;
-
 CREATE TABLE `sepp_qrtz_fired_triggers` (
   `SCHED_NAME` varchar(120) NOT NULL,
   `ENTRY_ID` varchar(95) NOT NULL,
@@ -963,9 +857,7 @@ CREATE TABLE `sepp_qrtz_fired_triggers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_qrtz_job_details` */
-
 DROP TABLE IF EXISTS `sepp_qrtz_job_details`;
-
 CREATE TABLE `sepp_qrtz_job_details` (
   `SCHED_NAME` varchar(120) NOT NULL,
   `JOB_NAME` varchar(190) NOT NULL,
@@ -983,9 +875,7 @@ CREATE TABLE `sepp_qrtz_job_details` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_qrtz_locks` */
-
 DROP TABLE IF EXISTS `sepp_qrtz_locks`;
-
 CREATE TABLE `sepp_qrtz_locks` (
   `SCHED_NAME` varchar(120) NOT NULL,
   `LOCK_NAME` varchar(40) NOT NULL,
@@ -993,9 +883,7 @@ CREATE TABLE `sepp_qrtz_locks` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_qrtz_paused_trigger_grps` */
-
 DROP TABLE IF EXISTS `sepp_qrtz_paused_trigger_grps`;
-
 CREATE TABLE `sepp_qrtz_paused_trigger_grps` (
   `SCHED_NAME` varchar(120) NOT NULL,
   `TRIGGER_GROUP` varchar(190) NOT NULL,
@@ -1003,9 +891,7 @@ CREATE TABLE `sepp_qrtz_paused_trigger_grps` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_qrtz_scheduler_state` */
-
 DROP TABLE IF EXISTS `sepp_qrtz_scheduler_state`;
-
 CREATE TABLE `sepp_qrtz_scheduler_state` (
   `SCHED_NAME` varchar(120) NOT NULL,
   `INSTANCE_NAME` varchar(190) NOT NULL,
@@ -1015,9 +901,7 @@ CREATE TABLE `sepp_qrtz_scheduler_state` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_qrtz_simple_triggers` */
-
 DROP TABLE IF EXISTS `sepp_qrtz_simple_triggers`;
-
 CREATE TABLE `sepp_qrtz_simple_triggers` (
   `SCHED_NAME` varchar(120) NOT NULL,
   `TRIGGER_NAME` varchar(190) NOT NULL,
@@ -1030,9 +914,7 @@ CREATE TABLE `sepp_qrtz_simple_triggers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_qrtz_simprop_triggers` */
-
 DROP TABLE IF EXISTS `sepp_qrtz_simprop_triggers`;
-
 CREATE TABLE `sepp_qrtz_simprop_triggers` (
   `SCHED_NAME` varchar(120) NOT NULL,
   `TRIGGER_NAME` varchar(190) NOT NULL,
@@ -1053,9 +935,7 @@ CREATE TABLE `sepp_qrtz_simprop_triggers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_qrtz_triggers` */
-
 DROP TABLE IF EXISTS `sepp_qrtz_triggers`;
-
 CREATE TABLE `sepp_qrtz_triggers` (
   `SCHED_NAME` varchar(120) NOT NULL,
   `TRIGGER_NAME` varchar(190) NOT NULL,
@@ -1090,9 +970,7 @@ CREATE TABLE `sepp_qrtz_triggers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_rel_status` */
-
 DROP TABLE IF EXISTS `sepp_rel_status`;
-
 CREATE TABLE `sepp_rel_status` (
   `status_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `status_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -1102,9 +980,7 @@ CREATE TABLE `sepp_rel_status` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_relate_type` */
-
 DROP TABLE IF EXISTS `sepp_relate_type`;
-
 CREATE TABLE `sepp_relate_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `type_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -1114,9 +990,7 @@ CREATE TABLE `sepp_relate_type` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_release` */
-
 DROP TABLE IF EXISTS `sepp_release`;
-
 CREATE TABLE `sepp_release` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `rel_code` varchar(50) NOT NULL COMMENT '版本号',
@@ -1139,9 +1013,7 @@ CREATE TABLE `sepp_release` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_release_note` */
-
 DROP TABLE IF EXISTS `sepp_release_note`;
-
 CREATE TABLE `sepp_release_note` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `req_id` int(10) NOT NULL COMMENT '产品需求号',
@@ -1159,9 +1031,7 @@ CREATE TABLE `sepp_release_note` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_releasenote_status` */
-
 DROP TABLE IF EXISTS `sepp_releasenote_status`;
-
 CREATE TABLE `sepp_releasenote_status` (
   `status_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `status_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -1171,9 +1041,7 @@ CREATE TABLE `sepp_releasenote_status` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_report_type` */
-
 DROP TABLE IF EXISTS `sepp_report_type`;
-
 CREATE TABLE `sepp_report_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `type_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -1183,9 +1051,7 @@ CREATE TABLE `sepp_report_type` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_req_change` */
-
 DROP TABLE IF EXISTS `sepp_req_change`;
-
 CREATE TABLE `sepp_req_change` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `req_id` int(10) NOT NULL COMMENT '产品需求ID',
@@ -1204,9 +1070,7 @@ CREATE TABLE `sepp_req_change` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_req_close_style` */
-
 DROP TABLE IF EXISTS `sepp_req_close_style`;
-
 CREATE TABLE `sepp_req_close_style` (
   `style_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `style_name` varchar(40) NOT NULL COMMENT '方式名',
@@ -1217,9 +1081,7 @@ CREATE TABLE `sepp_req_close_style` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_req_priority` */
-
 DROP TABLE IF EXISTS `sepp_req_priority`;
-
 CREATE TABLE `sepp_req_priority` (
   `priority_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `priority_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -1229,9 +1091,7 @@ CREATE TABLE `sepp_req_priority` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_req_status` */
-
 DROP TABLE IF EXISTS `sepp_req_status`;
-
 CREATE TABLE `sepp_req_status` (
   `status_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `status_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -1241,9 +1101,7 @@ CREATE TABLE `sepp_req_status` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_req_type` */
-
 DROP TABLE IF EXISTS `sepp_req_type`;
-
 CREATE TABLE `sepp_req_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `type_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -1253,9 +1111,7 @@ CREATE TABLE `sepp_req_type` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_requirement` */
-
 DROP TABLE IF EXISTS `sepp_requirement`;
-
 CREATE TABLE `sepp_requirement` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '产品需求ID',
   `source_id` int(10) NOT NULL DEFAULT 0 COMMENT '需求源ID',
@@ -1287,9 +1143,7 @@ CREATE TABLE `sepp_requirement` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_resource_config` */
-
 DROP TABLE IF EXISTS `sepp_resource_config`;
-
 CREATE TABLE `sepp_resource_config` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `resource_desc` varchar(100) NOT NULL COMMENT '资源描述',
@@ -1309,9 +1163,7 @@ CREATE TABLE `sepp_resource_config` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_setting_config` */
-
 DROP TABLE IF EXISTS `sepp_setting_config`;
-
 CREATE TABLE `sepp_setting_config` (
   `id` int(2) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `setting_name` varchar(20) NOT NULL COMMENT '配置类型展示名称',
@@ -1323,9 +1175,7 @@ CREATE TABLE `sepp_setting_config` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_settings` */
-
 DROP TABLE IF EXISTS `sepp_settings`;
-
 CREATE TABLE `sepp_settings` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `setting_type` int(2) NOT NULL COMMENT '配置类型',
@@ -1339,9 +1189,7 @@ CREATE TABLE `sepp_settings` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_test_means` */
-
 DROP TABLE IF EXISTS `sepp_test_means`;
-
 CREATE TABLE `sepp_test_means` (
   `means_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `means_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -1351,9 +1199,7 @@ CREATE TABLE `sepp_test_means` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_test_mission` */
-
 DROP TABLE IF EXISTS `sepp_test_mission`;
-
 CREATE TABLE `sepp_test_mission` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '测试任务ID',
   `req_id` int(10) NOT NULL COMMENT '所属需求ID',
@@ -1377,9 +1223,7 @@ CREATE TABLE `sepp_test_mission` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_test_period` */
-
 DROP TABLE IF EXISTS `sepp_test_period`;
-
 CREATE TABLE `sepp_test_period` (
   `period_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `period_name` varchar(40) NOT NULL COMMENT '产品名称',
@@ -1390,9 +1234,7 @@ CREATE TABLE `sepp_test_period` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_test_plan` */
-
 DROP TABLE IF EXISTS `sepp_test_plan`;
-
 CREATE TABLE `sepp_test_plan` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '测试计划 ID',
   `rel_id` int(10) NOT NULL COMMENT '版本号',
@@ -1412,9 +1254,7 @@ CREATE TABLE `sepp_test_plan` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_test_priority` */
-
 DROP TABLE IF EXISTS `sepp_test_priority`;
-
 CREATE TABLE `sepp_test_priority` (
   `priority_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `priority_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -1424,9 +1264,7 @@ CREATE TABLE `sepp_test_priority` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_test_report` */
-
 DROP TABLE IF EXISTS `sepp_test_report`;
-
 CREATE TABLE `sepp_test_report` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `rel_id` int(10) NOT NULL COMMENT '版本号ID',
@@ -1444,9 +1282,7 @@ CREATE TABLE `sepp_test_report` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_test_result` */
-
 DROP TABLE IF EXISTS `sepp_test_result`;
-
 CREATE TABLE `sepp_test_result` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `scenario_id` int(10) NOT NULL COMMENT '测试场景/集合ID',
@@ -1465,9 +1301,7 @@ CREATE TABLE `sepp_test_result` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_test_result_status` */
-
 DROP TABLE IF EXISTS `sepp_test_result_status`;
-
 CREATE TABLE `sepp_test_result_status` (
   `status_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `status_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -1477,9 +1311,7 @@ CREATE TABLE `sepp_test_result_status` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_test_run` */
-
 DROP TABLE IF EXISTS `sepp_test_run`;
-
 CREATE TABLE `sepp_test_run` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `scenario_id` int(10) NOT NULL COMMENT '测试集/场景ID',
@@ -1492,9 +1324,7 @@ CREATE TABLE `sepp_test_run` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_test_scenario` */
-
 DROP TABLE IF EXISTS `sepp_test_scenario`;
-
 CREATE TABLE `sepp_test_scenario` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '场景ID',
   `name` varchar(50) NOT NULL COMMENT '场景名称',
@@ -1509,9 +1339,7 @@ CREATE TABLE `sepp_test_scenario` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_test_status` */
-
 DROP TABLE IF EXISTS `sepp_test_status`;
-
 CREATE TABLE `sepp_test_status` (
   `status_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `status_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -1521,9 +1349,7 @@ CREATE TABLE `sepp_test_status` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_test_type` */
-
 DROP TABLE IF EXISTS `sepp_test_type`;
-
 CREATE TABLE `sepp_test_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `type_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -1533,9 +1359,7 @@ CREATE TABLE `sepp_test_type` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_tm_status` */
-
 DROP TABLE IF EXISTS `sepp_tm_status`;
-
 CREATE TABLE `sepp_tm_status` (
   `status_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `status_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -1545,9 +1369,7 @@ CREATE TABLE `sepp_tm_status` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_user` */
-
 DROP TABLE IF EXISTS `sepp_user`;
-
 CREATE TABLE `sepp_user` (
   `user_id` int(10) NOT NULL AUTO_INCREMENT COMMENT '用户ID',
   `user_account` varchar(50) NOT NULL COMMENT '用户账号',
@@ -1568,9 +1390,7 @@ CREATE TABLE `sepp_user` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_user_role` */
-
 DROP TABLE IF EXISTS `sepp_user_role`;
-
 CREATE TABLE `sepp_user_role` (
   `role_id` int(10) NOT NULL AUTO_INCREMENT COMMENT '角色ID',
   `role_code` varchar(10) NOT NULL COMMENT '角色代码',
@@ -1585,9 +1405,7 @@ CREATE TABLE `sepp_user_role` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_user_setting` */
-
 DROP TABLE IF EXISTS `sepp_user_setting`;
-
 CREATE TABLE `sepp_user_setting` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `user_id` int(10) NOT NULL COMMENT '用户ID',
@@ -1607,9 +1425,7 @@ CREATE TABLE `sepp_user_setting` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_warning` */
-
 DROP TABLE IF EXISTS `sepp_warning`;
-
 CREATE TABLE `sepp_warning` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `product_id` int(10) NOT NULL,
@@ -1627,9 +1443,7 @@ CREATE TABLE `sepp_warning` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_warning_level` */
-
 DROP TABLE IF EXISTS `sepp_warning_level`;
-
 CREATE TABLE `sepp_warning_level` (
   `level_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `level_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -1639,9 +1453,7 @@ CREATE TABLE `sepp_warning_level` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_warning_notify` */
-
 DROP TABLE IF EXISTS `sepp_warning_notify`;
-
 CREATE TABLE `sepp_warning_notify` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `warning_id` bigint(20) NOT NULL COMMENT '告警ID',
@@ -1661,9 +1473,7 @@ CREATE TABLE `sepp_warning_notify` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_warning_rules` */
-
 DROP TABLE IF EXISTS `sepp_warning_rules`;
-
 CREATE TABLE `sepp_warning_rules` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `type` int(10) NOT NULL COMMENT '告警类型',
@@ -1681,9 +1491,7 @@ CREATE TABLE `sepp_warning_rules` (
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_warning_type` */
-
 DROP TABLE IF EXISTS `sepp_warning_type`;
-
 CREATE TABLE `sepp_warning_type` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `type` int(10) NOT NULL COMMENT '告警类型ID',
