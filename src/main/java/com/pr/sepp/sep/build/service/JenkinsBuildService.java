@@ -144,13 +144,13 @@ public class JenkinsBuildService {
     public void build(BuildHistoryReq buildHistoryReq) {
 
         Map<String, List<BuildFile>> instanceBuildFiles = buildHistoryService.listBuildFiles(buildHistoryReq.getNoteId(), buildHistoryReq.getInstances());
-        log.debug("添加参数开始：{}",buildHistoryReq.getInstance());
+        log.debug("添加参数开始：{}", buildHistoryReq.getInstance());
         buildHistoryReq.getInstances().forEach(instance -> {
             if (!buildHistoryReq.getBuildMethod().get(instance)) {
                 instanceBuildFiles.put(instance, instanceBuildFiles.get(instance)).get(0).setParamValue(instance);
             }
         });
-        log.debug("添加参数结束：{}",buildHistoryReq.getInstance());
+        log.debug("添加参数结束：{}", buildHistoryReq.getInstance());
         buildHistoryReq.buildInitData();
         build(buildHistoryReq, instanceBuildFiles);
     }
@@ -160,7 +160,7 @@ public class JenkinsBuildService {
         Set<Map.Entry<String, List<BuildFile>>> entries = instanceBuildFiles.entrySet();
         BuildHistory buildHistory = BuildHistory.reqToBuildHistory(buildHistoryReq);
         for (Map.Entry<String, List<BuildFile>> entry : entries) {
-            log.debug("构建历史封装开始{}",buildHistory.getJobName());
+            log.debug("构建历史封装开始{}", buildHistory.getJobName());
             EnvInfo envInfo = envInfoDAO.findEnvInfo(buildHistoryReq.getProductId(), buildHistoryReq.getBranchId(),
                     buildHistoryReq.getEnvType(), entry.getKey());
             if (isNull(envInfo)) {
@@ -172,7 +172,7 @@ public class JenkinsBuildService {
             //设置job构建历史的必要字段
             setBuildHistory(buildHistory, buildFiles, envInfo);
             //开始构建
-            log.debug("构建历史封装完成{}",buildHistory.getJobName());
+            log.debug("构建历史封装完成{}", buildHistory.getJobName());
             build(repeatBuildInstance, buildHistory, buildFilesToParamsMap(buildFiles));
         }
         if (isNotEmpty(repeatBuildInstance)) {
@@ -239,7 +239,7 @@ public class JenkinsBuildService {
 
     private void startBuild(String jobName, Map<String, String> params, InstanceType instanceType) {
         try {
-            JenkinsClient jenkinsClient = jenkinsClientProvider.getJenkinsClient(instanceType);
+            JenkinsClient jenkinsClient = jenkinsClientProvider.getBuildJenkinsClient(instanceType);
             jenkinsClient.startBuild(jobName, params);
         } catch (IOException e) {
             throw new SeppServerException("构建失败，请稍后重试", e);

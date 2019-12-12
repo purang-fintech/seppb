@@ -5,9 +5,9 @@ import com.pr.sepp.env.info.dao.EnvInfoDAO;
 import com.pr.sepp.mgr.system.dao.SettingDAO;
 import com.pr.sepp.sep.build.dao.BuildInstanceDAO;
 import com.pr.sepp.sep.build.service.DeploymentService;
+import com.pr.sepp.sep.build.service.impl.BuildHistoryService;
 import com.pr.sepp.sep.build.service.trigger.JenkinsStatusUpdateTrigger;
 import com.pr.sepp.sep.build.service.trigger.JenkinsStatusUpdater;
-import com.pr.sepp.sep.build.service.impl.BuildHistoryService;
 import com.pr.sepp.utils.jenkins.ConfigurationJenkinsClientProvider;
 import com.pr.sepp.utils.jenkins.DynamicJenkinsClientProvider;
 import com.pr.sepp.utils.jenkins.JenkinsClientProvider;
@@ -21,39 +21,38 @@ import org.springframework.context.annotation.Configuration;
 @EnableConfigurationProperties({JenkinsProperties.class})
 public class SeppConfiguration {
 
-    protected final JenkinsProperties jenkinsProperties;
+	protected final JenkinsProperties jenkinsProperties;
 
-    public SeppConfiguration(JenkinsProperties jenkinsProperties) {
-        this.jenkinsProperties = jenkinsProperties;
-    }
+	public SeppConfiguration(JenkinsProperties jenkinsProperties) {
+		this.jenkinsProperties = jenkinsProperties;
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    public JenkinsClientProvider jenkinsClientProvider(JenkinsProperties jenkinsProperties,
-                                                       SettingDAO settingDAO) {
-        if (jenkinsProperties.isEnableProgrammatic()) {
-            return new ConfigurationJenkinsClientProvider(jenkinsProperties, settingDAO);
-        }
-        return new DynamicJenkinsClientProvider(jenkinsProperties, settingDAO);
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public JenkinsClientProvider jenkinsClientProvider(JenkinsProperties jenkinsProperties, SettingDAO settingDAO) {
+		if (jenkinsProperties.isEnableProgrammatic()) {
+			return new ConfigurationJenkinsClientProvider(jenkinsProperties, settingDAO);
+		}
+		return new DynamicJenkinsClientProvider(jenkinsProperties, settingDAO);
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    public JenkinsStatusUpdater jenkinsStatusUpdater(JenkinsClientProvider jenkinsClientProvider,
-                                                     BuildHistoryService buildHistoryService,
-                                                     DeploymentService deploymentService,
-                                                     ObjectMapper mapper,
-                                                     EnvInfoDAO envInfoDAO,
-                                                     BuildInstanceDAO buildInstanceDAO) {
+	@Bean
+	@ConditionalOnMissingBean
+	public JenkinsStatusUpdater jenkinsStatusUpdater(JenkinsClientProvider jenkinsClientProvider,
+													 BuildHistoryService buildHistoryService,
+													 DeploymentService deploymentService,
+													 ObjectMapper mapper,
+													 EnvInfoDAO envInfoDAO,
+													 BuildInstanceDAO buildInstanceDAO) {
 
-        return new JenkinsStatusUpdater(jenkinsClientProvider, buildHistoryService, deploymentService,
-                mapper, envInfoDAO, buildInstanceDAO);
-    }
+		return new JenkinsStatusUpdater(jenkinsClientProvider, buildHistoryService, deploymentService,
+				mapper, envInfoDAO, buildInstanceDAO);
+	}
 
-    @Bean
-    @ConditionalOnMissingBean
-    public JenkinsStatusUpdateTrigger statusUpdateTrigger(JenkinsStatusUpdater jenkinsStatusUpdater,
-                                                          JenkinsProperties jenkinsProperties) {
-        return new JenkinsStatusUpdateTrigger(jenkinsStatusUpdater, jenkinsProperties);
-    }
+	@Bean
+	@ConditionalOnMissingBean
+	public JenkinsStatusUpdateTrigger statusUpdateTrigger(JenkinsStatusUpdater jenkinsStatusUpdater,
+														  JenkinsProperties jenkinsProperties) {
+		return new JenkinsStatusUpdateTrigger(jenkinsStatusUpdater, jenkinsProperties);
+	}
 }

@@ -4,8 +4,8 @@ import lombok.Data;
 
 @Data
 public class SettingConfig {
-	private int id;
+	private Integer id;
 	private String settingName;
-	private int settingLimit;
+	private Integer settingLimit;
 	private String settingKeys;
 }

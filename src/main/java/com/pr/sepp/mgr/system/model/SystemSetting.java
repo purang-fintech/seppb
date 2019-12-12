@@ -10,9 +10,9 @@ import java.util.List;
 
 @Data
 public class SystemSetting {
-    private int id;
-    private int settingType;
-    private int createUser;
+    private Integer id;
+    private Integer settingType;
+    private Integer createUser;
     private String settingValue;
 
     @Data
@@ -22,7 +22,6 @@ public class SystemSetting {
         private String password;
         private InstanceType serverType;
         private boolean disabled;
-
     }
 
     public static List<JenkinsConfig> settingToJenkinsConfig(SystemSetting systemSetting) throws IOException {

@@ -6,19 +6,19 @@ import com.pr.sepp.mgr.system.model.SettingConfig;
 import com.pr.sepp.mgr.system.model.SystemSetting;
 
 public interface SettingService {
-	public List<Map<String, Object>> listConfig();
+	List<Map<String, Object>> listConfig();
 
-	public int configCreate(SettingConfig setting);
+	int configCreate(SettingConfig setting);
 
-	public int configUpdate(SettingConfig setting);
+	int configUpdate(SettingConfig setting);
 
-	public int configDelete(int configId);
+	int configDelete(int configId);
 
-	public List<Map<String, Object>> listSetting();
+	List<Map<String, Object>> listSetting();
 
-	public int settingCreate(SystemSetting setting);
+	int settingCreate(SystemSetting setting);
 
-	public int settingUpdate(SystemSetting setting);
+	int settingUpdate(SystemSetting setting);
 
-	public int settingDelete(int settingId);
+	int settingDelete(int settingId);
 }

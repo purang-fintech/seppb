@@ -91,9 +91,11 @@
     </delete>
 
     <select id="findSetting" resultType="com.pr.sepp.mgr.system.model.SystemSetting">
-        SELECT *
-        FROM sepp_settings s
-                 INNER JOIN (SELECT * FROM sepp_setting_config WHERE setting_type = #{settingType}) c
-                            ON s.setting_type = c.id
+        SELECT id,
+               setting_type as settingType,
+               create_user as createUser,
+               setting_value as settingValue
+          FROM sepp_settings
+         WHERE setting_type = #{settingType}
     </select>
 </mapper>

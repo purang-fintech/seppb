@@ -56,7 +56,7 @@ DROP TABLE IF EXISTS `sepp_auto_type`;
 
 CREATE TABLE `sepp_auto_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `type_name` varchar(40) NOT NULL COMMENT '描述',
+  `type_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`type_id`)
@@ -152,15 +152,15 @@ CREATE TABLE `sepp_case_info` (
   `test_type` int(10) DEFAULT NULL COMMENT '测试类型，如功能、性能、安全性等',
   `test_period` int(10) DEFAULT NULL COMMENT '测试阶段，如系统测试',
   `prod_module` int(10) DEFAULT NULL COMMENT '测试手段，如自动化、手动',
-  `regress_mark` varchar(1) COLLATE utf8_bin DEFAULT 'N' COMMENT '回归标识',
-  `auto_path` varchar(200) COLLATE utf8_bin DEFAULT NULL COMMENT '自动化脚本路径',
+  `regress_mark` varchar(1) DEFAULT 'N' COMMENT '回归标识',
+  `auto_path` varchar(200) DEFAULT NULL COMMENT '自动化脚本路径',
   `auto_type` int(10) DEFAULT NULL COMMENT '自动化测试类型，如webui、接口等',
-  `pre_condition` text COLLATE utf8_bin DEFAULT NULL COMMENT '测试前置条件',
-  `summary` text COLLATE utf8_bin DEFAULT NULL COMMENT '测试用例描述',
+  `pre_condition` text DEFAULT NULL COMMENT '测试前置条件',
+  `summary` text DEFAULT NULL COMMENT '测试用例描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   UNIQUE KEY `case_id` (`case_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8_bin;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_case_mind` */
 
@@ -168,12 +168,12 @@ DROP TABLE IF EXISTS `sepp_case_mind`;
 
 CREATE TABLE `sepp_case_mind` (
   `case_id` int(10) NOT NULL COMMENT 'CASE ID',
-  `mind_text` text COLLATE utf8_bin DEFAULT NULL COMMENT '脑图测试用例文本内容',
+  `mind_text` text DEFAULT NULL COMMENT '脑图测试用例文本内容',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   UNIQUE KEY `case_id` (`case_id`),
   CONSTRAINT `CHK_TEXT` CHECK (json_valid(`mind_text`))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8_bin;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_case_related` */
 
@@ -188,7 +188,7 @@ CREATE TABLE `sepp_case_related` (
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`id`),
   UNIQUE KEY `INDEX_RELATED` (`case_id`,`relate_id`,`relate_type`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_case_step` */
 
@@ -197,13 +197,13 @@ DROP TABLE IF EXISTS `sepp_case_step`;
 CREATE TABLE `sepp_case_step` (
   `case_id` int(10) NOT NULL COMMENT 'CASE ID',
   `step_id` int(10) NOT NULL COMMENT 'STEP ID',
-  `operation` varchar(200) COLLATE utf8_bin NOT NULL COMMENT '操作描述',
-  `input_data` varchar(200) COLLATE utf8_bin NOT NULL COMMENT '输入数据',
-  `expect_result` varchar(200) COLLATE utf8_bin NOT NULL COMMENT '预期结果',
+  `operation` varchar(200) NOT NULL COMMENT '操作描述',
+  `input_data` varchar(200) NOT NULL COMMENT '输入数据',
+  `expect_result` varchar(200) NOT NULL COMMENT '预期结果',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   UNIQUE KEY `INDEX_STEP` (`case_id`,`step_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8_bin;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_case_tree` */
 
@@ -213,14 +213,14 @@ CREATE TABLE `sepp_case_tree` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `parent_id` int(10) NOT NULL COMMENT '父文件夹ID',
   `product_id` int(10) NOT NULL COMMENT '所属产品ID',
-  `type` varchar(10) COLLATE utf8_bin NOT NULL COMMENT '节点类型：文件夹、用例',
-  `name` varchar(50) COLLATE utf8_bin NOT NULL COMMENT '节点名称',
+  `type` varchar(10) NOT NULL COMMENT '节点类型：文件夹、用例',
+  `name` varchar(50) NOT NULL COMMENT '节点名称',
   `creator` int(10) NOT NULL COMMENT '创建人',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`id`),
   KEY `INDEX_PARENT` (`id`,`parent_id`,`name`,`type`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_cm_status` */
 
@@ -280,7 +280,7 @@ DROP TABLE IF EXISTS `sepp_defect_influence`;
 
 CREATE TABLE `sepp_defect_influence` (
   `influence_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `influence_name` varchar(40) NOT NULL COMMENT '描述',
+  `influence_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`influence_id`)
@@ -292,7 +292,7 @@ DROP TABLE IF EXISTS `sepp_defect_period`;
 
 CREATE TABLE `sepp_defect_period` (
   `period_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `period_name` varchar(40) NOT NULL COMMENT '描述',
+  `period_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`period_id`)
@@ -304,7 +304,7 @@ DROP TABLE IF EXISTS `sepp_defect_priority`;
 
 CREATE TABLE `sepp_defect_priority` (
   `priority_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `priority_name` varchar(40) NOT NULL COMMENT '描述',
+  `priority_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`priority_id`)
@@ -343,7 +343,7 @@ DROP TABLE IF EXISTS `sepp_defect_type`;
 
 CREATE TABLE `sepp_defect_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `type_name` varchar(40) NOT NULL COMMENT '描述',
+  `type_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`type_id`)
@@ -370,8 +370,8 @@ CREATE TABLE `sepp_defects` (
   `product_id` int(10) NOT NULL COMMENT '所属产品',
   `prod_module` int(10) DEFAULT NULL COMMENT '应用模块',
   `fix_times` int(10) DEFAULT 0 COMMENT '修复次数',
-  `summary` varchar(50) COLLATE utf8_bin NOT NULL COMMENT '缺陷摘要',
-  `detail` text COLLATE utf8_bin DEFAULT NULL COMMENT '详细信息',
+  `summary` varchar(50) NOT NULL COMMENT '缺陷摘要',
+  `detail` text DEFAULT NULL COMMENT '详细信息',
   `found_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT '发现时间',
   `response_time` datetime DEFAULT NULL COMMENT '响应时间',
   `fixed_time` datetime DEFAULT NULL COMMENT '解决时间',
@@ -382,7 +382,7 @@ CREATE TABLE `sepp_defects` (
   `deploy_cost` float DEFAULT NULL COMMENT '部署时长',
   `verify_cost` float DEFAULT NULL COMMENT '验证时长',
   `refuse_reason` tinyint(2) DEFAULT NULL COMMENT '拒绝原因',
-  `refuse_detail` varchar(500) COLLATE utf8_bin DEFAULT NULL COMMENT '拒绝描述',
+  `refuse_detail` varchar(500) DEFAULT NULL COMMENT '拒绝描述',
   `same_code_defect` int(11) DEFAULT NULL COMMENT '同源/重复缺陷号',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
@@ -395,7 +395,7 @@ CREATE TABLE `sepp_defects` (
   KEY `index_req` (`req_id`),
   KEY `index_module` (`prod_module`),
   KEY `index_users` (`submitter`,`conciliator`,`responser`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_deployment_history` */
 
@@ -451,7 +451,7 @@ DROP TABLE IF EXISTS `sepp_env_type`;
 
 CREATE TABLE `sepp_env_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `type_name` varchar(40) NOT NULL COMMENT '描述',
+  `type_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`type_id`)
@@ -483,7 +483,7 @@ DROP TABLE IF EXISTS `sepp_found_means`;
 
 CREATE TABLE `sepp_found_means` (
   `means_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `means_name` varchar(40) NOT NULL COMMENT '描述',
+  `means_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`means_id`)
@@ -495,7 +495,7 @@ DROP TABLE IF EXISTS `sepp_found_period`;
 
 CREATE TABLE `sepp_found_period` (
   `period_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `period_name` varchar(40) NOT NULL COMMENT '描述',
+  `period_name` varchar(40) NOT NULL COMMENT '状态描述',
   `period_alias` varchar(10) DEFAULT NULL COMMENT '别名',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
@@ -510,15 +510,15 @@ CREATE TABLE `sepp_history` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `obj_type` int(10) NOT NULL COMMENT '对象类型',
   `obj_id` int(10) NOT NULL COMMENT '对象类型ID',
-  `obj_key` varchar(20) COLLATE utf8_bin DEFAULT NULL COMMENT '对象属性',
+  `obj_key` varchar(20) DEFAULT NULL COMMENT '对象属性',
   `product_id` int(10) NOT NULL COMMENT '产品ID',
   `oper_user` int(10) NOT NULL COMMENT '操作用户ID',
   `oper_time` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '操作时间',
   `oper_type` int(10) NOT NULL COMMENT '操作类型，如新增、修改、删除',
   `refer_user` int(10) DEFAULT NULL COMMENT '涉及用户',
-  `org_value` text COLLATE utf8_bin DEFAULT NULL COMMENT '对象旧值',
-  `new_value` text COLLATE utf8_bin DEFAULT NULL COMMENT '对象新值',
-  `oper_comment` text COLLATE utf8_bin DEFAULT NULL COMMENT '操作说明',
+  `org_value` text DEFAULT NULL COMMENT '对象旧值',
+  `new_value` text DEFAULT NULL COMMENT '对象新值',
+  `oper_comment` text DEFAULT NULL COMMENT '操作说明',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`id`),
@@ -526,7 +526,7 @@ CREATE TABLE `sepp_history` (
   KEY `INDEX_OBJ` (`obj_type`,`obj_id`,`obj_key`),
   KEY `INDEX_OPER` (`oper_user`),
   KEY `INDEX_REFER` (`refer_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_menu` */
 
@@ -598,7 +598,7 @@ DROP TABLE IF EXISTS `sepp_object_type`;
 
 CREATE TABLE `sepp_object_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `type_name` varchar(40) NOT NULL COMMENT '描述',
+  `type_name` varchar(40) NOT NULL COMMENT '状态描述',
   `table_name` varchar(100) NOT NULL COMMENT '数据表名称',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
@@ -697,9 +697,9 @@ CREATE TABLE `sepp_problem` (
   `trans_id` int(10) DEFAULT NULL COMMENT '问题转报对象ID',
   `product_id` int(10) NOT NULL COMMENT '问题所属产品',
   `module_id` int(10) DEFAULT NULL COMMENT '问题应用模块',
-  `summary` varchar(50) COLLATE utf8_bin NOT NULL COMMENT '问题摘要',
-  `detail` text COLLATE utf8_bin DEFAULT NULL COMMENT '问题详细信息',
-  `attachment` varchar(200) COLLATE utf8_bin DEFAULT NULL COMMENT '问题附件',
+  `summary` varchar(50) NOT NULL COMMENT '问题摘要',
+  `detail` text DEFAULT NULL COMMENT '问题详细信息',
+  `attachment` varchar(200) DEFAULT NULL COMMENT '问题附件',
   `submit_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT '问题发现时间',
   `expect_resolve_time` datetime NOT NULL COMMENT '期望解决时间',
   `resolve_time` datetime DEFAULT NULL COMMENT '问题解决时间',
@@ -708,15 +708,15 @@ CREATE TABLE `sepp_problem` (
   `improve_one` int(10) DEFAULT NULL COMMENT '改进措施一级分类',
   `improve_two` int(10) DEFAULT NULL COMMENT '改进措施二级分类',
   `improve_plan_to` date DEFAULT NULL COMMENT '改进措施计划完成日期',
-  `improve_detail` text COLLATE utf8_bin DEFAULT NULL COMMENT '改进措施详细说明',
-  `refuse_reason` text COLLATE utf8_bin DEFAULT NULL COMMENT '拒绝原因描述',
+  `improve_detail` text DEFAULT NULL COMMENT '改进措施详细说明',
+  `refuse_reason` text DEFAULT NULL COMMENT '拒绝原因描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`id`),
   KEY `inx_submit_time` (`submit_time`),
   KEY `inx_resolve_time` (`resolve_time`),
   KEY `inx_close_time` (`close_time`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_problem_improve` */
 
@@ -740,7 +740,7 @@ DROP TABLE IF EXISTS `sepp_problem_resolve`;
 
 CREATE TABLE `sepp_problem_resolve` (
   `method_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `method_name` varchar(40) NOT NULL COMMENT '描述',
+  `method_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`method_id`)
@@ -1107,7 +1107,7 @@ DROP TABLE IF EXISTS `sepp_relate_type`;
 
 CREATE TABLE `sepp_relate_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `type_name` varchar(40) NOT NULL COMMENT '描述',
+  `type_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`type_id`)
@@ -1176,7 +1176,7 @@ DROP TABLE IF EXISTS `sepp_report_type`;
 
 CREATE TABLE `sepp_report_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `type_name` varchar(40) NOT NULL COMMENT '描述',
+  `type_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`type_id`)
@@ -1222,7 +1222,7 @@ DROP TABLE IF EXISTS `sepp_req_priority`;
 
 CREATE TABLE `sepp_req_priority` (
   `priority_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `priority_name` varchar(40) NOT NULL COMMENT '描述',
+  `priority_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`priority_id`)
@@ -1246,7 +1246,7 @@ DROP TABLE IF EXISTS `sepp_req_type`;
 
 CREATE TABLE `sepp_req_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `type_name` varchar(40) NOT NULL COMMENT '描述',
+  `type_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`type_id`)
@@ -1314,13 +1314,13 @@ DROP TABLE IF EXISTS `sepp_setting_config`;
 
 CREATE TABLE `sepp_setting_config` (
   `id` int(2) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `setting_name` varchar(20) COLLATE utf8_bin NOT NULL COMMENT '配置类型展示名称',
+  `setting_name` varchar(20) NOT NULL COMMENT '配置类型展示名称',
   `setting_limit` int(2) NOT NULL COMMENT '配置项个数限制',
-  `setting_keys` varchar(1024) COLLATE utf8_bin NOT NULL COMMENT '配置项参数KEY',
+  `setting_keys` varchar(1024) NOT NULL COMMENT '配置项参数KEY',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_settings` */
 
@@ -1329,14 +1329,14 @@ DROP TABLE IF EXISTS `sepp_settings`;
 CREATE TABLE `sepp_settings` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `setting_type` int(2) NOT NULL COMMENT '配置类型',
-  `setting_value` varchar(4096) COLLATE utf8_bin NOT NULL COMMENT '配置内容，JSON格式',
+  `setting_value` varchar(4096) NOT NULL COMMENT '配置内容，JSON格式',
   `create_user` int(10) NOT NULL COMMENT '操作用户',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`id`),
   UNIQUE KEY `INX_TYPE` (`setting_type`),
   CONSTRAINT `JSON_CHECK` CHECK (json_valid(`setting_value`))
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_test_means` */
 
@@ -1344,7 +1344,7 @@ DROP TABLE IF EXISTS `sepp_test_means`;
 
 CREATE TABLE `sepp_test_means` (
   `means_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `means_name` varchar(40) NOT NULL COMMENT '描述',
+  `means_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`means_id`)
@@ -1417,7 +1417,7 @@ DROP TABLE IF EXISTS `sepp_test_priority`;
 
 CREATE TABLE `sepp_test_priority` (
   `priority_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `priority_name` varchar(40) NOT NULL COMMENT '描述',
+  `priority_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`priority_id`)
@@ -1453,7 +1453,7 @@ CREATE TABLE `sepp_test_result` (
   `run_id` int(10) NOT NULL COMMENT '测试运行ID',
   `case_id` int(10) NOT NULL COMMENT '测试用例ID',
   `step_id` int(10) DEFAULT NULL COMMENT '测试用例ID',
-  `step_actual` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8_bin DEFAULT NULL COMMENT '步骤运行的实际结果',
+  `step_actual` varchar(200) CHARACTER SET utf8mb4 DEFAULT NULL COMMENT '步骤运行的实际结果',
   `run_date` datetime NOT NULL DEFAULT current_timestamp() COMMENT '运行时间',
   `result` int(10) DEFAULT NULL COMMENT '运行结论',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
@@ -1526,7 +1526,7 @@ DROP TABLE IF EXISTS `sepp_test_type`;
 
 CREATE TABLE `sepp_test_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `type_name` varchar(40) NOT NULL COMMENT '描述',
+  `type_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`type_id`)
@@ -1550,14 +1550,14 @@ DROP TABLE IF EXISTS `sepp_user`;
 
 CREATE TABLE `sepp_user` (
   `user_id` int(10) NOT NULL AUTO_INCREMENT COMMENT '用户ID',
-  `user_account` varchar(50) COLLATE utf8_bin NOT NULL COMMENT '用户账号',
-  `password` varchar(200) COLLATE utf8_bin DEFAULT NULL COMMENT '用户密码',
-  `user_name` varchar(50) COLLATE utf8_bin NOT NULL COMMENT '用户姓名',
-  `user_email` varchar(100) COLLATE utf8_bin NOT NULL COMMENT '用户电子邮件地址',
+  `user_account` varchar(50) NOT NULL COMMENT '用户账号',
+  `password` varchar(200) DEFAULT NULL COMMENT '用户密码',
+  `user_name` varchar(50) NOT NULL COMMENT '用户姓名',
+  `user_email` varchar(100) NOT NULL COMMENT '用户电子邮件地址',
   `favicon_id` int(10) DEFAULT 543 COMMENT '头像文件ID',
   `team_id` int(10) DEFAULT NULL COMMENT '所属团队ID',
-  `is_valid` varchar(1) COLLATE utf8_bin NOT NULL DEFAULT 'Y' COMMENT '是否有效',
-  `is_vendor` varchar(1) COLLATE utf8_bin NOT NULL DEFAULT 'N' COMMENT '是否外包',
+  `is_valid` varchar(1) NOT NULL DEFAULT 'Y' COMMENT '是否有效',
+  `is_vendor` varchar(1) NOT NULL DEFAULT 'N' COMMENT '是否外包',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`user_id`),
@@ -1565,7 +1565,7 @@ CREATE TABLE `sepp_user` (
   UNIQUE KEY `INDEX_EMAIL` (`user_email`),
   UNIQUE KEY `INDEX_NAME` (`user_name`),
   KEY `INDEX_TEAM` (`team_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_user_role` */
 
@@ -1592,9 +1592,9 @@ CREATE TABLE `sepp_user_setting` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `user_id` int(10) NOT NULL COMMENT '用户ID',
   `message_on` tinyint(1) DEFAULT 1 COMMENT '打开消息提示',
-  `message_subscribe` varchar(200) COLLATE utf8_bin DEFAULT '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21' COMMENT '用户消息订阅',
-  `email_subscribe` varchar(200) COLLATE utf8_bin DEFAULT '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21' COMMENT '用户邮件订阅',
-  `portal_config` varchar(50) COLLATE utf8_bin DEFAULT '1,3,4,5,6,7' COMMENT '工作台选项卡展示',
+  `message_subscribe` varchar(200) DEFAULT '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21' COMMENT '用户消息订阅',
+  `email_subscribe` varchar(200) DEFAULT '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21' COMMENT '用户邮件订阅',
+  `portal_config` varchar(50) DEFAULT '1,3,4,5,6,7' COMMENT '工作台选项卡展示',
   `dialog_auto_close` tinyint(1) DEFAULT 1 COMMENT '点击空白处自动关闭对话框',
   `auto_login` tinyint(1) DEFAULT 0 COMMENT '自动登录上次的项目',
   `auto_refresh` tinyint(1) DEFAULT 1 COMMENT '侧边栏折叠和展开时echarts页面布局',
@@ -1604,7 +1604,7 @@ CREATE TABLE `sepp_user_setting` (
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`id`),
   UNIQUE KEY `INDEX_USER` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4 COLLATE=utf8_bin;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_warning` */
 
@@ -1632,7 +1632,7 @@ DROP TABLE IF EXISTS `sepp_warning_level`;
 
 CREATE TABLE `sepp_warning_level` (
   `level_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `level_name` varchar(40) NOT NULL COMMENT '描述',
+  `level_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`level_id`)

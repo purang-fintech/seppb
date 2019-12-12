@@ -57,7 +57,7 @@ public class SettingController {
 	}
 
 	@RequestMapping(value = "/setting/query", method =  RequestMethod.POST)
-	public List<Map<String, Object>> listSetting(HttpServletRequest request) {
+	public List<Map<String, Object>> listSetting() {
 		return settingService.listSetting();
 	}
 

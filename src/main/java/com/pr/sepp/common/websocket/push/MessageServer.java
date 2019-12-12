@@ -14,6 +14,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
 
+import javax.annotation.PreDestroy;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -26,7 +27,7 @@ import static com.pr.sepp.common.websocket.model.MessageType.MESSAGE_TYPE;
 
 @Slf4j
 @Component
-public class MessageServer implements WebSocketServer<String, Void> {
+public class MessageServer implements WebSocketServer<String, String> {
 
 	@Autowired
 	private FetchClient fetchClient;
@@ -62,7 +63,7 @@ public class MessageServer implements WebSocketServer<String, Void> {
 	@Override
 	public void pushByT(String userId) {
 		Set<WebSocketSession> sessions = GlobalCache.getUserSessionMap().get(userId);
-		sessions.forEach(session -> pushBySession(session, null));
+		sessions.forEach(session -> pushBySession(session, userId));
 		messageService.updateSendStatusByUser(Integer.parseInt(userId), 1);
 	}
 
@@ -72,12 +73,13 @@ public class MessageServer implements WebSocketServer<String, Void> {
 	 * @param session
 	 */
 	@Override
-	public void pushBySession(WebSocketSession session, Void vo) {
+	public void pushBySession(WebSocketSession session, String userId) {
 		try {
 			String message = mapper.writeValueAsString(responseBuilder(session));
 			GlobalSession.sendMessage(session, message);
 		} catch (Exception e) {
 			log.error("websocket发送消息失败", e);
+            GlobalSession.removeSession(Integer.valueOf(userId),session);
 		}
 	}
 
@@ -101,4 +103,9 @@ public class MessageServer implements WebSocketServer<String, Void> {
 		});
 		return globalDataResp;
 	}
+
+	@PreDestroy
+	public void destroy() {
+	    GlobalCache.clear();
+    }
 }
