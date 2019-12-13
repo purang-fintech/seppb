@@ -127,6 +127,7 @@ public class JenkinsBuildService {
                 deploymentService.saveDeploymentHistory(deploymentBuildReq);
             }
         } catch (IOException e) {
+            jenkinsClientProvider.checkAndUpdateJenkinsClient(e);
             throw new SeppServerException("服务器异常，请稍后再试", e);
         }
         deploymentBuildServer.pushByT(DeploymentWebSessionPayload.builder().branchId(deploymentBuildReq.getBranchId())
@@ -218,6 +219,7 @@ public class JenkinsBuildService {
             buildHistory.setType(buildInstance.getType());
             build(repeatBuildInstance, buildHistory, buildFilesToParamsMap(buildFiles));
         } catch (IOException e) {
+            jenkinsClientProvider.checkAndUpdateJenkinsClient(e);
             log.error("构建id为:{}的buildParams序列化失败{}", buildHistory.getId(), e);
             throw new SeppServerException(1001, "服务器异常");
         }
@@ -242,6 +244,7 @@ public class JenkinsBuildService {
             JenkinsClient jenkinsClient = jenkinsClientProvider.getBuildJenkinsClient(instanceType);
             jenkinsClient.startBuild(jobName, params);
         } catch (IOException e) {
+            jenkinsClientProvider.checkAndUpdateJenkinsClient(e);
             throw new SeppServerException("构建失败，请稍后重试", e);
         }
     }

@@ -10,6 +10,7 @@ import com.pr.sepp.sqa.service.AnalysisService;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -75,7 +76,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 		List<String> dates = getReleaseDates(dataMap);
 		List<Map<String, Object>> expectTrend = new ArrayList<>();
 
-		if (null != dataMap.get("relId") && String.valueOf(dataMap.get("relId")) != "") {
+		if (!StringUtils.isEmpty(MapUtils.getString(dataMap, "relId"))) {
 			Map<String, Object> relMap = new HashMap<>();
 			relMap.put("productId", dataMap.get("productId"));
 			relMap.put("relId", dataMap.get("relId"));

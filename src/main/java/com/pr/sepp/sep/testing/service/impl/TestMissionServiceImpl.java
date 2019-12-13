@@ -211,7 +211,7 @@ public class TestMissionServiceImpl implements TestMissionService {
 		int userId = ParameterThreadLocal.getUserId();
 
 		List<TestMissionStatus> sts = baseQueryDAO.testMissionStatus();
-		String newStatusName = sts.stream().filter(f -> status == f.getStatusId()).findFirst().orElse(new TestMissionStatus()).getStatusName();
+		String newStatusName = sts.stream().filter(f -> Objects.equals(f.getStatusId(), status)).findFirst().orElse(new TestMissionStatus()).getStatusName();
 
 		Map<String, Object> queryOld = new HashMap<>();
 		queryOld.put("id", id);

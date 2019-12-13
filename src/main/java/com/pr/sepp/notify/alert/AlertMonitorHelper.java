@@ -75,7 +75,7 @@ public class AlertMonitorHelper {
         return MailDTO.builder()
                 .failRetry(true)
                 .failRetryCount(3)
-                .failRetryTime(10 * 1000)
+                .failRetryTime(10_1000)
                 .failSubject(ALERT_RETRY_ERROR_TITLE)
                 .failTo(new String[]{"chenlang@purang.com"})
                 .to(new String[]{email})

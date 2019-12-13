@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import java.io.IOException;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Optional;
 
 import static com.pr.sepp.sep.build.model.constants.JenkinsBuildStatus.BUILDING;
@@ -104,7 +105,7 @@ public class BuildHistoryService {
 	}
 
 	private BuildHistory building(BuildHistory buildHistory) {
-		if (buildHistory.getBuildStatus() == BUILDING) {
+		if (buildHistory.getBuildStatus() == BUILDING && Objects.nonNull(buildHistory.getType())) {
 			try {
 				JenkinsClient.BuildProgress buildProgress = jenkinsClientProvider.getJenkinsClient(buildHistory.getType())
 						.buildProgress(buildHistory.getJobName(),

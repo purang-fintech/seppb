@@ -76,7 +76,7 @@
                 <otherwise>
                     and d.product_id = #{productId}
                     <if test="relId!=null and relId!=''">
-                        and r.rel_id = #{relId}
+                        and d.rel_id = #{relId}
                     </if>
                     <if test="reqId!=null and reqId != ''">
                         and d.req_id = #{reqId}

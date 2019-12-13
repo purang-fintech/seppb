@@ -1,8 +1,5 @@
 package com.pr.sepp.utils.jenkins;
 
-import com.pr.sepp.common.exception.SeppClientException;
-import com.pr.sepp.utils.jenkins.model.ParameterDefinition;
-import com.pr.sepp.utils.jenkins.model.PipelineStep;
 import com.google.common.collect.Lists;
 import com.google.common.collect.Maps;
 import com.offbytwo.jenkins.JenkinsServer;
@@ -11,11 +8,15 @@ import com.offbytwo.jenkins.client.util.EncodingUtils;
 import com.offbytwo.jenkins.client.util.UrlUtils;
 import com.offbytwo.jenkins.model.Queue;
 import com.offbytwo.jenkins.model.*;
+import com.pr.sepp.common.exception.SeppClientException;
+import com.pr.sepp.utils.jenkins.model.ParameterDefinition;
+import com.pr.sepp.utils.jenkins.model.PipelineStep;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 
+import java.io.Closeable;
 import java.io.IOException;
 import java.util.*;
 
@@ -24,7 +25,7 @@ import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
-public class JenkinsClient {
+public class JenkinsClient implements Closeable {
     private static final String BUILD_LOG_CSS = "%s<style scoped>.pipeline-new-node {color: #9A9999;}</style>";
     private static final String JENKINS_BUILD_PARAM_CLASS = "hudson.model.ParametersDefinitionProperty";
 
@@ -67,7 +68,6 @@ public class JenkinsClient {
         if (nonNull(maxBuildVersion) && maxBuildVersion >= lastNumber) {
             return maxBuildVersion + 1;
         }
-        //todo 更新数据库(更新策略有问题，需要调整)
         return lastNumber + 1;
     }
 
@@ -111,10 +111,11 @@ public class JenkinsClient {
      * @return
      */
     public boolean checkRepeatBuild(@NonNull String jobName, Map<String, String> paramsMap) {
-        List<QueueItem> queueItems = null;
+        List<QueueItem> queueItems = new LinkedList<>();
         try {
             queueItems = queueItemsByJobName(this.queue().getItems(), jobName);
         } catch (IOException e) {
+            log.warn("check repeat build error:{}", e.getMessage());
         }
         Set<Map.Entry<String, String>> entries = paramsMap.entrySet();
         for (Map.Entry<String, String> entry : entries) {
@@ -129,6 +130,12 @@ public class JenkinsClient {
         String param = paramKey + "=" + paramValue;
         if (Objects.equals(items.size(), 0)) return false;
         return items.stream().anyMatch(item -> item.getParams().contains(param));
+    }
+
+    @Override
+    public void close() {
+        client.close();
+        jenkinsServer.close();
     }
 
     /**
@@ -146,6 +153,10 @@ public class JenkinsClient {
 
     private JobWithDetails job(String jobName) throws IOException {
         return jenkinsServer.getJob(jobName);
+    }
+
+    public boolean isRunning() {
+        return jenkinsServer.isRunning();
     }
 
     public Map<String, Object> getLog(@NonNull String jobName, @NonNull Integer buildVersion) throws IOException {

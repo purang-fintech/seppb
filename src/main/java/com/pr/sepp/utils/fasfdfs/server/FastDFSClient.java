@@ -73,7 +73,6 @@ public class FastDFSClient {
         EXT_MAPS.put("xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
         EXT_MAPS.put("pptx", "application/vnd.openxmlformats-officedocument.presentationml.presentation");
         EXT_MAPS.put("doc", "application/msword");
-        EXT_MAPS.put("doc", "application/wps-office.doc");
         EXT_MAPS.put("docx", "application/vnd.openxmlformats-officedocument.wordprocessingml.document");
         EXT_MAPS.put("txt", "text/plain");
         // 音频
@@ -509,6 +508,7 @@ public class FastDFSClient {
     public Map<String, Object> getFileInfo(String filepath) throws FdfsException {
         TrackerServer trackerServer = pool.borrowObject();
         StorageClient1 storageClient = new StorageClient1(trackerServer, null);
+        Map<String, Object> infoMap = new HashMap<>(4);
         FileInfo fileInfo = null;
         try {
             fileInfo = storageClient.get_file_info1(filepath);
@@ -519,12 +519,12 @@ public class FastDFSClient {
             pool.returnObject(trackerServer);
         }
 
-        Map<String, Object> infoMap = new HashMap<>(4);
-
-        infoMap.put("SourceIpAddr", fileInfo.getSourceIpAddr());
-        infoMap.put("FileSize", fileInfo.getFileSize());
-        infoMap.put("CreateTime", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(fileInfo.getCreateTimestamp()));
-        infoMap.put("CRC32", fileInfo.getCrc32());
+        if (null != fileInfo) {
+            infoMap.put("SourceIpAddr", fileInfo.getSourceIpAddr());
+            infoMap.put("FileSize", fileInfo.getFileSize());
+            infoMap.put("CreateTime", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(fileInfo.getCreateTimestamp()));
+            infoMap.put("CRC32", fileInfo.getCrc32());
+        }
 
         return infoMap;
     }

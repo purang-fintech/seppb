@@ -62,7 +62,7 @@ public class TestPlanServiceImpl implements TestPlanService {
         dataMap.put("productId", productId);
         Release release = releaseDAO.releaseQuery(dataMap).get(0);
         List<TestPeriod> periods = baseQueryDAO.testPeriod();
-        String testType = periods.stream().filter(a -> a.getPeriodId() == planType).findFirst().orElse(new TestPeriod()).getPeriodName();
+        String testType = periods.stream().filter(a -> Objects.equals(a.getPeriodId(), planType)).findFirst().orElse(new TestPeriod()).getPeriodName();
 
         testPlanDAO.testPlanCreate(testPlan);
         int created = testPlan.getId();
@@ -211,7 +211,7 @@ public class TestPlanServiceImpl implements TestPlanService {
             message.setContent(msg);
             messageService.businessMessageGenerator(message, userId, messageToSub);
 
-            if (item.getResponser() != item.getSpliter()) { //非测试任务负责人本人操作
+            if (item.getResponser() - item.getSpliter() != 0) { //非测试任务负责人本人操作
                 List<Integer> messageToRes = new ArrayList<>();
                 messageToRes.add(item.getResponser());
                 messageService.businessMessageGenerator(message, userId, messageToRes);

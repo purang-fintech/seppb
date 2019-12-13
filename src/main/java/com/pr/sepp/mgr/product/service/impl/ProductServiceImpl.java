@@ -181,7 +181,7 @@ public class ProductServiceImpl implements ProductService {
 	public int productDocCreate(ProductDoc doc) {
 		Map<String, Object> dataMap = new HashMap<>();
 		dataMap.put("productId", doc.getProductId());
-		dataMap.put("productId", doc.getParentId());
+		dataMap.put("parentId", doc.getParentId());
 		dataMap.put("attachmentId", doc.getAttachmentId());
 
 		// 查询是否已存在，如果已存在则直接返回

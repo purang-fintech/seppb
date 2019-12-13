@@ -7,10 +7,12 @@ import com.pr.sepp.sep.build.model.constants.InstanceType;
 import com.pr.sepp.utils.jenkins.model.JenkinsProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.http.client.config.RequestConfig;
+import org.apache.http.conn.ConnectionPoolTimeoutException;
 import org.apache.http.impl.client.HttpClientBuilder;
 
 import javax.annotation.PostConstruct;
 import java.net.URI;
+import java.util.Collections;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -55,6 +57,21 @@ public abstract class JenkinsClientProvider {
         }
     }
 
+    public void checkAndUpdateJenkinsClient(Exception e) {
+        if (e instanceof ConnectionPoolTimeoutException) {
+            closeAll();
+            retrieveJenkinsClient();
+        }
+    }
+
+    public Map<String, JenkinsClient> getJenkinsClientProviderMap() {
+        return Collections.unmodifiableMap(jenkinsClientProviderMap);
+    }
+
+    public Map<String, JenkinsClient> getBuildJenkinsClientProviderMap() {
+        return  Collections.unmodifiableMap(buildJenkinsClientProviderMap);
+    }
+
     public HttpClientBuilder clientBuilder() {
         HttpClientBuilder httpClientBuilder = HttpClientBuilder.create();
         RequestConfig.Builder builder = RequestConfig.custom();
@@ -62,11 +79,13 @@ public abstract class JenkinsClientProvider {
         builder.setSocketTimeout(20 * 1000);
         builder.setConnectTimeout(5 * 1000);
         httpClientBuilder.setDefaultRequestConfig(builder.build());
+        httpClientBuilder.setMaxConnPerRoute(10);
+        httpClientBuilder.setMaxConnTotal(20);
         return httpClientBuilder;
     }
 
-    protected JenkinsClient createJenkinsClient(String androidUrl, String username, String password) {
-        JenkinsHttpClient httpClient = new JenkinsHttpClient(URI.create(androidUrl),
+    protected JenkinsClient createJenkinsClient(String url, String username, String password) {
+        JenkinsHttpClient httpClient = new JenkinsHttpClient(URI.create(url),
                 clientBuilder,
                 username, password);
         JenkinsServer androidJenkinsServer = new JenkinsServer(httpClient);
@@ -76,4 +95,9 @@ public abstract class JenkinsClientProvider {
     protected abstract boolean shouldUpdateJenkinsClient();
 
     protected abstract void retrieveJenkinsClient();
+
+    private void closeAll() {
+        buildJenkinsClientProviderMap.forEach((type, client) -> client.close());
+        jenkinsClientProviderMap.forEach((type, client) -> client.close());
+    }
 }

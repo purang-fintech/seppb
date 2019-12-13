@@ -109,8 +109,8 @@ public class DefectServiceImpl implements DefectService {
 		dataMap.put("id", id);
 		Defect oldDefect = defectDAO.defectQuery(dataMap).get(0);
 		List<DefectStatus> sts = baseQueryDAO.defectStatus();
-		String oldStatusName = sts.stream().filter(f -> f.getStatusId() == oldDefect.getStatus()).findFirst().orElse(new DefectStatus()).getStatusName();
-		String newStatusName = sts.stream().filter(f -> f.getStatusId() == statusInt).findFirst().orElse(new DefectStatus()).getStatusName();
+		String oldStatusName = sts.stream().filter(f -> Objects.equals(f.getStatusId(), oldDefect.getStatus())).findFirst().orElse(new DefectStatus()).getStatusName();
+		String newStatusName = sts.stream().filter(f -> Objects.equals(f.getStatusId(), statusInt)).findFirst().orElse(new DefectStatus()).getStatusName();
 
 		// 原状态为拒绝，新状态为非拒绝且非关闭时，需要清空拒绝操作信息
 		if (statusInt != 6 && statusInt != 0 && oldDefect.getStatus() == 6) {
@@ -239,8 +239,8 @@ public class DefectServiceImpl implements DefectService {
 		dataMap.put("id", defectRequestParam.getId());
 		Defect oldDefect = defectDAO.defectQuery(dataMap).get(0);
 		List<DefectStatus> sts = baseQueryDAO.defectStatus();
-		String oldStatusName = sts.stream().filter(f -> f.getStatusId() == oldDefect.getStatus()).findFirst().orElse(new DefectStatus()).getStatusName();
-		String newStatusName = sts.stream().filter(f -> f.getStatusId() == status).findFirst().orElse(new DefectStatus()).getStatusName();
+		String oldStatusName = sts.stream().filter(f -> Objects.equals(f.getStatusId(), oldDefect.getStatus())).findFirst().orElse(new DefectStatus()).getStatusName();
+		String newStatusName = sts.stream().filter(f -> Objects.equals(f.getStatusId(), status)).findFirst().orElse(new DefectStatus()).getStatusName();
 		String msg = "缺陷：【#" + oldDefect.getId() + " - " + oldDefect.getSummary() + "】信息更新，状态已由【" + oldStatusName + "】变为【" + newStatusName + "】";
 
 		// 原状态为拒绝，新状态为非拒绝且非关闭时，需要清空拒绝操作信息

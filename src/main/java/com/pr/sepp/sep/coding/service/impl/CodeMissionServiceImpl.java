@@ -115,8 +115,8 @@ public class CodeMissionServiceImpl implements CodeMissionService {
 
 		if (status - oldCms.getStatus() != 0) {
 			List<CodeMissionStatus> sts = baseQueryDAO.codeMissionStatus();
-			String oldStatusName = sts.stream().filter(f -> f.getStatusId() == oldCms.getStatus()).findFirst().orElse(new CodeMissionStatus()).getStatusName();
-			String newStatusName = sts.stream().filter(f -> f.getStatusId() == status).findFirst().orElse(new CodeMissionStatus()).getStatusName();
+			String oldStatusName = sts.stream().filter(f -> Objects.equals(f.getStatusId(), oldCms.getStatus())).findFirst().orElse(new CodeMissionStatus()).getStatusName();
+			String newStatusName = sts.stream().filter(f -> Objects.equals(f.getStatusId(), status)).findFirst().orElse(new CodeMissionStatus()).getStatusName();
 
 			suffix = "，状态由【" + oldStatusName + "】改为【" + newStatusName + "】";
 
@@ -210,7 +210,7 @@ public class CodeMissionServiceImpl implements CodeMissionService {
 
 		dataMap.put("status", status);
 		List<CodeMissionStatus> sts = baseQueryDAO.codeMissionStatus();
-		String newStatusName = sts.stream().filter(f -> f.getStatusId() == status).findFirst().orElse(new CodeMissionStatus()).getStatusName();
+		String newStatusName = sts.stream().filter(f -> Objects.equals(f.getStatusId(), status)).findFirst().orElse(new CodeMissionStatus()).getStatusName();
 
 		String msg = "开发任务：【#" + id + " - " + cms.getSummary() + "】由用户【"
 				+ operName + "】操作，状态从【" + cms.getStatusName() + "】变为【" + newStatusName + "】";

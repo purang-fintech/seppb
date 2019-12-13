@@ -1,6 +1,9 @@
 package com.pr.sepp.sep.build.service.trigger;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.common.collect.Sets;
+import com.offbytwo.jenkins.model.Build;
+import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.pr.sepp.env.info.dao.EnvInfoDAO;
 import com.pr.sepp.env.info.model.EnvInfo;
 import com.pr.sepp.sep.build.dao.BuildInstanceDAO;
@@ -13,12 +16,12 @@ import com.pr.sepp.sep.build.service.impl.BuildHistoryService;
 import com.pr.sepp.utils.jenkins.JenkinsClient;
 import com.pr.sepp.utils.jenkins.JenkinsClientProvider;
 import com.pr.sepp.utils.jenkins.model.PipelineStep;
-import com.google.common.collect.Sets;
-import com.offbytwo.jenkins.model.Build;
-import com.offbytwo.jenkins.model.BuildWithDetails;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.http.conn.ConnectionPoolTimeoutException;
 
+import javax.annotation.PreDestroy;
 import java.io.IOException;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -28,6 +31,7 @@ import java.util.concurrent.ConcurrentMap;
 import static com.pr.sepp.common.constants.CommonParameter.DEPLOY_JOB_NAME;
 import static com.pr.sepp.sep.build.model.BuildHistory.apply;
 import static com.pr.sepp.sep.build.model.constants.DeploymentStatus.convertJenkinsStatus;
+import static java.util.stream.Collectors.toList;
 
 @Slf4j
 public class JenkinsStatusUpdater {
@@ -67,7 +71,7 @@ public class JenkinsStatusUpdater {
     public void computeIfAbsent(InstanceType type, String jobName) {
         Set<String> sectionSets = sectionJobsMap.computeIfAbsent(type, s -> Sets.newConcurrentHashSet());
         sectionSets.add(jobName);
-        log.debug("当前被发布过的job集合:{}",sectionJobsMap);
+        log.debug("当前被发布过的job集合:{}", sectionJobsMap);
     }
 
     private void initWholeJobNames() {
@@ -86,12 +90,14 @@ public class JenkinsStatusUpdater {
     }
 
     protected void updateBuild(InstanceType instanceType, Set<String> jobNames) {
+        JenkinsClient jenkinsClient = jenkinsClientProvider.getJenkinsClient(instanceType);
         for (String jobName : jobNames) {
             try {
-                JenkinsClient jenkinsClient = jenkinsClientProvider.getJenkinsClient(instanceType);
                 List<Build> builds = jenkinsClient.allBuildsByJobName(jobName);
                 updateBuild(jobName, jenkinsClient, builds);
             } catch (IOException e) {
+                jenkinsClientProvider.checkAndUpdateJenkinsClient(e);
+                jenkinsClient = jenkinsClientProvider.getJenkinsClient(instanceType);
                 log.error("获取{}的构建结果失败:{}", jobName, e);
             } catch (Exception e1) {
                 log.error("更新{}数据库jenkins状态失败:{}", jobName, e1);
@@ -100,21 +106,31 @@ public class JenkinsStatusUpdater {
     }
 
     private void updateBuild(String jobName, JenkinsClient jenkinsClient, List<Build> builds) throws IOException {
-        for (Build build : builds) {
-            PipelineStep pipelineStep = jenkinsClient.pipelineStep(jobName, build.getNumber());
-            BuildWithDetails details = build.details();
-            BuildHistory buildHistory = apply(build.getNumber(), details, jobName);
-            String pipeline = mapper.writeValueAsString(pipelineStep);
-            buildHistory.setPipelineStep(pipeline);
-            buildHistoryService.createOrUpdate(buildHistory);
-            deploymentService.updateDeploymentRsult(DeploymentHistory.builder()
-                    .jobName(jobName)
-                    .deployStatus(convertJenkinsStatus(details))
-                    .buildVersion(build.getNumber())
-                    .pipelineStep(pipeline)
-                    .deployJobName(DEPLOY_JOB_NAME).build());
+        List<Build> buildList = builds.stream().sorted(Comparator.comparing(Build::getNumber).reversed()).limit(5).collect(toList());
+        for (Build build : buildList) {
+            updateBuild(jobName, jenkinsClient, build);
         }
     }
 
+    private void updateBuild(String jobName, JenkinsClient jenkinsClient, Build build) throws IOException {
+        PipelineStep pipelineStep = jenkinsClient.pipelineStep(jobName, build.getNumber());
+        BuildWithDetails details = build.details();
+        BuildHistory buildHistory = apply(build.getNumber(), details, jobName);
+        String pipeline = mapper.writeValueAsString(pipelineStep);
+        buildHistory.setPipelineStep(pipeline);
+        buildHistoryService.createOrUpdate(buildHistory);
+        deploymentService.updateDeploymentRsult(DeploymentHistory.builder()
+                .jobName(jobName)
+                .deployStatus(convertJenkinsStatus(details))
+                .buildVersion(build.getNumber())
+                .pipelineStep(pipeline)
+                .deployJobName(DEPLOY_JOB_NAME).build());
+    }
+
+    @PreDestroy
+    public void clear() {
+        jobInstancesMap.clear();
+        sectionJobsMap.clear();
+    }
 
 }

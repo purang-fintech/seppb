@@ -10,6 +10,7 @@ import com.pr.sepp.sep.build.service.trigger.JenkinsStatusUpdateTrigger;
 import com.pr.sepp.sep.build.service.trigger.JenkinsStatusUpdater;
 import com.pr.sepp.utils.jenkins.ConfigurationJenkinsClientProvider;
 import com.pr.sepp.utils.jenkins.DynamicJenkinsClientProvider;
+import com.pr.sepp.utils.jenkins.JenkinsClientManager;
 import com.pr.sepp.utils.jenkins.JenkinsClientProvider;
 import com.pr.sepp.utils.jenkins.model.JenkinsProperties;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -55,4 +56,10 @@ public class SeppConfiguration {
 														  JenkinsProperties jenkinsProperties) {
 		return new JenkinsStatusUpdateTrigger(jenkinsStatusUpdater, jenkinsProperties);
 	}
+
+    @Bean
+    @ConditionalOnMissingBean
+    public JenkinsClientManager clientManager(JenkinsClientProvider jenkinsClientProvider) {
+        return new JenkinsClientManager(jenkinsClientProvider);
+    }
 }

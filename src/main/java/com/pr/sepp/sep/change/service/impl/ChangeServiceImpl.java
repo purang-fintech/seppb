@@ -59,8 +59,8 @@ public class ChangeServiceImpl implements ChangeService {
 			Arrays.sort(adted);
 			String[] toadt = change.getAuditUser().split(",");
 			Arrays.sort(toadt);
-			String adtedStr = null;
-			String toadtStr = null;
+			String adtedStr = "";
+			String toadtStr = "";
 			for (int i = 0; i < adted.length; i++) {
 				adtedStr += adted[i];
 			}

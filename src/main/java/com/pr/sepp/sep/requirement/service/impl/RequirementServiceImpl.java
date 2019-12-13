@@ -168,7 +168,7 @@ public class RequirementServiceImpl implements RequirementService {
 		int userId = ParameterThreadLocal.getUserId();
 		int reqId = requirement.getId();
 		int moduleId = requirement.getModuleId();
-		SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-dd HH:mm:ss");
+		SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
 		Change change = new Change();
 
