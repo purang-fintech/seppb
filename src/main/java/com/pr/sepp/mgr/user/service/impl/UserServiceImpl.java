@@ -6,7 +6,9 @@ import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.mgr.role.dao.RoleDAO;
 import com.pr.sepp.mgr.system.service.SettingService;
 import com.pr.sepp.mgr.user.dao.UserDAO;
+import com.pr.sepp.mgr.user.dao.UserSettingDAO;
 import com.pr.sepp.mgr.user.model.User;
+import com.pr.sepp.mgr.user.model.UserSetting;
 import com.pr.sepp.mgr.user.service.UserService;
 import com.pr.sepp.notify.model.Message;
 import com.pr.sepp.notify.service.MessageService;
@@ -46,6 +48,9 @@ public class UserServiceImpl implements UserService {
 	private UserDAO userDAO;
 
 	@Autowired
+	private UserSettingDAO userSettingDAO;
+
+	@Autowired
 	private RoleDAO roleDAO;
 
 	@Autowired
@@ -64,7 +69,14 @@ public class UserServiceImpl implements UserService {
 
 	@Override
 	public int userCreate(User user) {
-		return userDAO.userCreate(user);
+		userDAO.userCreate(user);
+		int userId = user.getUserId();
+
+		UserSetting setting = new UserSetting();
+		setting.setUserId(userId);
+		userSettingDAO.userSettingCreate(setting);
+
+		return userId;
 	}
 
 	@Override
@@ -248,6 +260,10 @@ public class UserServiceImpl implements UserService {
 		userDAO.userCreate(newUser);
 		int userId = newUser.getUserId();
 
+		UserSetting setting = new UserSetting();
+		setting.setUserId(userId);
+		userSettingDAO.userSettingCreate(setting);
+
 		// 初始授权DEMO
 		Map<String, Object> dataMap = new HashMap<>();
 		dataMap.put("userId", userId);
@@ -318,6 +334,9 @@ public class UserServiceImpl implements UserService {
 					.isValid("Y")
 					.isVendor("N").build();
 			userDAO.userCreate(newUser);
+			UserSetting setting = new UserSetting();
+			setting.setUserId(newUser.getUserId());
+			userSettingDAO.userSettingCreate(setting);
 			dataMap.put(USER_ID, newUser.getUserId());
 			users = userDAO.userQuery(dataMap);
 		}
