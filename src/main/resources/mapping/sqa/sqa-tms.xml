@@ -98,7 +98,7 @@
 			<otherwise>
 				and c.req_id in 
 				  (select 
-				    req_id 
+				    id
 				  from
 				    sepp_requirement
 				  where product_id = #{productId})
@@ -132,9 +132,9 @@
 				 	and p.id = c.plan_id)
 			</when>
 			<otherwise>
-				and c.req_id in 
+				and c.req_id in
 				  (select 
-				    req_id 
+				    id
 				  from
 				    sepp_requirement
 				  where product_id = #{productId})
