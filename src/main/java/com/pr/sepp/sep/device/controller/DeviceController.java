@@ -1,5 +1,7 @@
 package com.pr.sepp.sep.device.controller;
 
+import com.pr.sepp.common.constants.CommonParameter;
+import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.sep.device.model.Device;
 import com.pr.sepp.sep.device.service.DeviceService;
 import com.github.pagehelper.PageHelper;
@@ -28,12 +30,12 @@ public class DeviceController {
 		dataMap.put("assetId", request.getParameter("assetId"));
 		dataMap.put("userName", request.getParameter("userName"));
 		dataMap.put("oprSys", request.getParameter("oprSys"));
-		dataMap.put("status", request.getParameter("status"));
+		dataMap.put(CommonParameter.STATUS, request.getParameter(CommonParameter.STATUS));
 		dataMap.put("brand", request.getParameter("brand"));
 		dataMap.put("deviceName", request.getParameter("deviceName"));
 
-		int pageNum = StringUtils.isEmpty(request.getParameter("pageNum")) ? 1 : Integer.parseInt(request.getParameter("pageNum"));
-		int pageSize = StringUtils.isEmpty(request.getParameter("pageSize")) ? 500 : Integer.parseInt(request.getParameter("pageSize"));
+		int pageNum = ParameterThreadLocal.getPageNum();
+		int pageSize = ParameterThreadLocal.getPageSize();
 		PageHelper.startPage(pageNum, pageSize);
 		List<Device> list = deviceService.deviceQuery(dataMap);
 		PageInfo<Device> pageInfo = new PageInfo<>(list);
@@ -45,13 +47,13 @@ public class DeviceController {
 	@RequestMapping(value = "/device/rent", method =  RequestMethod.POST)
 	public int changeUser(HttpServletRequest request) {
 		Map<String, Object> dataMap = new HashMap<>();
-		String id = request.getParameter("id");
-		dataMap.put("id", id);
+		String id = request.getParameter(CommonParameter.ID);
+		dataMap.put(CommonParameter.ID, id);
 		String userName = request.getParameter("userName");
 		dataMap.put("userName", userName);
 		String rentDate = request.getParameter("rentDate");
 		dataMap.put("rentDate", rentDate);
-		dataMap.put("status", "已借出");
+		dataMap.put(CommonParameter.STATUS, "已借出");
 
 		return deviceService.changeUser(dataMap);
 
@@ -60,12 +62,12 @@ public class DeviceController {
 	@RequestMapping(value = "/device/return", method =  RequestMethod.POST)
 	public int intoWarehouse(HttpServletRequest request) {
 		Map<String, Object> dataMap = new HashMap<>();
-		String id = request.getParameter("id");
-		dataMap.put("id", id);
+		String id = request.getParameter(CommonParameter.ID);
+		dataMap.put(CommonParameter.ID, id);
 		dataMap.put("userName", "仓库");
 		String returnDate = request.getParameter("returnDate");
 		dataMap.put("returnDate", returnDate);
-		dataMap.put("status", "已归还");
+		dataMap.put(CommonParameter.STATUS, "已归还");
 		return deviceService.intoWarehouse(dataMap);
 	}
 
@@ -89,7 +91,7 @@ public class DeviceController {
 	public int deviceUpdate(HttpServletRequest request) {
 		Device device = new Device();
 		device.setVersions(request.getParameter("versions"));
-		device.setId(Integer.parseInt(request.getParameter("id")));
+		device.setId(Integer.parseInt(request.getParameter(CommonParameter.ID)));
 		return deviceService.deviceUpdate(device);
 	}
 }

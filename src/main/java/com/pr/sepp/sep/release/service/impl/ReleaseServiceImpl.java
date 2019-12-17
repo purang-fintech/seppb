@@ -1,5 +1,6 @@
 package com.pr.sepp.sep.release.service.impl;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.history.model.SEPPHistory;
 import com.pr.sepp.history.service.HistoryService;
@@ -51,7 +52,7 @@ public class ReleaseServiceImpl implements ReleaseService {
 		SEPPHistory history = new SEPPHistory();
 		history.setObjType(4);
 		history.setObjId(createdId);
-		history.setObjKey("id");
+		history.setObjKey(CommonParameter.ID);
 		history.setProductId(productId);
 		history.setOperUser(userId);
 		history.setOperType(1);
@@ -65,7 +66,7 @@ public class ReleaseServiceImpl implements ReleaseService {
 		messageTo.add(release.getResponser());
 
 		Map<String, Object> userMap = new HashMap<>();
-		userMap.put("productId", productId);
+		userMap.put(CommonParameter.PRODUCT_ID, productId);
 		userMap.put("roleId", 10);
 		List<User> pms = userDAO.userQueryProductRole(userMap);
 		pms.forEach(user -> {
@@ -101,7 +102,7 @@ public class ReleaseServiceImpl implements ReleaseService {
 		int userId = ParameterThreadLocal.getUserId();
 
 		Map<String, Object> queryMap = new HashMap<>();
-		queryMap.put("id", release.getId());
+		queryMap.put(CommonParameter.ID, release.getId());
 		Release relOld = releaseDAO.releaseQuery(queryMap).get(0);
 
 		release.setRelCode(relOld.getRelCode());

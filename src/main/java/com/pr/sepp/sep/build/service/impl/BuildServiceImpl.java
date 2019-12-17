@@ -1,5 +1,6 @@
 package com.pr.sepp.sep.build.service.impl;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.mgr.user.dao.UserDAO;
 import com.pr.sepp.mgr.user.model.User;
@@ -39,7 +40,7 @@ public class BuildServiceImpl implements BuildService {
 		List<ReleaseNote> result = buildDAO.releasenoteQuery(dataMap);
 
 		Map<String, Object> userMap = new HashMap<>();
-		userMap.put("productId", ParameterThreadLocal.getProductId());
+		userMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 		List<User> users = userDAO.userQuery(userMap);
 
 		result.forEach(item -> {

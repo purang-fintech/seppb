@@ -1,6 +1,7 @@
 package com.pr.sepp.sep.testing.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.sep.testing.model.PlanMissionReq;
 import com.pr.sepp.sep.testing.model.TestMission;
@@ -28,18 +29,18 @@ public class TestMissionController {
     public PageInfo<TestMission> testMissionQuery(HttpServletRequest request) {
 
         Map<String, Object> dataMap = new HashMap<>();
-        dataMap.put("productId", request.getParameter("productId"));
-        dataMap.put("id", request.getParameter("id"));
-        dataMap.put("reqId", request.getParameter("reqId"));
-        dataMap.put("relId", request.getParameter("relId"));
+        dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
+        dataMap.put(CommonParameter.ID, request.getParameter(CommonParameter.ID));
+        dataMap.put(CommonParameter.REQ_ID, request.getParameter(CommonParameter.REQ_ID));
+        dataMap.put(CommonParameter.REL_ID, request.getParameter(CommonParameter.REL_ID));
         dataMap.put("planId", request.getParameter("planId"));
         dataMap.put("type", request.getParameter("type"));
-        dataMap.put("spliter", request.getParameter("spliter"));
-        String status = request.getParameter("status");
+        dataMap.put(CommonParameter.SPLITER, request.getParameter(CommonParameter.SPLITER));
+        String status = request.getParameter(CommonParameter.STATUS);
         if (!StringUtils.isEmpty(status)) {
             dataMap.put("sts", Arrays.asList(status.split(",")));
         }
-        dataMap.put("responser", request.getParameter("responser"));
+        dataMap.put(CommonParameter.RESPONSER, request.getParameter(CommonParameter.RESPONSER));
         if (!StringUtils.isEmpty(request.getParameter("splitDateBegin"))) {
             dataMap.put("splitDateBegin", request.getParameter("splitDateBegin") + " 00:00:00");
         }
@@ -72,9 +73,9 @@ public class TestMissionController {
     @RequestMapping(value = "/tms/nrel_query", method = RequestMethod.POST)
     public PageInfo<TestMission> notPlanedTMQuery(HttpServletRequest request) {
         Map<String, Object> dataMap = new HashMap<>();
-        dataMap.put("productId", request.getParameter("productId"));
+        dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
         dataMap.put("type", request.getParameter("type"));
-        dataMap.put("relId", request.getParameter("relId"));
+        dataMap.put(CommonParameter.REL_ID, request.getParameter(CommonParameter.REL_ID));
 
         PageHelper.startPage(ParameterThreadLocal.getPageNum(), ParameterThreadLocal.getPageSize());
 
@@ -94,8 +95,8 @@ public class TestMissionController {
     }
 
     @RequestMapping(value = "/tms/status_update/{id}", method = RequestMethod.POST)
-    public int testMissionStatusUpdate(@PathVariable("id") Integer id, @RequestBody String status) {
-        return testMissionService.testMissionStatusUpdate(id, Integer.parseInt(JSON.parseObject(status).get("status").toString()));
+    public int testMissionStatusUpdate(@PathVariable(CommonParameter.ID) Integer id, @RequestBody String status) {
+        return testMissionService.testMissionStatusUpdate(id, Integer.parseInt(JSON.parseObject(status).get(CommonParameter.STATUS).toString()));
     }
 
     @RequestMapping(value = "/tms/plan_update", method = RequestMethod.POST)
@@ -104,7 +105,7 @@ public class TestMissionController {
     }
 
     @RequestMapping(value = "/tms/delete/{id}", method = RequestMethod.POST)
-    public int testMissionDelete(@PathVariable("id") int id) {
+    public int testMissionDelete(@PathVariable(CommonParameter.ID) int id) {
         return testMissionService.testMissionDelete(id);
     }
 

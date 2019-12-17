@@ -3,6 +3,7 @@ package com.pr.sepp.sep.testing.service.impl;
 import com.pr.sepp.base.dao.BaseQueryDAO;
 import com.pr.sepp.base.model.TestMissionStatus;
 import com.pr.sepp.base.model.TestPeriod;
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.history.model.SEPPHistory;
 import com.pr.sepp.history.service.HistoryService;
@@ -60,8 +61,8 @@ public class TestMissionServiceImpl implements TestMissionService {
 				a -> Objects.equals(a.getPeriodId(), testMission.getType())).findFirst().orElse(new TestPeriod()).getPeriodName();
 
 		Map<String, Object> reqMap = new HashMap<>();
-		reqMap.put("productId", productId);
-		reqMap.put("reqId", testMission.getReqId());
+		reqMap.put(CommonParameter.PRODUCT_ID, productId);
+		reqMap.put(CommonParameter.REQ_ID, testMission.getReqId());
 		Requirement req = requirementDAO.reqQuery(reqMap).get(0);
 		String reqSum = "【#" + req.getId() + " - " + req.getSummary() + "】";
 
@@ -101,7 +102,7 @@ public class TestMissionServiceImpl implements TestMissionService {
 		SEPPHistory history = new SEPPHistory();
 		history.setObjType(18);
 		history.setObjId(createdId);
-		history.setObjKey("id");
+		history.setObjKey(CommonParameter.ID);
 		history.setProductId(productId);
 		history.setOperUser(userId);
 		history.setOperType(1);
@@ -118,8 +119,8 @@ public class TestMissionServiceImpl implements TestMissionService {
 		int userId = ParameterThreadLocal.getUserId();
 
 		Map<String, Object> queryOld = new HashMap<>();
-		queryOld.put("id", testMission.getId());
-		queryOld.put("productId", productId);
+		queryOld.put(CommonParameter.ID, testMission.getId());
+		queryOld.put(CommonParameter.PRODUCT_ID, productId);
 		TestMission oldTestMission = testMissionDAO.testMissionQuery(queryOld).get(0);
 
 		testMission.setReqId(oldTestMission.getReqId());
@@ -214,7 +215,7 @@ public class TestMissionServiceImpl implements TestMissionService {
 		String newStatusName = sts.stream().filter(f -> Objects.equals(f.getStatusId(), status)).findFirst().orElse(new TestMissionStatus()).getStatusName();
 
 		Map<String, Object> queryOld = new HashMap<>();
-		queryOld.put("id", id);
+		queryOld.put(CommonParameter.ID, id);
 		TestMission oldTestMission = testMissionDAO.testMissionQuery(queryOld).get(0);
 
 		String reqSum = "【#" + oldTestMission.getReqId() + " - " + oldTestMission.getReqSummary() + "】";
@@ -244,7 +245,7 @@ public class TestMissionServiceImpl implements TestMissionService {
 		SEPPHistory history = new SEPPHistory();
 		history.setObjType(18);
 		history.setObjId(id);
-		history.setObjKey("status");
+		history.setObjKey(CommonParameter.STATUS);
 		history.setProductId(productId);
 		history.setOperUser(userId);
 		history.setOperType(2);
@@ -270,7 +271,7 @@ public class TestMissionServiceImpl implements TestMissionService {
 
 		tms.forEach(d -> {
 			Map<String, Object> queryOld = new HashMap<>();
-			queryOld.put("id", d);
+			queryOld.put(CommonParameter.ID, d);
 			TestMission oldTestMission = testMissionDAO.testMissionQuery(queryOld).get(0);
 
 			String suffix;
@@ -279,12 +280,12 @@ public class TestMissionServiceImpl implements TestMissionService {
 
 			if (null == planMissionReq.getPlanId()) {
 				Map<String, Object> planMap = new HashMap<>();
-				planMap.put("id", oldTestMission.getPlanId());
+				planMap.put(CommonParameter.ID, oldTestMission.getPlanId());
 				TestPlan plan = testPlanDAO.testPlanQuery(planMap).get(0);
 				suffix = "从版本【" + plan.getRelCode() + "】的【" + oldTestMission.getTypeName() + "】计划中移除";
 			} else {
 				Map<String, Object> planMap = new HashMap<>();
-				planMap.put("id", planMissionReq.getPlanId());
+				planMap.put(CommonParameter.ID, planMissionReq.getPlanId());
 				TestPlan plan = testPlanDAO.testPlanQuery(planMap).get(0);
 				suffix = "纳入版本【" + plan.getRelCode() + "】的【" + oldTestMission.getTypeName() + "】计划中";
 			}
@@ -320,7 +321,7 @@ public class TestMissionServiceImpl implements TestMissionService {
 		int userId = ParameterThreadLocal.getUserId();
 
 		Map<String, Object> queryOld = new HashMap<>();
-		queryOld.put("id", id);
+		queryOld.put(CommonParameter.ID, id);
 		TestMission oldTestMission = testMissionDAO.testMissionQuery(queryOld).get(0);
 
 		String reqSum = "【#" + oldTestMission.getReqId() + " - " + oldTestMission.getReqSummary() + "】";
@@ -346,7 +347,7 @@ public class TestMissionServiceImpl implements TestMissionService {
 		SEPPHistory history = new SEPPHistory();
 		history.setObjType(18);
 		history.setObjId(id);
-		history.setObjKey("id");
+		history.setObjKey(CommonParameter.ID);
 		history.setProductId(productId);
 		history.setOperUser(userId);
 		history.setOperType(3);

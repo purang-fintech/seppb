@@ -1,5 +1,6 @@
 package com.pr.sepp.mgr.product.service.impl;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.history.model.SEPPHistory;
 import com.pr.sepp.history.service.HistoryService;
@@ -61,14 +62,14 @@ public class ProductServiceImpl implements ProductService {
 		int userId = product.getUserId();
 
 		Map<String, Object> queryMap = new HashMap<>();
-		queryMap.put("productId", productId);
+		queryMap.put(CommonParameter.PRODUCT_ID, productId);
 		Product oldProduct = productDAO.productQuery(queryMap).get(0);
 
 		product.setProductId(oldProduct.getProductId());
 
 		if (!oldProduct.getProductCode().equals(product.getProductCode())) {
 			Map<String, Object> relModMap = new HashMap<>();
-			relModMap.put("productId", productId);
+			relModMap.put(CommonParameter.PRODUCT_ID, productId);
 			relModMap.put("newProductCode", product.getProductCode());
 			relModMap.put("oldProductCode", oldProduct.getProductCode());
 
@@ -109,7 +110,7 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public int productDelete(int productId) {
 		Map<String, Object> queryMap = new HashMap<>();
-		queryMap.put("productId", productId);
+		queryMap.put(CommonParameter.PRODUCT_ID, productId);
 		Product oldProduct = productDAO.productQuery(queryMap).get(0);
 
 		SEPPHistory history = new SEPPHistory();
@@ -180,7 +181,7 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public int productDocCreate(ProductDoc doc) {
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("productId", doc.getProductId());
+		dataMap.put(CommonParameter.PRODUCT_ID, doc.getProductId());
 		dataMap.put("parentId", doc.getParentId());
 		dataMap.put("attachmentId", doc.getAttachmentId());
 
@@ -198,7 +199,7 @@ public class ProductServiceImpl implements ProductService {
 		int userId = ParameterThreadLocal.getUserId();
 		history.setObjType(19);
 		history.setObjId(id);
-		history.setObjKey("id");
+		history.setObjKey(CommonParameter.ID);
 		history.setProductId(ParameterThreadLocal.getProductId());
 		history.setOperUser(userId);
 		history.setOperComment("新建产品文档" + type + "，编码为【" + id + "】，名称为【" + doc.getLabel() + "】");
@@ -216,7 +217,7 @@ public class ProductServiceImpl implements ProductService {
 		int id = doc.getId();
 
 		Map<String, Object> queryMap = new HashMap<>();
-		queryMap.put("id", id);
+		queryMap.put(CommonParameter.ID, id);
 		ProductDoc oldDoc = productDAO.productDocQuery(queryMap).get(0);
 
 		// readonly
@@ -312,7 +313,7 @@ public class ProductServiceImpl implements ProductService {
 		int branchId = branch.getBranchId();
 
 		Map<String, Object> queryMap = new HashMap<>();
-		queryMap.put("branchId", branchId);
+		queryMap.put(CommonParameter.BRANCH_ID, branchId);
 		ProductBranch oldBranch = productDAO.productBranchQuery(queryMap).get(0);
 
 		List<SEPPHistory> histories = new ArrayList<>();
@@ -350,7 +351,7 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public int productBranchDelete(Integer branchId) {
 		Map<String, Object> queryMap = new HashMap<>();
-		queryMap.put("branchId", branchId);
+		queryMap.put(CommonParameter.BRANCH_ID, branchId);
 		ProductBranch oldBranch = productDAO.productBranchQuery(queryMap).get(0);
 
 		SEPPHistory history = new SEPPHistory();

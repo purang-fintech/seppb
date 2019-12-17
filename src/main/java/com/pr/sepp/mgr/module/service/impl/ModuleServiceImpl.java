@@ -1,5 +1,6 @@
 package com.pr.sepp.mgr.module.service.impl;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.history.model.SEPPHistory;
 import com.pr.sepp.history.service.HistoryService;
@@ -36,7 +37,7 @@ public class ModuleServiceImpl implements ModuleService {
 	@Override
 	public int moduleCreate(Module module) {
 		Map<String, Object> tempMap = new HashMap<>();
-		tempMap.put("productId", module.getProductId());
+		tempMap.put(CommonParameter.PRODUCT_ID, module.getProductId());
 		Product product = productDAO.productQuery(tempMap).get(0);
 
 		moduleDAO.moduleCreate(module);
@@ -59,11 +60,11 @@ public class ModuleServiceImpl implements ModuleService {
 	public int moduleUpdate(Module module) throws IllegalAccessException {
 		Integer productId = ParameterThreadLocal.getProductId();
 		Map<String, Object> tempMap = new HashMap<>();
-		tempMap.put("productId", productId);
+		tempMap.put(CommonParameter.PRODUCT_ID, productId);
 		Product product = productDAO.productQuery(tempMap).get(0);
 
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("moduleId", module.getModuleId());
+		dataMap.put(CommonParameter.MODULE_ID, module.getModuleId());
 		Module oldModule = moduleDAO.moduleQuery(dataMap).get(0);
 
 		int userId = ParameterThreadLocal.getUserId();
@@ -103,11 +104,11 @@ public class ModuleServiceImpl implements ModuleService {
 	@Override
 	public int moduleDelete(Integer moduleId) {
 		Map<String, Object> modMap = new HashMap<>();
-		modMap.put("moduleId", moduleId);
+		modMap.put(CommonParameter.MODULE_ID, moduleId);
 		Module module = moduleDAO.moduleQuery(modMap).get(0);
 
 		Map<String, Object> tempMap = new HashMap<>();
-		tempMap.put("productId", module.getProductId());
+		tempMap.put(CommonParameter.PRODUCT_ID, module.getProductId());
 		Product product = productDAO.productQuery(tempMap).get(0);
 
 		SEPPHistory history = new SEPPHistory();

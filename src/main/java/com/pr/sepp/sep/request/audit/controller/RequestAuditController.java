@@ -1,5 +1,7 @@
 package com.pr.sepp.sep.request.audit.controller;
 
+import com.pr.sepp.common.constants.CommonParameter;
+import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.sep.request.audit.model.RequestAudit;
 import com.pr.sepp.sep.request.audit.model.RequestAuditResult;
 import com.pr.sepp.sep.request.audit.service.RequestAuditService;
@@ -27,17 +29,17 @@ public class RequestAuditController {
 	}
 
 	@PostMapping(value = "/request/audit/{id}")
-	public int requestAudit(@RequestBody RequestAuditResult requestAuditResult, @PathVariable("id") Integer id) {
+	public int requestAudit(@RequestBody RequestAuditResult requestAuditResult, @PathVariable(CommonParameter.ID) Integer id) {
 		return requestAuditService.requestAuditPush(id, requestAuditResult);
 	}
 
 	@PostMapping(value = "/request/audit_query")
 	public PageInfo<RequestAudit> requestAuditQuery(HttpServletRequest request) {
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("id", request.getParameter("id"));
+		dataMap.put(CommonParameter.ID, request.getParameter(CommonParameter.ID));
 		dataMap.put("prId", request.getParameter("prId"));
-		dataMap.put("productId", request.getParameter("productId"));
-		dataMap.put("submitter", request.getParameter("submitter"));
+		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
+		dataMap.put(CommonParameter.SUBMITTER, request.getParameter(CommonParameter.SUBMITTER));
 		dataMap.put("auditStatus", request.getParameter("auditStatus"));
 		if (!StringUtils.isEmpty(request.getParameter("submitTimeStart"))) {
 			dataMap.put("submitTimeStart", request.getParameter("submitTimeStart") + " 00:00:00");
@@ -46,8 +48,8 @@ public class RequestAuditController {
 			dataMap.put("submitTimeEnd", request.getParameter("submitTimeEnd") + " 23:59:59");
 		}
 
-		int pageNum = StringUtils.isEmpty(request.getParameter("pageNum")) ? 1 : Integer.parseInt(request.getParameter("pageNum"));
-		int pageSize = StringUtils.isEmpty(request.getParameter("pageSize")) ? 500 : Integer.parseInt(request.getParameter("pageSize"));
+		int pageNum = ParameterThreadLocal.getPageNum();
+		int pageSize = ParameterThreadLocal.getPageSize();
 		PageHelper.startPage(pageNum, pageSize);
 
 		List<RequestAudit> requestAudits = requestAuditService.requestAuditQuery(dataMap);

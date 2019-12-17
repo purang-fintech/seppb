@@ -1,6 +1,7 @@
 package com.pr.sepp.sep.build.controller;
 
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.sep.build.model.BuildInstance;
 import com.pr.sepp.sep.build.model.constants.InstanceType;
@@ -62,14 +63,14 @@ public class BuildInstanceController {
     }
 
     @GetMapping(value = "/instances/branch/validator")
-    public boolean checkBranchRepeat(@RequestParam("branchId") Integer branchId,
+    public boolean checkBranchRepeat(@RequestParam(CommonParameter.BRANCH_ID) Integer branchId,
                                      @RequestParam("envType") Integer envType,
                                      @RequestParam("instance") String instance) {
         return buildInstanceService.checkBranchRepeat(branchId, envType, ParameterThreadLocal.getProductId(), instance);
     }
 
     @DeleteMapping(value = "/instances/envs/{id}")
-    public void checkBranchRepeat(@PathVariable("id") Integer id) {
+    public void checkBranchRepeat(@PathVariable(CommonParameter.ID) Integer id) {
         buildInstanceService.deleteEnv(id);
     }
 }

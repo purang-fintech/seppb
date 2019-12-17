@@ -1,5 +1,6 @@
 package com.pr.sepp.sep.release.controller;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.sep.release.model.Release;
 import com.pr.sepp.sep.release.service.ReleaseService;
@@ -35,17 +36,17 @@ public class ReleaseController {
 	@RequestMapping(value = "/release/query", method = RequestMethod.POST)
 	public PageInfo<Release> releaseQuery(HttpServletRequest request) {
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("productId", ParameterThreadLocal.getProductId());
-		String status = request.getParameter("status");
+		dataMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
+		String status = request.getParameter(CommonParameter.STATUS);
 		if (!StringUtils.isEmpty(status)) {
 			dataMap.put("sts", Arrays.asList(status.split(",")));
 		}
-		dataMap.put("id", request.getParameter("id"));
-		dataMap.put("reqId", request.getParameter("reqId"));
-		dataMap.put("branchId", request.getParameter("branchId"));
-		dataMap.put("creator", request.getParameter("creator"));
-		dataMap.put("responser", request.getParameter("responser"));
-		dataMap.put("relCode", request.getParameter("relCode"));
+		dataMap.put(CommonParameter.ID, request.getParameter(CommonParameter.ID));
+		dataMap.put(CommonParameter.REQ_ID, request.getParameter(CommonParameter.REQ_ID));
+		dataMap.put(CommonParameter.BRANCH_ID, request.getParameter(CommonParameter.BRANCH_ID));
+		dataMap.put(CommonParameter.CREATOR, request.getParameter(CommonParameter.CREATOR));
+		dataMap.put(CommonParameter.RESPONSER, request.getParameter(CommonParameter.RESPONSER));
+		dataMap.put(CommonParameter.REL_CODE, request.getParameter(CommonParameter.REL_CODE));
 		dataMap.put("relDateBegin", request.getParameter("relDateBegin"));
 		dataMap.put("relDateEnd", request.getParameter("relDateEnd"));
 
@@ -59,7 +60,7 @@ public class ReleaseController {
 	@RequestMapping(value = "/release/opening", method = RequestMethod.POST)
 	public List<Release> openReleaseQuery() {
 		Map<String, String> dataMap = new HashMap<>();
-		dataMap.put("productId", String.valueOf(ParameterThreadLocal.getProductId()));
+		dataMap.put(CommonParameter.PRODUCT_ID, String.valueOf(ParameterThreadLocal.getProductId()));
 		return releaseService.openReleaseQuery(dataMap);
 	}
 }

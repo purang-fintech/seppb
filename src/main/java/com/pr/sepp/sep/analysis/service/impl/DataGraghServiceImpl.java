@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -43,7 +44,7 @@ public class DataGraghServiceImpl implements DataGraghService {
 			planEnd = rel.get("relDate").toString();
 		} else {
 			Map<String, Object> dataMap = new HashMap<> ();
-			dataMap.put("relId", relId);
+			dataMap.put(CommonParameter.REL_ID, relId);
 			dataMap.put("planType", planType);
 
 			TestPlan testPlan = testPlanDAO.testPlanQuery(dataMap).get(0);
@@ -73,7 +74,7 @@ public class DataGraghServiceImpl implements DataGraghService {
 	public List<Map<String, Object>> defectDirection(int relId, int planType) {
 		List<String> dates = getReleaseDates(relId, planType);
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("relId", relId);
+		dataMap.put(CommonParameter.REL_ID, relId);
 		dataMap.put("planType", planType);
 
 		List<Map<String, Object>> defectFound = dataGraghDAO.defectFound(dataMap);
@@ -174,7 +175,7 @@ public class DataGraghServiceImpl implements DataGraghService {
 	@Override
 	public Map<String, List<Map<String, Object>>> defectDistribution(int relId, int planType) {
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("relId", relId);
+		dataMap.put(CommonParameter.REL_ID, relId);
 		dataMap.put("planType", planType);
 
 		List<Map<String, Object>> defectModule = dataGraghDAO.defectModule(dataMap);

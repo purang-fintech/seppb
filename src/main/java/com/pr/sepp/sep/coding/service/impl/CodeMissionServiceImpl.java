@@ -2,6 +2,7 @@ package com.pr.sepp.sep.coding.service.impl;
 
 import com.pr.sepp.base.dao.BaseQueryDAO;
 import com.pr.sepp.base.model.CodeMissionStatus;
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.history.model.SEPPHistory;
 import com.pr.sepp.history.service.HistoryService;
@@ -51,8 +52,8 @@ public class CodeMissionServiceImpl implements CodeMissionService {
 		int reqId = codeMission.getReqId();
 
 		Map<String, Object> queryMap = new HashMap<>();
-		queryMap.put("reqId", reqId);
-		queryMap.put("productId", productId);
+		queryMap.put(CommonParameter.REQ_ID, reqId);
+		queryMap.put(CommonParameter.PRODUCT_ID, productId);
 		Requirement oldReq = requirementDAO.reqQuery(queryMap).get(0);
 		String reqSum = "【#" + reqId + " - " + oldReq.getSummary() + "】";
 
@@ -63,15 +64,15 @@ public class CodeMissionServiceImpl implements CodeMissionService {
 		reqStatusSynchronize(createdId, 1);
 
 		Map<String, Object> operMap = new HashMap<>();
-		operMap.put("userId", userId);
-		operMap.put("productId", productId);
+		operMap.put(CommonParameter.USER_ID, userId);
+		operMap.put(CommonParameter.PRODUCT_ID, productId);
 		String operName = userDAO.userQuery(operMap).get(0).getUserName();
 
 		String msg = "用户【" + operName + "】在产品需求" + reqSum + "下拆分出新的开发任务：【#" + createdId + " - " + codeMission.getSummary() + "】";
 		SEPPHistory history = new SEPPHistory();
 		history.setObjType(6);
 		history.setObjId(createdId);
-		history.setObjKey("id");
+		history.setObjKey(CommonParameter.ID);
 		history.setProductId(productId);
 		history.setOperUser(userId);
 		history.setOperType(1);
@@ -103,12 +104,12 @@ public class CodeMissionServiceImpl implements CodeMissionService {
 
 		Map<String, Object> queryMap = new HashMap<>();
 		queryMap.put("cmId", codeMission.getId());
-		queryMap.put("productId", productId);
+		queryMap.put(CommonParameter.PRODUCT_ID, productId);
 		CodeMission oldCms = codeMissionDAO.cmsQuery(queryMap).get(0);
 
 		Map<String, Object> operMap = new HashMap<>();
-		operMap.put("userId", userId);
-		operMap.put("productId", productId);
+		operMap.put(CommonParameter.USER_ID, userId);
+		operMap.put(CommonParameter.PRODUCT_ID, productId);
 		String operName = userDAO.userQuery(operMap).get(0).getUserName();
 		String msg = "开发任务：【#" + codeMission.getId() + " - " + codeMission.getSummary() + "】信息由用户【" + operName + "】操作更新";
 		String suffix = "";
@@ -200,15 +201,15 @@ public class CodeMissionServiceImpl implements CodeMissionService {
 		int userId = ParameterThreadLocal.getUserId();
 
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("id", id);
+		dataMap.put(CommonParameter.ID, id);
 		CodeMission cms = codeMissionDAO.cmsQuery(dataMap).get(0);
 
 		Map<String, Object> operMap = new HashMap<>();
-		operMap.put("userId", userId);
-		operMap.put("productId", productId);
+		operMap.put(CommonParameter.USER_ID, userId);
+		operMap.put(CommonParameter.PRODUCT_ID, productId);
 		String operName = userDAO.userQuery(operMap).get(0).getUserName();
 
-		dataMap.put("status", status);
+		dataMap.put(CommonParameter.STATUS, status);
 		List<CodeMissionStatus> sts = baseQueryDAO.codeMissionStatus();
 		String newStatusName = sts.stream().filter(f -> Objects.equals(f.getStatusId(), status)).findFirst().orElse(new CodeMissionStatus()).getStatusName();
 
@@ -224,7 +225,7 @@ public class CodeMissionServiceImpl implements CodeMissionService {
 		history.setReferUser(cms.getResponser());
 		history.setOrgValue(String.valueOf(cms.getStatus()));
 		history.setNewValue(String.valueOf(status));
-		history.setObjKey("status");
+		history.setObjKey(CommonParameter.STATUS);
 		historyService.historyInsert(history);
 
 		List<Integer> messageToSub = new ArrayList<>();
@@ -276,8 +277,8 @@ public class CodeMissionServiceImpl implements CodeMissionService {
 		int oldStatus = requirement.getStatus();
 
 		Map<String, Object> cmsQueryMap = new HashMap<>();
-		cmsQueryMap.put("reqId", reqId);
-		cmsQueryMap.put("productId", productId);
+		cmsQueryMap.put(CommonParameter.REQ_ID, reqId);
+		cmsQueryMap.put(CommonParameter.PRODUCT_ID, productId);
 		List<CodeMission> codeMissions = codeMissionDAO.cmsQuery(cmsQueryMap);
 
 		int mappedStatus = cmsMap2Req(cmNewStatus);
@@ -318,7 +319,7 @@ public class CodeMissionServiceImpl implements CodeMissionService {
 		SEPPHistory history = new SEPPHistory();
 		history.setObjType(2);
 		history.setObjId(requirement.getId());
-		history.setObjKey("status");
+		history.setObjKey(CommonParameter.STATUS);
 		history.setProductId(productId);
 		history.setOperUser(userId);
 		history.setOperType(2);
@@ -357,7 +358,7 @@ public class CodeMissionServiceImpl implements CodeMissionService {
 			history.setOperType(2);
 			history.setOperComment(msg);
 			history.setReferUser(cms.getResponser());
-			history.setObjKey("status");
+			history.setObjKey(CommonParameter.STATUS);
 			history.setOrgValue(String.valueOf(cms.getStatus()));
 			history.setNewValue(String.valueOf(status));
 			historyService.historyInsert(history);

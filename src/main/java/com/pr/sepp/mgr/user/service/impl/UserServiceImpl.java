@@ -1,6 +1,7 @@
 package com.pr.sepp.mgr.user.service.impl;
 
 import com.pr.sepp.auth.core.jwt.Sessions;
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.exception.SeppServerException;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.mgr.role.dao.RoleDAO;
@@ -109,7 +110,7 @@ public class UserServiceImpl implements UserService {
 
 		products.forEach(item -> {
 			Map<String, Object> adminMap = new HashMap<>();
-			adminMap.put("productId", item.get("id"));
+			adminMap.put(CommonParameter.PRODUCT_ID, item.get(CommonParameter.ID));
 			adminMap.put("roleId", "0");
 			List<User> admins = userDAO.userQueryProductRole(adminMap);
 			if (admins.size() == 0) {
@@ -118,7 +119,7 @@ public class UserServiceImpl implements UserService {
 			}
 
 			Message message = new Message();
-			message.setProductId(Integer.parseInt(item.get("id")));
+			message.setProductId(Integer.parseInt(item.get(CommonParameter.ID)));
 			message.setTitle("来自用户【" + applyUser.getUserAccount() + " - " + applyUser.getUserName() + "】的权限申请");
 			message.setContent(roleList.toString());
 			message.setObjectType(13);
@@ -143,7 +144,7 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<User> userQueryProductRole(Integer productId, Integer roleId) {
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("productId", productId);
+		dataMap.put(CommonParameter.PRODUCT_ID, productId);
 		dataMap.put("roleId", roleId);
 		return userDAO.userQueryProductRole(dataMap);
 	}
@@ -266,7 +267,7 @@ public class UserServiceImpl implements UserService {
 
 		// 初始授权DEMO
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("userId", userId);
+		dataMap.put(CommonParameter.USER_ID, userId);
 		dataMap.put("products", Arrays.asList(new Integer[]{0}));
 		dataMap.put("roles", Arrays.asList(new Integer[]{13}));
 		roleDAO.privUpdate(dataMap);

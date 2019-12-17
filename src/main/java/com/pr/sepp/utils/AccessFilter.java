@@ -1,5 +1,6 @@
 package com.pr.sepp.utils;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.constants.Env;
 import com.google.common.collect.Sets;
 import com.google.common.net.HttpHeaders;
@@ -56,7 +57,7 @@ public class AccessFilter implements Filter {
 
 	private boolean loginValid(HttpServletRequest httpServletRequest, HttpServletResponse httpServletResponse) throws IOException {
 		HttpSession session = httpServletRequest.getSession();
-		String uid = httpServletRequest.getParameter("userId");
+		String uid = httpServletRequest.getParameter(CommonParameter.USER_ID);
 		String token = (String) session.getAttribute(uid);
 		String url=httpServletRequest.getRequestURI();
 		HashSet<String> canAccessUrls = Sets.newHashSet("/sepp/user/list_domain", "/", "/sepp/", "/sepp/user/list_domain",
@@ -74,7 +75,7 @@ public class AccessFilter implements Filter {
 		return true;
 	}
 
-	public void init(FilterConfig arg0) throws ServletException {
+	public void init(FilterConfig arg0) {
 
 	}
 }

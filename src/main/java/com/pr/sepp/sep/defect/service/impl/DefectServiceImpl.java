@@ -2,6 +2,7 @@ package com.pr.sepp.sep.defect.service.impl;
 
 import com.pr.sepp.base.dao.BaseQueryDAO;
 import com.pr.sepp.base.model.DefectStatus;
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.history.model.SEPPHistory;
 import com.pr.sepp.history.service.HistoryService;
@@ -58,7 +59,7 @@ public class DefectServiceImpl implements DefectService {
 		SEPPHistory history = new SEPPHistory();
 		history.setObjType(5);
 		history.setObjId(defect.getId());
-		history.setObjKey("id");
+		history.setObjKey(CommonParameter.ID);
 		history.setProductId(productId);
 		history.setOperUser(userId);
 		history.setOperType(1);
@@ -68,8 +69,8 @@ public class DefectServiceImpl implements DefectService {
 		historyService.historyInsert(history);
 
 		Map<String, Object> subMap = new HashMap<>();
-		subMap.put("userId", userId);
-		subMap.put("productId", productId);
+		subMap.put(CommonParameter.USER_ID, userId);
+		subMap.put(CommonParameter.PRODUCT_ID, productId);
 		String submitterName = userDAO.userQuery(subMap).get(0).getUserName();
 		String prefix = "用户【" + submitterName + "】已";
 		boolean responsed = !Objects.isNull(defect.getResponser());
@@ -106,7 +107,7 @@ public class DefectServiceImpl implements DefectService {
 		int id = defect.getId();
 
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("id", id);
+		dataMap.put(CommonParameter.ID, id);
 		Defect oldDefect = defectDAO.defectQuery(dataMap).get(0);
 		List<DefectStatus> sts = baseQueryDAO.defectStatus();
 		String oldStatusName = sts.stream().filter(f -> Objects.equals(f.getStatusId(), oldDefect.getStatus())).findFirst().orElse(new DefectStatus()).getStatusName();
@@ -133,8 +134,8 @@ public class DefectServiceImpl implements DefectService {
 
 		String msg = "缺陷：【#" + defect.getId() + " - " + defect.getSummary() + "】";
 		Map<String, Object> operMap = new HashMap<>();
-		operMap.put("userId", userId);
-		operMap.put("productId", productId);
+		operMap.put(CommonParameter.USER_ID, userId);
+		operMap.put(CommonParameter.PRODUCT_ID, productId);
 		String operName = userDAO.userQuery(operMap).get(0).getUserName();
 		String suffix = "信息被用户【" + operName + "】更新";
 
@@ -203,7 +204,7 @@ public class DefectServiceImpl implements DefectService {
 			Object newValue = field.get(defect);
 			Object oldValue = field.get(oldDefect);
 
-			if (keyName.endsWith("Name") || keyName.equals("relCode") || keyName.equals("productor")) {
+			if (keyName.endsWith("Name") || keyName.equals(CommonParameter.REL_CODE) || keyName.equals("productor")) {
 				continue;
 			}
 
@@ -236,7 +237,7 @@ public class DefectServiceImpl implements DefectService {
 		int status = defectRequestParam.getStatus();
 
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("id", defectRequestParam.getId());
+		dataMap.put(CommonParameter.ID, defectRequestParam.getId());
 		Defect oldDefect = defectDAO.defectQuery(dataMap).get(0);
 		List<DefectStatus> sts = baseQueryDAO.defectStatus();
 		String oldStatusName = sts.stream().filter(f -> Objects.equals(f.getStatusId(), oldDefect.getStatus())).findFirst().orElse(new DefectStatus()).getStatusName();
@@ -291,7 +292,7 @@ public class DefectServiceImpl implements DefectService {
 		history.setReferUser(oldDefect.getResponser());
 		history.setOrgValue(String.valueOf(oldDefect.getStatus()));
 		history.setNewValue(String.valueOf(status));
-		history.setObjKey("status");
+		history.setObjKey(CommonParameter.STATUS);
 
 		historyService.historyInsert(history);
 		return defectDAO.defectStatusUpdate(defectRequestParam);

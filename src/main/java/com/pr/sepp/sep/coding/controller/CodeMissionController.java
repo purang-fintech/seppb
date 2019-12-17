@@ -1,5 +1,6 @@
 package com.pr.sepp.sep.coding.controller;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.sep.coding.model.CodeMission;
 import com.pr.sepp.sep.coding.service.CodeMissionService;
@@ -25,14 +26,14 @@ public class CodeMissionController {
 	@RequestMapping(value = "/cms/query", method = RequestMethod.POST)
 	public PageInfo<CodeMission> cmsQuery(HttpServletRequest request) {
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("productId", request.getParameter("productId"));
-		dataMap.put("reqId", request.getParameter("reqId"));
-		dataMap.put("relId", request.getParameter("relId"));
-		dataMap.put("id", request.getParameter("id"));
-		dataMap.put("spliter", request.getParameter("spliter"));
-		dataMap.put("moduleId", request.getParameter("moduleId"));
-		dataMap.put("responser", request.getParameter("responser"));
-		String status = request.getParameter("status");
+		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
+		dataMap.put(CommonParameter.REQ_ID, request.getParameter(CommonParameter.REQ_ID));
+		dataMap.put(CommonParameter.REL_ID, request.getParameter(CommonParameter.REL_ID));
+		dataMap.put(CommonParameter.ID, request.getParameter(CommonParameter.ID));
+		dataMap.put(CommonParameter.SPLITER, request.getParameter(CommonParameter.SPLITER));
+		dataMap.put(CommonParameter.MODULE_ID, request.getParameter(CommonParameter.MODULE_ID));
+		dataMap.put(CommonParameter.RESPONSER, request.getParameter(CommonParameter.RESPONSER));
+		String status = request.getParameter(CommonParameter.STATUS);
 		if (!StringUtils.isEmpty(status)) {
 			dataMap.put("sts", Arrays.asList(status.split(",")));
 		}
@@ -74,12 +75,12 @@ public class CodeMissionController {
 	}
 
 	@RequestMapping(value = "/cms/status_update/{id}/{status}", method = RequestMethod.POST)
-	public int cmsStatusUpdate(@PathVariable("status") Integer status, @PathVariable("id") Integer id) {
+	public int cmsStatusUpdate(@PathVariable(CommonParameter.STATUS) Integer status, @PathVariable(CommonParameter.ID) Integer id) {
 		return codeMissionService.cmsStatusUpdate(status, id);
 	}
 
 	@RequestMapping(value = "/cms/req_cms_sync/{reqId}/{status}", method = RequestMethod.POST)
-	public int reqCmsStatusSync(@PathVariable("reqId") Integer reqId, @PathVariable("status") Integer status) {
+	public int reqCmsStatusSync(@PathVariable(CommonParameter.REQ_ID) Integer reqId, @PathVariable(CommonParameter.STATUS) Integer status) {
 		return codeMissionService.reqCmsStatusSync(reqId, status);
 	}
 }

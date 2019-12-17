@@ -6,6 +6,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.pr.sepp.common.constants.CommonParameter;
+import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.sep.coding.model.CodeMission;
 import com.pr.sepp.sep.release.model.Release;
 import com.pr.sepp.sep.requirement.model.Requirement;
@@ -33,11 +35,11 @@ public class FuzzQueryController {
 	@RequestMapping(value = "/fuzz/release_query", method =  RequestMethod.POST)
 	public PageInfo<Release> releaseQuery(HttpServletRequest request, @RequestParam(value = "searchText") String searchText) {
 		Map<String, String> dataMap = new HashMap<>();
-		dataMap.put("productId", request.getParameter("productId"));
+		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
 		dataMap.put("searchText", searchText);
 
-		int pageNum = StringUtils.isEmpty(request.getParameter("pageNum")) ? 1 : Integer.parseInt(request.getParameter("pageNum"));
-		int pageSize = StringUtils.isEmpty(request.getParameter("pageSize")) ? 500 : Integer.parseInt(request.getParameter("pageSize"));
+		int pageNum = ParameterThreadLocal.getPageNum();
+		int pageSize = ParameterThreadLocal.getPageSize();
 		PageHelper.startPage(pageNum, pageSize);
 
 		List<Release> list = fuzzQueryService.releaseQuery(dataMap);
@@ -48,11 +50,11 @@ public class FuzzQueryController {
 	@RequestMapping(value = "/fuzz/req_query", method =  RequestMethod.POST)
 	public PageInfo<Requirement> reqQuery(HttpServletRequest request, @RequestParam(value = "searchText") String searchText) {
 		Map<String, String> dataMap = new HashMap<>();
-		dataMap.put("productId", request.getParameter("productId"));
+		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
 		dataMap.put("searchText", searchText);
 
-		int pageNum = StringUtils.isEmpty(request.getParameter("pageNum")) ? 1 : Integer.parseInt(request.getParameter("pageNum"));
-		int pageSize = StringUtils.isEmpty(request.getParameter("pageSize")) ? 500 : Integer.parseInt(request.getParameter("pageSize"));
+		int pageNum = ParameterThreadLocal.getPageNum();
+		int pageSize = ParameterThreadLocal.getPageSize();
 		PageHelper.startPage(pageNum, pageSize);
 
 		List<Requirement> list = fuzzQueryService.reqQuery(dataMap);
@@ -63,11 +65,11 @@ public class FuzzQueryController {
 	@RequestMapping(value = "/fuzz/cms_query", method =  RequestMethod.POST)
 	public PageInfo<CodeMission> cmsQuery(HttpServletRequest request, @RequestParam(value = "searchText") String searchText) {
 		Map<String, String> dataMap = new HashMap<>();
-		dataMap.put("productId", request.getParameter("productId"));
+		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
 		dataMap.put("searchText", searchText);
 
-		int pageNum = StringUtils.isEmpty(request.getParameter("pageNum")) ? 1 : Integer.parseInt(request.getParameter("pageNum"));
-		int pageSize = StringUtils.isEmpty(request.getParameter("pageSize")) ? 500 : Integer.parseInt(request.getParameter("pageSize"));
+		int pageNum = ParameterThreadLocal.getPageNum();
+		int pageSize = ParameterThreadLocal.getPageSize();
 		PageHelper.startPage(pageNum, pageSize);
 
 		List<CodeMission> list = fuzzQueryService.cmsQuery(dataMap);
@@ -78,11 +80,11 @@ public class FuzzQueryController {
 	@RequestMapping(value = "/fuzz/defect_query", method =  RequestMethod.POST)
 	public PageInfo<Defect> defectQuery(HttpServletRequest request, @RequestParam(value = "searchText") String searchText) {
 		Map<String, String> dataMap = new HashMap<>();
-		dataMap.put("productId", request.getParameter("productId"));
+		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
 		dataMap.put("searchText", searchText);
 
-		int pageNum = StringUtils.isEmpty(request.getParameter("pageNum")) ? 1 : Integer.parseInt(request.getParameter("pageNum"));
-		int pageSize = StringUtils.isEmpty(request.getParameter("pageSize")) ? 500 : Integer.parseInt(request.getParameter("pageSize"));
+		int pageNum = ParameterThreadLocal.getPageNum();
+		int pageSize = ParameterThreadLocal.getPageSize();
 		PageHelper.startPage(pageNum, pageSize);
 
 		List<Defect> list = fuzzQueryService.defectQuery(dataMap);
@@ -93,11 +95,11 @@ public class FuzzQueryController {
 	@RequestMapping(value = "/fuzz/problem_query", method =  RequestMethod.POST)
 	public PageInfo<Problem> problemQuery(HttpServletRequest request, @RequestParam(value = "searchText") String searchText) {
 		Map<String, String> dataMap = new HashMap<>();
-		dataMap.put("productId", request.getParameter("productId"));
+		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
 		dataMap.put("searchText", searchText);
 
-		int pageNum = StringUtils.isEmpty(request.getParameter("pageNum")) ? 1 : Integer.parseInt(request.getParameter("pageNum"));
-		int pageSize = StringUtils.isEmpty(request.getParameter("pageSize")) ? 500 : Integer.parseInt(request.getParameter("pageSize"));
+		int pageNum = ParameterThreadLocal.getPageNum();
+		int pageSize = ParameterThreadLocal.getPageSize();
 		PageHelper.startPage(pageNum, pageSize);
 
 		List<Problem> list = fuzzQueryService.problemQuery(dataMap);

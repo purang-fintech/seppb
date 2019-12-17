@@ -48,7 +48,7 @@ public class DeploymentBuildReq {
 
     public Map<String, String> deployParams() {
         HashMap<String, String> paramsMap = Maps.newHashMap();
-        paramsMap.put(BUILDVERSION, String.valueOf(buildVersion));
+        paramsMap.put(BUILD_VERSION, String.valueOf(buildVersion));
         paramsMap.put(JOB_NAME, jobName);
         return paramsMap;
     }

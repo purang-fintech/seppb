@@ -1,5 +1,6 @@
 package com.pr.sepp.mgr.role.controller;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.history.model.SEPPHistory;
 import com.pr.sepp.history.service.HistoryService;
@@ -46,8 +47,8 @@ public class RoleController {
 	@RequestMapping(value = "/priv/query", method =  RequestMethod.POST)
 	public PageInfo<Map<String, Object>> privQuery(HttpServletRequest request) throws Exception {
 		Map<String, String> dataMap = new HashMap<>();
-		dataMap.put("productId", request.getParameter("productId"));
-		dataMap.put("userId", request.getParameter("userId"));
+		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
+		dataMap.put(CommonParameter.USER_ID, request.getParameter(CommonParameter.USER_ID));
 		dataMap.put("roleId", request.getParameter("roleId"));
 		dataMap.put("privId", request.getParameter("privId"));
 		dataMap.put("isValid", request.getParameter("isValid"));
@@ -64,14 +65,14 @@ public class RoleController {
 		Map<String, Object> dataMap = new HashMap<>();
 		String[] products = request.getParameter("products").split(",");
 		String[] roles = request.getParameter("roles").split(",");
-		dataMap.put("userId", request.getParameter("operUser"));
+		dataMap.put(CommonParameter.USER_ID, request.getParameter("operUser"));
 		dataMap.put("products", Arrays.asList(products));
 		dataMap.put("roles", Arrays.asList(roles));
 
 		int privedUser = Integer.parseInt(request.getParameter("operUser"));
 
 		Map<String, Object> userMap = new HashMap<>();
-		userMap.put("userId", privedUser);
+		userMap.put(CommonParameter.USER_ID, privedUser);
 		User user = userService.userQuery(userMap).get(0);
 
 		int count = roleService.privUpdate(dataMap);
@@ -100,10 +101,10 @@ public class RoleController {
 		Map<String, String> queryMap = new HashMap<>();
 		queryMap.put("privId", privs.split(",")[0]);
 		Map<String, Object> privilege = roleService.privQuery(queryMap).get(0);
-		int privedUser = (int) privilege.get("userId");
+		int privedUser = (int) privilege.get(CommonParameter.USER_ID);
 
 		Map<String, Object> userMap = new HashMap<>();
-		userMap.put("userId", privedUser);
+		userMap.put(CommonParameter.USER_ID, privedUser);
 		User user = userService.userQuery(userMap).get(0);
 		
 		int count = roleService.privDelete(dataMap);
@@ -123,7 +124,7 @@ public class RoleController {
 	}
 
 	@RequestMapping(value = "/role/p_r_query_user", method =  RequestMethod.POST)
-	public List<Map<String, Object>> productRoleQueryUser(@RequestParam(value = "userId") Integer userId) {
+	public List<Map<String, Object>> productRoleQueryUser(@RequestParam(value = CommonParameter.USER_ID) Integer userId) {
 		return roleService.productRoleQueryUser(userId);
 	}
 }

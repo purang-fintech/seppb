@@ -1,5 +1,6 @@
 package com.pr.sepp.sep.testing.controller;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.sep.testing.model.TestPlan;
 import com.pr.sepp.sep.testing.service.TestPlanService;
@@ -23,11 +24,11 @@ public class TestPlanController {
     @RequestMapping(value = "/plan/query", method = RequestMethod.POST)
     public PageInfo<TestPlan> testPlanQuery(HttpServletRequest request) {
         Map<String, Object> dataMap = new HashMap<>();
-        dataMap.put("productId", request.getParameter("productId"));
-        dataMap.put("relId", request.getParameter("relId"));
+        dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
+        dataMap.put(CommonParameter.REL_ID, request.getParameter(CommonParameter.REL_ID));
         dataMap.put("planType", request.getParameter("planType"));
         dataMap.put("planStatus", request.getParameter("planStatus"));
-        dataMap.put("responser", request.getParameter("responser"));
+        dataMap.put(CommonParameter.RESPONSER, request.getParameter(CommonParameter.RESPONSER));
         if (!StringUtils.isEmpty(request.getParameter("planedDateBegin"))) {
             dataMap.put("planedDateBegin", request.getParameter("planedDateBegin") + " 00:00:00");
         }
@@ -58,7 +59,7 @@ public class TestPlanController {
     }
 
     @RequestMapping(value = "/plan/delete/{id}", method = RequestMethod.POST)
-    public int testPlanDelete(@PathVariable("id") Integer id) {
+    public int testPlanDelete(@PathVariable(CommonParameter.ID) Integer id) {
         return testPlanService.testPlanDelete(id);
     }
 

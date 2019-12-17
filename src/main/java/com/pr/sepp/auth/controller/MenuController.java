@@ -5,6 +5,7 @@ import com.pr.sepp.auth.model.req.MenuReq;
 import com.pr.sepp.auth.model.resp.MenuResp;
 import com.pr.sepp.auth.model.resp.UserAuthResp;
 import com.pr.sepp.auth.service.MenuService;
+import com.pr.sepp.common.constants.CommonParameter;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -43,7 +44,7 @@ public class MenuController {
     }
 
     @DeleteMapping(value = "/menus/configs/{id}")
-    public void deleteMenu(@PathVariable("id") Integer id) {
+    public void deleteMenu(@PathVariable(CommonParameter.ID) Integer id) {
         menuService.deleteMenu(id);
     }
 

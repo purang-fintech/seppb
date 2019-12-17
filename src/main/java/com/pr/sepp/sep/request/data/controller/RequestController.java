@@ -1,5 +1,6 @@
 package com.pr.sepp.sep.request.data.controller;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.sep.request.audit.model.RequestAudit;
 import com.pr.sepp.sep.request.data.model.ProductRequirement;
@@ -37,7 +38,7 @@ public class RequestController {
 	}
 
 	@PostMapping(value = "/request/close/{id}")
-	public int requestClose(@PathVariable("id") Integer id) {
+	public int requestClose(@PathVariable(CommonParameter.ID) Integer id) {
 		return requestsService.requestClose(id);
 	}
 
@@ -50,21 +51,21 @@ public class RequestController {
 	public PageInfo<ProductRequirement> requestQuery(HttpServletRequest request) {
 
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("id", request.getParameter("id"));
+		dataMap.put(CommonParameter.ID, request.getParameter(CommonParameter.ID));
 		dataMap.put("priority", request.getParameter("priority"));
 		String moduleIds = request.getParameter("moduleIds");
 		if (!StringUtils.isEmpty(moduleIds)) {
 			dataMap.put("modules", Arrays.asList(moduleIds.split(",")));
 		}
-		dataMap.put("productId", request.getParameter("productId"));
-		dataMap.put("submitter", request.getParameter("submitter"));
+		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
+		dataMap.put(CommonParameter.SUBMITTER, request.getParameter(CommonParameter.SUBMITTER));
 		if (!StringUtils.isEmpty(request.getParameter("submitDateBegintart"))) {
 			dataMap.put("submitDateBegin", request.getParameter("submitDateBegintart") + " 00:00:00");
 		}
 		if (!StringUtils.isEmpty(request.getParameter("submitDateEnd"))) {
 			dataMap.put("submitDateEnd", request.getParameter("submitDateEnd") + " 23:59:59");
 		}
-		String status = request.getParameter("status");
+		String status = request.getParameter(CommonParameter.STATUS);
 		if (!StringUtils.isEmpty(status)) {
 			dataMap.put("sts", Arrays.asList(status.split(",")));
 		}
@@ -73,8 +74,8 @@ public class RequestController {
 			dataMap.put("types", Arrays.asList(type.split(",")));
 		}
 
-		int pageNum = StringUtils.isEmpty(request.getParameter("pageNum")) ? 1 : Integer.parseInt(request.getParameter("pageNum"));
-		int pageSize = StringUtils.isEmpty(request.getParameter("pageSize")) ? 500 : Integer.parseInt(request.getParameter("pageSize"));
+		int pageNum = ParameterThreadLocal.getPageNum();
+		int pageSize = ParameterThreadLocal.getPageSize();
 		PageHelper.startPage(pageNum, pageSize);
 
 		List<ProductRequirement> requests = requestsService.requestQuery(dataMap);

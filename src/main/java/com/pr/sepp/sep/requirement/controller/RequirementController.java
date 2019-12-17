@@ -1,6 +1,7 @@
 package com.pr.sepp.sep.requirement.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.sep.requirement.model.ReqStatusUpdate;
 import com.pr.sepp.sep.requirement.model.Requirement;
@@ -29,12 +30,12 @@ public class RequirementController {
 
 		Map<String, Object> dataMap = new HashMap<>();
 		// 前向兼容，解决前端可能会存在的语义不明的情况
-		if (StringUtils.isNotEmpty(request.getParameter("reqId"))) {
-			dataMap.put("id", request.getParameter("reqId"));
-		} else if (StringUtils.isNotEmpty(request.getParameter("id"))) {
-			dataMap.put("id", request.getParameter("id"));
+		if (StringUtils.isNotEmpty(request.getParameter(CommonParameter.REQ_ID))) {
+			dataMap.put(CommonParameter.ID, request.getParameter(CommonParameter.REQ_ID));
+		} else if (StringUtils.isNotEmpty(request.getParameter(CommonParameter.ID))) {
+			dataMap.put(CommonParameter.ID, request.getParameter(CommonParameter.ID));
 		}
-		dataMap.put("relId", request.getParameter("relId"));
+		dataMap.put(CommonParameter.REL_ID, request.getParameter(CommonParameter.REL_ID));
 		dataMap.put("cmId", request.getParameter("cmId"));
 		dataMap.put("tmId", request.getParameter("tmId"));
 		dataMap.put("defectId", request.getParameter("defectId"));
@@ -43,8 +44,8 @@ public class RequirementController {
 		if (!StringUtils.isEmpty(moduleIds)) {
 			dataMap.put("modules", Arrays.asList(moduleIds.split(",")));
 		}
-		dataMap.put("productId", request.getParameter("productId"));
-		dataMap.put("submitter", request.getParameter("submitter"));
+		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
+		dataMap.put(CommonParameter.SUBMITTER, request.getParameter(CommonParameter.SUBMITTER));
 		if (!StringUtils.isEmpty(request.getParameter("submitDateBegin"))) {
 			dataMap.put("submitDateBegin", request.getParameter("submitDateBegin") + " 00:00:00");
 		}
@@ -63,7 +64,7 @@ public class RequirementController {
 		if (!StringUtils.isEmpty(request.getParameter("sitBeginDateEnd"))) {
 			dataMap.put("sitBeginDateEnd", request.getParameter("sitBeginDateEnd") + " 23:59:59");
 		}
-		String status = request.getParameter("status");
+		String status = request.getParameter(CommonParameter.STATUS);
 		if (!StringUtils.isEmpty(status)) {
 			dataMap.put("sts", Arrays.asList(status.split(",")));
 		}
@@ -112,12 +113,12 @@ public class RequirementController {
 	}
 
 	@RequestMapping(value = "/req/history/{reqId}", method = RequestMethod.POST)
-	public List<Map<String, String>> reqHistoryQuery(@PathVariable("reqId") Integer reqId) {
+	public List<Map<String, String>> reqHistoryQuery(@PathVariable(CommonParameter.REQ_ID) Integer reqId) {
 		return requirementService.reqHistoryQuery(reqId);
 	}
 
 	@RequestMapping(value = "/req/rel_query/{relId}/{pageNum}/{pageSize}", method = RequestMethod.POST)
-	public PageInfo<Requirement> relReqQuery(@PathVariable("relId") Integer relId,
+	public PageInfo<Requirement> relReqQuery(@PathVariable(CommonParameter.REL_ID) Integer relId,
 											 @PathVariable("pageNum") Integer pageNum,
 											 @PathVariable("pageSize") Integer pageSize) {
 		PageHelper.startPage(ParameterThreadLocal.getPageNum(), ParameterThreadLocal.getPageSize());
@@ -128,7 +129,7 @@ public class RequirementController {
 	}
 
 	@RequestMapping(value = "/req/copy/{id}", method = RequestMethod.POST)
-	public int reqDelayCopy(@PathVariable("id") Integer id) {
+	public int reqDelayCopy(@PathVariable(CommonParameter.ID) Integer id) {
 		return requirementService.reqDelayCopy(id);
 	}
 }

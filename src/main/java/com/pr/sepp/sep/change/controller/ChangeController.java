@@ -1,5 +1,6 @@
 package com.pr.sepp.sep.change.controller;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.sep.change.model.Change;
 import com.pr.sepp.sep.change.service.ChangeService;
@@ -21,7 +22,7 @@ public class ChangeController {
 	private ChangeService changeService;
 
 	@RequestMapping(value = "/change/query", method = RequestMethod.POST)
-	public List<Change> changeQuery(@RequestParam(value = "reqId") int reqId) {
+	public List<Change> changeQuery(@RequestParam(value = CommonParameter.REQ_ID) int reqId) {
 		return changeService.changeQuery(reqId);
 	}
 
@@ -29,11 +30,11 @@ public class ChangeController {
 	public PageInfo<Change> changeAuditQuery(HttpServletRequest request) {
 
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("reqId", request.getParameter("reqId"));
+		dataMap.put(CommonParameter.REQ_ID, request.getParameter(CommonParameter.REQ_ID));
 		dataMap.put("cmId", request.getParameter("cmId"));
 		dataMap.put("tmId", request.getParameter("tmId"));
-		dataMap.put("relId", request.getParameter("relId"));
-		dataMap.put("productId", request.getParameter("productId"));
+		dataMap.put(CommonParameter.REL_ID, request.getParameter(CommonParameter.REL_ID));
+		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
 		dataMap.put("changeStatus", request.getParameter("changeStatus"));
 		dataMap.put("changeUser", request.getParameter("changeUser"));
 		dataMap.put("auditUser", request.getParameter("auditUser"));
@@ -53,7 +54,7 @@ public class ChangeController {
 	}
 
 	@RequestMapping(value = "/change/update/{id}", method = RequestMethod.POST)
-	public synchronized int changeInfoUpdate(@PathVariable("id") Integer id) {
+	public synchronized int changeInfoUpdate(@PathVariable(CommonParameter.ID) Integer id) {
 		return changeService.changeInfoUpdate(id);
 	}
 
@@ -66,10 +67,10 @@ public class ChangeController {
 		}
 
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("reqId", request.getParameter("reqId"));
+		dataMap.put(CommonParameter.REQ_ID, request.getParameter(CommonParameter.REQ_ID));
 		dataMap.put("cmId", request.getParameter("cmId"));
 		dataMap.put("tmId", request.getParameter("tmId"));
-		dataMap.put("relId", request.getParameter("relId"));
+		dataMap.put(CommonParameter.REL_ID, request.getParameter(CommonParameter.REL_ID));
 		return changeService.changeOnWay(dataMap);
 	}
 }

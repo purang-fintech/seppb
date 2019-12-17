@@ -4,6 +4,7 @@ import java.lang.reflect.Field;
 import java.util.*;
 import java.util.stream.Collectors;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.history.model.SEPPHistory;
 import com.pr.sepp.history.service.HistoryService;
@@ -45,7 +46,7 @@ public class EnvInfoServiceImpl implements EnvInfoService {
 	@Override
 	public int envInfoCreate(EnvInfo envInfo) {
 		Map<String, Object> tempMap = new HashMap<>();
-		tempMap.put("productId", envInfo.getProductId());
+		tempMap.put(CommonParameter.PRODUCT_ID, envInfo.getProductId());
 		Product product = productDAO.productQuery(tempMap).get(0);
 
 		envInfoDAO.envInfoCreate(envInfo);
@@ -55,7 +56,7 @@ public class EnvInfoServiceImpl implements EnvInfoService {
 		SEPPHistory history = new SEPPHistory();
 		history.setObjType(14);
 		history.setObjId(created);
-		history.setObjKey("id");
+		history.setObjKey(CommonParameter.ID);
 		history.setProductId(product.getProductId());
 		history.setOperUser(ParameterThreadLocal.getUserId());
 		history.setOperComment("产品【" + product.getProductName() + "】下新建环境记录，URL为【" + envInfo.getEnvUrl() + "】");
@@ -71,11 +72,11 @@ public class EnvInfoServiceImpl implements EnvInfoService {
 		Integer userId = ParameterThreadLocal.getUserId();
 
 		Map<String, Object> tempMap = new HashMap<>();
-		tempMap.put("productId", productId);
+		tempMap.put(CommonParameter.PRODUCT_ID, productId);
 		Product product = productDAO.productQuery(tempMap).get(0);
 
 		Map<String, Object> queryMap = new HashMap<>();
-		queryMap.put("id", envInfo.getId());
+		queryMap.put(CommonParameter.ID, envInfo.getId());
 		EnvInfo oldEnvInfo = envInfoDAO.envInfoQuery(queryMap).get(0);
 
 		envInfo.setProductId(productId);
@@ -122,13 +123,13 @@ public class EnvInfoServiceImpl implements EnvInfoService {
 		EnvInfo oldEnvInfo = envInfoDAO.envInfoQuery(queryMap).get(0);
 
 		Map<String, Object> tempMap = new HashMap<>();
-		tempMap.put("productId", oldEnvInfo.getProductId());
+		tempMap.put(CommonParameter.PRODUCT_ID, oldEnvInfo.getProductId());
 		Product product = productDAO.productQuery(tempMap).get(0);
 
 		SEPPHistory history = new SEPPHistory();
 		history.setObjType(14);
 		history.setObjId(envInfoId);
-		history.setObjKey("id");
+		history.setObjKey(CommonParameter.ID);
 		history.setProductId(product.getProductId());
 		history.setOperUser(ParameterThreadLocal.getUserId());
 		history.setOperType(3);

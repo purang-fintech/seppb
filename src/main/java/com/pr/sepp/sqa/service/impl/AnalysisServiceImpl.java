@@ -1,6 +1,7 @@
 package com.pr.sepp.sqa.service.impl;
 
 import com.pr.sepp.common.calculation.service.GompertzCalculation;
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.mgr.product.dao.ProductDAO;
 import com.pr.sepp.mgr.product.model.ProductConfig;
 import com.pr.sepp.sep.release.dao.ReleaseDAO;
@@ -19,6 +20,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+
+import static com.pr.sepp.common.constants.CommonParameter.*;
 
 @Transactional
 @Service("analysisService")
@@ -40,14 +43,14 @@ public class AnalysisServiceImpl implements AnalysisService {
 	private static final String dateFormat = "yyyy-MM-dd";
 
 	private List<String> getReleaseDates(Map<String, Object> dataMap) {
-		String planBegin = String.valueOf(dataMap.get("qTimeBegin"));
-		String planEnd = String.valueOf(dataMap.get("qTimeEnd"));
+		String planBegin = String.valueOf(dataMap.get(CommonParameter.QRY_TIME_BEGIN));
+		String planEnd = String.valueOf(dataMap.get(CommonParameter.QRY_TIME_END));
 
-		List<String> result = new ArrayList<String>();
+		List<String> result = new ArrayList<>();
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat format = new SimpleDateFormat(dateFormat);
 
-		if (null != dataMap.get("relId") && !StringUtils.isEmpty(String.valueOf(dataMap.get("relId")))) {
+		if (null != dataMap.get(REL_ID) && !StringUtils.isEmpty(String.valueOf(dataMap.get(REL_ID)))) {
 			Release release = releaseDAO.releaseQuery(dataMap).get(0);
 			planBegin = release.getSitBeginDate();
 			planEnd = release.getRelDate();
@@ -76,12 +79,12 @@ public class AnalysisServiceImpl implements AnalysisService {
 		List<String> dates = getReleaseDates(dataMap);
 		List<Map<String, Object>> expectTrend = new ArrayList<>();
 
-		if (!StringUtils.isEmpty(MapUtils.getString(dataMap, "relId"))) {
+		if (!StringUtils.isEmpty(MapUtils.getString(dataMap, REL_ID))) {
 			Map<String, Object> relMap = new HashMap<>();
-			relMap.put("productId", dataMap.get("productId"));
-			relMap.put("relId", dataMap.get("relId"));
+			relMap.put(PRODUCT_ID, dataMap.get(PRODUCT_ID));
+			relMap.put(REL_ID, dataMap.get(REL_ID));
 			Release release = releaseDAO.releaseQuery(relMap).get(0);
-			ProductConfig config = productDAO.productConfigQuery(Integer.parseInt((String) dataMap.get("productId"))).get(0);
+			ProductConfig config = productDAO.productConfigQuery(Integer.parseInt((String) dataMap.get(PRODUCT_ID))).get(0);
 			Map<String, Double> gompertz = new Gson().fromJson(config.getGompertzParams(), new TypeToken<Map<String, Double>>() {
 			}.getType());
 			expectTrend = calService.releaseDefectTrend(release, new Double[]{gompertz.get("k"), gompertz.get("a"), gompertz.get("b"), gompertz.get("m")});
@@ -120,7 +123,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 				}
 			}
 
-			if (null != dataMap.get("relId")) {
+			if (null != dataMap.get(REL_ID)) {
 				for (int j = 0; j < expectTrend.size(); j++) {
 					Map<String, Object> expect = expectTrend.get(j);
 					String summaryDate = expect.get("summaryDate").toString();
@@ -173,7 +176,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 		for (int i = 1; i < chartsData.size(); i++) {
 			Map<String, Object> chartsMap = chartsData.get(i);
 			int expectFound = 0;
-			if (null != dataMap.get("relId")) {
+			if (null != dataMap.get(REL_ID)) {
 				expectFound = Integer.parseInt(chartsMap.get("expectFound").toString());
 				expectFound += (expectFound == 0) ? Integer.parseInt(chartsData.get(i - 1).get("expectFound").toString()) : 0;
 				chartsMap.put("expectFound", expectFound);
@@ -401,12 +404,12 @@ public class AnalysisServiceImpl implements AnalysisService {
 	public List<Map<String, Object>> defectCaseDensity(Map<String, Object> dataMap) {
 		List<Map<String, Object>> defectCase = analysisDAO.defectCaseDensity(dataMap);
 
-		defectCase.forEach((item) -> {
+		defectCase.forEach(item -> {
 			String relCaseStr = String.valueOf(item.get("cases"));
 			if (null == item.get("cases") || StringUtils.isEmpty(relCaseStr)) {
 				item.put("caseNum", 0);
 			} else {
-				List<String> cases = new ArrayList<String>(new HashSet<>(Arrays.asList(relCaseStr.split(","))));
+				List<String> cases = new ArrayList<>(new HashSet<>(Arrays.asList(relCaseStr.split(","))));
 				item.put("caseNum", cases.size());
 			}
 			item.remove("cases");

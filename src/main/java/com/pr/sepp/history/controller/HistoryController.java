@@ -6,6 +6,8 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.pr.sepp.common.constants.CommonParameter;
+import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -27,11 +29,11 @@ public class HistoryController {
 	@RequestMapping(value = "/mgr/direct", method =  RequestMethod.POST)
 	public PageInfo<SEPPHistory> historyDirectQuery(HttpServletRequest request) {
 		Map<String, String> dataMap = new HashMap<>();
-		dataMap.put("userId", request.getParameter("userId"));
-		dataMap.put("productId", request.getParameter("productId"));
+		dataMap.put(CommonParameter.USER_ID, request.getParameter(CommonParameter.USER_ID));
+		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
 
-		int pageNum = StringUtils.isEmpty(request.getParameter("pageNum")) ? 1 : Integer.parseInt(request.getParameter("pageNum"));
-		int pageSize = StringUtils.isEmpty(request.getParameter("pageSize")) ? 500 : Integer.parseInt(request.getParameter("pageSize"));
+		int pageNum = ParameterThreadLocal.getPageNum();
+		int pageSize = ParameterThreadLocal.getPageSize();
 		PageHelper.startPage(pageNum, pageSize);
 
 		List<SEPPHistory> list = historyService.historyDirectQuery(dataMap);
@@ -42,11 +44,11 @@ public class HistoryController {
 	@RequestMapping(value = "/mgr/refer", method =  RequestMethod.POST)
 	public PageInfo<SEPPHistory> historyReferQuery(HttpServletRequest request) {
 		Map<String, String> dataMap = new HashMap<>();
-		dataMap.put("userId", request.getParameter("userId"));
-		dataMap.put("productId", request.getParameter("productId"));
+		dataMap.put(CommonParameter.USER_ID, request.getParameter(CommonParameter.USER_ID));
+		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
 
-		int pageNum = StringUtils.isEmpty(request.getParameter("pageNum")) ? 1 : Integer.parseInt(request.getParameter("pageNum"));
-		int pageSize = StringUtils.isEmpty(request.getParameter("pageSize")) ? 500 : Integer.parseInt(request.getParameter("pageSize"));
+		int pageNum = ParameterThreadLocal.getPageNum();
+		int pageSize = ParameterThreadLocal.getPageSize();
 		PageHelper.startPage(pageNum, pageSize);
 
 		List<SEPPHistory> list = historyService.historyReferQuery(dataMap);

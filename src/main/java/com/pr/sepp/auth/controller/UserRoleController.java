@@ -3,6 +3,7 @@ package com.pr.sepp.auth.controller;
 import com.pr.sepp.auth.model.Role;
 import com.pr.sepp.auth.model.resp.CurrentUserRoleResp;
 import com.pr.sepp.auth.service.UserRoleService;
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +44,7 @@ public class UserRoleController {
     }
 
     @GetMapping(value = "/user/product/roles/{productId}")
-    public CurrentUserRoleResp userRolesByProduct(@PathVariable("productId") Integer productId) {
+    public CurrentUserRoleResp userRolesByProduct(@PathVariable(CommonParameter.PRODUCT_ID) Integer productId) {
         return userRoleService.currentUserRolesByProductId(ParameterThreadLocal.getUserId(), productId);
     }
 

@@ -1,5 +1,6 @@
 package com.pr.sepp.sep.testing.service.impl;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.history.model.SEPPHistory;
 import com.pr.sepp.history.service.HistoryService;
@@ -48,7 +49,7 @@ public class TestExecServiceImpl implements TestExecService {
 		history.setOperUser(ParameterThreadLocal.getUserId());
 		history.setOperType(1);
 		history.setOperComment("创建测试用例集：" + scenario.getName());
-		history.setObjKey("id");
+		history.setObjKey(CommonParameter.ID);
 		historyService.historyInsert(history);
 
 		return scenario.getId();
@@ -57,7 +58,7 @@ public class TestExecServiceImpl implements TestExecService {
 	@Override
 	public int testScenarioUpdate(TestScenario scenario) throws IllegalAccessException {
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("id", scenario.getId());
+		dataMap.put(CommonParameter.ID, scenario.getId());
 		TestScenario oldScenario = testExecDAO.testScenarioQuery(dataMap).get(0);
 
 		List<SEPPHistory> histories = new ArrayList<>();
@@ -94,7 +95,7 @@ public class TestExecServiceImpl implements TestExecService {
 	@Override
 	public int testScenarioDelete(Integer id) {
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("id", id);
+		dataMap.put(CommonParameter.ID, id);
 		TestScenario scenario = testExecDAO.testScenarioQuery(dataMap).get(0);
 
 		SEPPHistory history = new SEPPHistory();
@@ -102,7 +103,7 @@ public class TestExecServiceImpl implements TestExecService {
 		history.setObjId(scenario.getId());
 		history.setReferUser(scenario.getCreator());
 		history.setObjType(9);
-		history.setObjKey("id");
+		history.setObjKey(CommonParameter.ID);
 		history.setProductId(ParameterThreadLocal.getProductId());
 		history.setOperType(3);
 		history.setOperComment("删除测试用例集：" + scenario.getName());

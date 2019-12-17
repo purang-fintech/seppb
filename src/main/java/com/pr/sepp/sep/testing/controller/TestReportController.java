@@ -1,5 +1,6 @@
 package com.pr.sepp.sep.testing.controller;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.history.model.SEPPHistory;
 import com.pr.sepp.sep.testing.model.TestReport;
@@ -23,7 +24,7 @@ public class TestReportController {
 	@RequestMapping(value = "/report/query", method = RequestMethod.POST)
 	public PageInfo<TestReport> reportListQuery(HttpServletRequest request) {
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("relId", request.getParameter("relId"));
+		dataMap.put(CommonParameter.REL_ID, request.getParameter(CommonParameter.REL_ID));
 		dataMap.put("reportType", request.getParameter("reportType"));
 		dataMap.put("planType", request.getParameter("planType"));
 
@@ -45,16 +46,16 @@ public class TestReportController {
 	}
 
 	@RequestMapping(value = "/report/info_query/{id}", method = RequestMethod.POST)
-	public List<TestReport> reportInfoQuery(@PathVariable("id") String id) {
+	public List<TestReport> reportInfoQuery(@PathVariable(CommonParameter.ID) String id) {
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("id", id);
+		dataMap.put(CommonParameter.ID, id);
 		return testReportService.reportInfoQuery(dataMap);
 	}
 
 	@RequestMapping(value = "/report/sum_query", method = RequestMethod.POST)
 	public Map<String, Object> reportSumQuery(HttpServletRequest request) {
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("relId", request.getParameter("relId"));
+		dataMap.put(CommonParameter.REL_ID, request.getParameter(CommonParameter.REL_ID));
 		dataMap.put("planType", request.getParameter("planType"));
 		dataMap.put("reportId", request.getParameter("reportId"));
 		dataMap.put("reportDate", request.getParameter("reportDate"));

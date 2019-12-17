@@ -2,6 +2,7 @@ package com.pr.sepp.sep.requirement.service.impl;
 
 import com.pr.sepp.base.dao.BaseQueryDAO;
 import com.pr.sepp.base.model.RequirementStatus;
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.file.dao.FileDAO;
 import com.pr.sepp.file.model.SEPPFile;
@@ -116,7 +117,7 @@ public class RequirementServiceImpl implements RequirementService {
 
 		if (isProblem == 1) {
 			Map<String, String> problemMap = new HashMap<>();
-			problemMap.put("id", String.valueOf(requirement.getSourceId()));
+			problemMap.put(CommonParameter.ID, String.valueOf(requirement.getSourceId()));
 			problemMap.put("transId", String.valueOf(createdId));
 			problemDAO.problemRelate(problemMap);
 		}
@@ -127,7 +128,7 @@ public class RequirementServiceImpl implements RequirementService {
 		SEPPHistory history = new SEPPHistory();
 		history.setObjType(2);
 		history.setObjId(createdId);
-		history.setObjKey("id");
+		history.setObjKey(CommonParameter.ID);
 		history.setProductId(productId);
 		history.setOperUser(userId);
 		history.setOperType(1);
@@ -139,14 +140,14 @@ public class RequirementServiceImpl implements RequirementService {
 
 		// 通知对应模块的开发、测试、产品负责人以及项目经理
 		Map<String, Object> moduleMap = new HashMap<>();
-		moduleMap.put("moduleId", requirement.getModuleId());
+		moduleMap.put(CommonParameter.MODULE_ID, requirement.getModuleId());
 		Module module = moduleDAO.moduleQuery(moduleMap).get(0);
 		messageTo.add(module.getPdResponser());
 		messageTo.add(module.getDevResponser());
 		messageTo.add(module.getTestResponser());
 		// 项目经理
 		Map<String, Object> userMap = new HashMap<>();
-		userMap.put("productId", productId);
+		userMap.put(CommonParameter.PRODUCT_ID, productId);
 		userMap.put("roleId", "10");
 		List<User> pms = userDAO.userQueryProductRole(userMap);
 		pms.forEach(user -> messageTo.add(user.getUserId()));
@@ -173,8 +174,8 @@ public class RequirementServiceImpl implements RequirementService {
 		Change change = new Change();
 
 		Map<String, Object> queryMap = new HashMap<>();
-		queryMap.put("reqId", reqId);
-		queryMap.put("productId", productId);
+		queryMap.put(CommonParameter.REQ_ID, reqId);
+		queryMap.put(CommonParameter.PRODUCT_ID, productId);
 		Requirement oldReq = requirementDAO.reqQuery(queryMap).get(0);
 
 		change.setReqId(reqId);
@@ -201,8 +202,8 @@ public class RequirementServiceImpl implements RequirementService {
 		}
 
 		Map<String, Object> operMap = new HashMap<>();
-		operMap.put("userId", userId);
-		operMap.put("productId", productId);
+		operMap.put(CommonParameter.USER_ID, userId);
+		operMap.put(CommonParameter.PRODUCT_ID, productId);
 		String operName = userDAO.userQuery(operMap).get(0).getUserName();
 		String msg = "产品需求：【#" + reqId + " - " + requirement.getSummary() + "】信息由用户【" + operName + "】完成编辑";
 
@@ -242,7 +243,7 @@ public class RequirementServiceImpl implements RequirementService {
 			Object newValue = field.get(requirement);
 			Object oldValue = field.get(oldReq);
 
-			if (keyName.endsWith("Name") || keyName.equals("relCode") || keyName.equals("cmCount") || keyName.startsWith("change")) {
+			if (keyName.endsWith("Name") || keyName.equals(CommonParameter.REL_CODE) || keyName.equals("cmCount") || keyName.startsWith("change")) {
 				continue;
 			}
 			if (!Objects.equals(newValue, oldValue)) {
@@ -320,8 +321,8 @@ public class RequirementServiceImpl implements RequirementService {
 				while (it.hasNext()) {
 					int attachId = it.next();
 					Map<String, Object> docMap = new HashMap<>();
-					docMap.put("id", attachId);
-					docMap.put("productId", productId);
+					docMap.put(CommonParameter.ID, attachId);
+					docMap.put(CommonParameter.PRODUCT_ID, productId);
 					List<ProductDoc> docs = productService.productDocQuery(docMap);
 					if (null == docs || docs.size() == 0) {
 						continue;
@@ -350,11 +351,11 @@ public class RequirementServiceImpl implements RequirementService {
 		int status = reqStatusUpdate.getStatus();
 
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("id", id);
-		dataMap.put("productId", productId);
+		dataMap.put(CommonParameter.ID, id);
+		dataMap.put(CommonParameter.PRODUCT_ID, productId);
 		Requirement requirement = requirementDAO.reqQuery(dataMap).get(0);
 
-		dataMap.put("status", status);
+		dataMap.put(CommonParameter.STATUS, status);
 		List<RequirementStatus> sts = baseQueryDAO.requirementStatus();
 		String newStatusName = sts.stream().filter(f -> f.getStatusId() == status).findFirst().orElse(new RequirementStatus()).getStatusName();
 		String oldStatusName = sts.stream().filter(f -> Objects.equals(f.getStatusId(), requirement.getStatus())).findFirst().orElse(new RequirementStatus()).getStatusName();
@@ -370,7 +371,7 @@ public class RequirementServiceImpl implements RequirementService {
 		history.setReferUser(requirement.getSubmitter());
 		history.setOrgValue(String.valueOf(requirement.getStatus()));
 		history.setNewValue(String.valueOf(status));
-		history.setObjKey("status");
+		history.setObjKey(CommonParameter.STATUS);
 		historyService.historyInsert(history);
 
 		List<Integer> messageToSub = new ArrayList<>();
@@ -397,11 +398,11 @@ public class RequirementServiceImpl implements RequirementService {
 
 		releasing.forEach(req -> {
 			Map<String, Object> reqMap = new HashMap<>();
-			reqMap.put("id", req.getId());
+			reqMap.put(CommonParameter.ID, req.getId());
 			Requirement requirement = requirementDAO.reqQuery(reqMap).get(0);
 
 			Map<String, Object> relMap = new HashMap<>();
-			relMap.put("id", req.getRelId());
+			relMap.put(CommonParameter.ID, req.getRelId());
 			Release release = releaseDAO.releaseQuery(relMap).get(0);
 			String msg = "产品需求：【#" + req.getId() + " - " + requirement.getSummary() + "】已纳入版本【" + release.getRelCode() + "】";
 
@@ -410,14 +411,14 @@ public class RequirementServiceImpl implements RequirementService {
 
 			// 通知对应模块的开发、测试、产品负责人以及项目经理
 			Map<String, Object> moduleMap = new HashMap<>();
-			moduleMap.put("moduleId", requirement.getModuleId());
+			moduleMap.put(CommonParameter.MODULE_ID, requirement.getModuleId());
 			Module module = moduleDAO.moduleQuery(moduleMap).get(0);
 			messageTo.add(module.getPdResponser());
 			messageTo.add(module.getDevResponser());
 			messageTo.add(module.getTestResponser());
 			// 项目经理
 			Map<String, Object> userMap = new HashMap<>();
-			userMap.put("productId", productId);
+			userMap.put(CommonParameter.PRODUCT_ID, productId);
 			userMap.put("roleId", "10");
 			List<User> pms = userDAO.userQueryProductRole(userMap);
 			pms.forEach(user -> messageTo.add(user.getUserId()));
@@ -463,7 +464,7 @@ public class RequirementServiceImpl implements RequirementService {
 
 		reqs.forEach(reqId -> {
 			Map<String, Object> dataMap = new HashMap<>();
-			dataMap.put("id", reqId);
+			dataMap.put(CommonParameter.ID, reqId);
 			Requirement requirement = requirementDAO.reqQuery(dataMap).get(0);
 			String msg = "产品需求：【#" + reqId + " - " + requirement.getSummary() + "】已从版本【" + requirement.getRelCode() + "】中移除";
 
@@ -472,14 +473,14 @@ public class RequirementServiceImpl implements RequirementService {
 
 			// 通知对应模块的开发、测试、产品负责人以及项目经理
 			Map<String, Object> moduleMap = new HashMap<>();
-			moduleMap.put("moduleId", requirement.getModuleId());
+			moduleMap.put(CommonParameter.MODULE_ID, requirement.getModuleId());
 			Module module = moduleDAO.moduleQuery(moduleMap).get(0);
 			messageTo.add(module.getPdResponser());
 			messageTo.add(module.getDevResponser());
 			messageTo.add(module.getTestResponser());
 			// 项目经理
 			Map<String, Object> userMap = new HashMap<>();
-			userMap.put("productId", productId);
+			userMap.put(CommonParameter.PRODUCT_ID, productId);
 			userMap.put("roleId", "10");
 			List<User> pms = userDAO.userQueryProductRole(userMap);
 			pms.forEach(user -> messageTo.add(user.getUserId()));
@@ -523,7 +524,7 @@ public class RequirementServiceImpl implements RequirementService {
 
 		List<Requirement> list = requirementDAO.reqQuery(dataMap);
 		Map<String, Object> userMap = new HashMap<>();
-		userMap.put("productId", ParameterThreadLocal.getProductId());
+		userMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 		List<User> users = userDAO.userQuery(userMap);
 		list.forEach(item -> {
 			String subName = users.stream().filter(u -> Objects.equals(u.getUserId(), item.getSubmitter())).findFirst().orElse(new User()).getUserName();
@@ -545,7 +546,7 @@ public class RequirementServiceImpl implements RequirementService {
 
 		List<Requirement> list = requirementDAO.relReqQuery(relId);
 		Map<String, Object> userMap = new HashMap<>();
-		userMap.put("productId", ParameterThreadLocal.getProductId());
+		userMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 		List<User> users = userDAO.userQuery(userMap);
 		list.forEach(item -> {
 			String subName = users.stream().filter(u -> Objects.equals(u.getUserId(), item.getSubmitter())).findFirst().orElse(new User()).getUserName();
@@ -564,7 +565,7 @@ public class RequirementServiceImpl implements RequirementService {
 	public List<Requirement> reqBatchQuery(Map<String, Object> dataMap) {
 		List<Requirement> list = requirementDAO.reqBatchQuery(dataMap);
 		Map<String, Object> userMap = new HashMap<>();
-		userMap.put("productId", ParameterThreadLocal.getProductId());
+		userMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 		List<User> users = userDAO.userQuery(userMap);
 		list.forEach(item -> {
 			String subName = users.stream().filter(u -> Objects.equals(u.getUserId(), item.getSubmitter())).findFirst().orElse(new User()).getUserName();
@@ -591,7 +592,7 @@ public class RequirementServiceImpl implements RequirementService {
 		int userId = ParameterThreadLocal.getUserId();
 
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("id", oldReqId);
+		dataMap.put(CommonParameter.ID, oldReqId);
 		Requirement requirement = requirementDAO.reqQuery(dataMap).get(0);
 
 		ReqStatusUpdate reqStatusUpdate = new ReqStatusUpdate();
@@ -633,7 +634,7 @@ public class RequirementServiceImpl implements RequirementService {
 		history.setReferUser(requirement.getSubmitter());
 		history.setOrgValue(String.valueOf(requirement.getStatus()));
 		history.setNewValue("0");
-		history.setObjKey("status");
+		history.setObjKey(CommonParameter.STATUS);
 		historyService.historyInsert(history);
 
 		List<Integer> messageToSub = new ArrayList<>();

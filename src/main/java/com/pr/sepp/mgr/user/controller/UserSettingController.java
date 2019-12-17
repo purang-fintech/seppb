@@ -1,6 +1,7 @@
 package com.pr.sepp.mgr.user.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.mgr.user.model.UserSetting;
 import com.pr.sepp.mgr.user.service.UserSettingService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,7 +15,7 @@ public class UserSettingController {
 	private UserSettingService userSettingService;
 
 	@RequestMapping(value = "/user/setting/query/{userId}", method = RequestMethod.POST)
-	public UserSetting userSettingQuery(@PathVariable("userId") Integer userId) {
+	public UserSetting userSettingQuery(@PathVariable(CommonParameter.USER_ID) Integer userId) {
 		return userSettingService.userSettingQuery(userId);
 	}
 

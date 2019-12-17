@@ -1,5 +1,6 @@
 package com.pr.sepp.sep.request.audit.service.impl;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.history.model.SEPPHistory;
 import com.pr.sepp.history.service.HistoryService;
@@ -58,7 +59,7 @@ public class RequestAuditServiceImpl implements RequestAuditService {
 		SEPPHistory history = new SEPPHistory();
 		history.setObjType(21);
 		history.setObjId(requestAudit.getPrId());
-		history.setObjKey("id");
+		history.setObjKey(CommonParameter.ID);
 		history.setProductId(productId);
 		history.setOperUser(userId);
 		history.setOperType(1);
@@ -99,8 +100,8 @@ public class RequestAuditServiceImpl implements RequestAuditService {
 		int userId = ParameterThreadLocal.getUserId();
 
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("id", id);
-		dataMap.put("productId", productId);
+		dataMap.put(CommonParameter.ID, id);
+		dataMap.put(CommonParameter.PRODUCT_ID, productId);
 		RequestAudit requestAudit = requestAuditQuery(dataMap).get(0);
 
 		if (StringUtils.isNotEmpty(requestAudit.getCompleteTime())) {
@@ -156,8 +157,8 @@ public class RequestAuditServiceImpl implements RequestAuditService {
 		}
 
 		Map<String, Object> reqMap = new HashMap<>();
-		reqMap.put("id", requestAudit.getPrId());
-		reqMap.put("productId", productId);
+		reqMap.put(CommonParameter.ID, requestAudit.getPrId());
+		reqMap.put(CommonParameter.PRODUCT_ID, productId);
 		ProductRequirement request = requestDAO.requestQuery(reqMap).get(0);
 		
 		Message message = new Message();
@@ -282,8 +283,8 @@ public class RequestAuditServiceImpl implements RequestAuditService {
 	public int requestAuditComplete(RequestAudit requestAudit, int passed, String completeTime) {
 		if (passed == 1) {
 			Map<String, Object> dataMap = new HashMap<>();
-			dataMap.put("id", requestAudit.getPrId());
-			dataMap.put("productId", ParameterThreadLocal.getProductId());
+			dataMap.put(CommonParameter.ID, requestAudit.getPrId());
+			dataMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 			ProductRequirement request = requestDAO.requestQuery(dataMap).get(0);
 			Requirement requirement = new Requirement();
 
@@ -317,7 +318,7 @@ public class RequestAuditServiceImpl implements RequestAuditService {
 	public List<RequestAudit> requestAuditQuery(Map<String, Object> dataMap) {
 		List<RequestAudit> requestAudits = requestAuditDAO.requestAuditQuery(dataMap);
 		Map<String, Object> userMap = new HashMap<>();
-		userMap.put("productId", ParameterThreadLocal.getProductId());
+		userMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 		List<User> users = userDAO.userQuery(userMap);
 		requestAudits.forEach(item -> {
 			List<RequestAuditResult> baseAuditResult = new Gson().fromJson(item.getBaseAuditResultStr(), new TypeToken<List<RequestAuditResult>>() {

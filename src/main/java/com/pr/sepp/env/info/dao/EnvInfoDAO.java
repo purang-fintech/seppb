@@ -1,5 +1,6 @@
 package com.pr.sepp.env.info.dao;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.env.info.model.EnvInfo;
 import org.apache.ibatis.annotations.Param;
 
@@ -18,11 +19,11 @@ public interface EnvInfoDAO {
 
 	int envInfoDelete(Integer envInfoId);
 
-	EnvInfo findEnvInfo(@Param("productId") Integer productId, @Param("branchId") Integer branchId,
+	EnvInfo findEnvInfo(@Param(CommonParameter.PRODUCT_ID) Integer productId, @Param(CommonParameter.BRANCH_ID) Integer branchId,
 						@Param("envType") Integer envType, @Param("instance") String instance);
 
 	List<EnvInfo> selectAllJobEnvInfo();
 
-	List<EnvInfo> findEnvInfos(@Param("productId") Integer productId, @Param("branchId") Integer branchId,
+	List<EnvInfo> findEnvInfos(@Param(CommonParameter.PRODUCT_ID) Integer productId, @Param(CommonParameter.BRANCH_ID) Integer branchId,
 							   @Param("envType") Integer envType);
 }

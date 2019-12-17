@@ -1,5 +1,6 @@
 package com.pr.sepp.sep.testing.controller;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.sep.testing.model.CaseResult;
 import com.pr.sepp.sep.testing.model.TestRun;
 import com.pr.sepp.sep.testing.model.TestScenario;
@@ -23,8 +24,8 @@ public class TestExecController {
 	@RequestMapping(value = "/scenario/query", method = RequestMethod.POST)
 	public List<TestScenario> testScenarioQuery(HttpServletRequest request) {
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("id", request.getParameter("id"));
-		dataMap.put("relId", request.getParameter("relId"));
+		dataMap.put(CommonParameter.ID, request.getParameter(CommonParameter.ID));
+		dataMap.put(CommonParameter.REL_ID, request.getParameter(CommonParameter.REL_ID));
 		dataMap.put("planId", request.getParameter("planId"));
 		dataMap.put("planType", request.getParameter("planType"));
 		return testExecService.testScenarioQuery(dataMap);
@@ -41,7 +42,7 @@ public class TestExecController {
 	}
 
 	@RequestMapping(value = "/scenario/delete/{id}", method = RequestMethod.POST)
-	public int testScenarioDelete(@PathVariable("id") Integer id) {
+	public int testScenarioDelete(@PathVariable(CommonParameter.ID) Integer id) {
 		return testExecService.testScenarioDelete(id);
 	}
 
@@ -52,7 +53,7 @@ public class TestExecController {
 		}
 
 		Map<String, Object> scenarioMap = new HashMap<>();
-		scenarioMap.put("id", scenarioId);
+		scenarioMap.put(CommonParameter.ID, scenarioId);
 		List<TestScenario> scenarios = testExecService.testScenarioQuery(scenarioMap);
 
 		if (null == scenarios || scenarios.size() == 0) {

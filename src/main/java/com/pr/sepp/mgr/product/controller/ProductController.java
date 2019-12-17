@@ -1,5 +1,6 @@
 package com.pr.sepp.mgr.product.controller;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.mgr.product.model.Product;
 import com.pr.sepp.mgr.product.model.ProductBranch;
@@ -25,7 +26,7 @@ public class ProductController {
 	@RequestMapping(value = "/product/query", method = RequestMethod.POST)
 	public PageInfo<Product> productQuery(HttpServletRequest request) {
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("productId", request.getParameter("productId"));
+		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
 		dataMap.put("productCode", request.getParameter("productCode"));
 		dataMap.put("productName", request.getParameter("productName"));
 		dataMap.put("owner", request.getParameter("owner"));
@@ -49,12 +50,12 @@ public class ProductController {
 	}
 
 	@RequestMapping(value = "/product/delete/{productId}", method = RequestMethod.POST)
-	public int productDelete(@PathVariable("productId") Integer productId) {
+	public int productDelete(@PathVariable(CommonParameter.PRODUCT_ID) Integer productId) {
 		return productService.productDelete(productId);
 	}
 
 	@RequestMapping(value = "/product/config_query/{productId}", method = RequestMethod.POST)
-	public Map<String, Object> productConfigQuery(@PathVariable("productId") Integer productId) {
+	public Map<String, Object> productConfigQuery(@PathVariable(CommonParameter.PRODUCT_ID) Integer productId) {
 		return productService.productConfigQuery(productId);
 	}
 
@@ -66,8 +67,8 @@ public class ProductController {
 	@RequestMapping(value = "/document/query", method = RequestMethod.POST)
 	public List<ProductDoc> productDocQuery(HttpServletRequest request) {
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("productId", request.getParameter("productId"));
-		dataMap.put("moduleId", request.getParameter("moduleId"));
+		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
+		dataMap.put(CommonParameter.MODULE_ID, request.getParameter(CommonParameter.MODULE_ID));
 		dataMap.put("parentId", request.getParameter("parentId"));
 		dataMap.put("type", request.getParameter("type"));
 
@@ -78,7 +79,7 @@ public class ProductController {
 	public PageInfo<ProductDoc> documentFuzzQuery(HttpServletRequest request) {
 		Map<String, Object> dataMap = new HashMap<>();
 		dataMap.put("searchText", request.getParameter("searchText"));
-		dataMap.put("productId", request.getParameter("productId"));
+		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
 
 		PageHelper.startPage(ParameterThreadLocal.getPageNum(), ParameterThreadLocal.getPageSize());
 
@@ -88,7 +89,7 @@ public class ProductController {
 	}
 
 	@RequestMapping(value = "/document/version_query/{productId}", method = RequestMethod.POST)
-	public List<String> documentVersionQuery(@PathVariable("productId") Integer productId) {
+	public List<String> documentVersionQuery(@PathVariable(CommonParameter.PRODUCT_ID) Integer productId) {
 		return productService.documentVersionQuery(productId);
 	}
 
@@ -110,7 +111,7 @@ public class ProductController {
 	@RequestMapping(value = "/branch/query", method = RequestMethod.POST)
 	public PageInfo<ProductBranch> productBranchQuery(HttpServletRequest request) {
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("productId", request.getParameter("productId"));
+		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
 		dataMap.put("isValid", request.getParameter("isValid"));
 
 		PageHelper.startPage(ParameterThreadLocal.getPageNum(), ParameterThreadLocal.getPageSize());
@@ -131,7 +132,7 @@ public class ProductController {
 	}
 
 	@RequestMapping(value = "/branch/delete/{branchId}", method = RequestMethod.POST)
-	public int productBranchDelete(@PathVariable("branchId") Integer branchId) {
+	public int productBranchDelete(@PathVariable(CommonParameter.BRANCH_ID) Integer branchId) {
 		return productService.productBranchDelete(branchId);
 	}
 }

@@ -5,6 +5,7 @@ import java.util.*;
 
 import com.pr.sepp.base.dao.BaseQueryDAO;
 import com.pr.sepp.base.model.TestPeriod;
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.history.model.SEPPHistory;
 import com.pr.sepp.history.service.HistoryService;
@@ -58,8 +59,8 @@ public class TestPlanServiceImpl implements TestPlanService {
         int planType = testPlan.getPlanType();
 
         Map<String, Object> dataMap = new HashMap<>();
-        dataMap.put("relId", relId);
-        dataMap.put("productId", productId);
+        dataMap.put(CommonParameter.REL_ID, relId);
+        dataMap.put(CommonParameter.PRODUCT_ID, productId);
         Release release = releaseDAO.releaseQuery(dataMap).get(0);
         List<TestPeriod> periods = baseQueryDAO.testPeriod();
         String testType = periods.stream().filter(a -> Objects.equals(a.getPeriodId(), planType)).findFirst().orElse(new TestPeriod()).getPeriodName();
@@ -89,7 +90,7 @@ public class TestPlanServiceImpl implements TestPlanService {
 
         SEPPHistory history = new SEPPHistory();
         history.setObjType(7);
-        history.setObjKey("id");
+        history.setObjKey(CommonParameter.ID);
         history.setObjId(created);
         history.setProductId(productId);
         history.setOperUser(userId);
@@ -109,7 +110,7 @@ public class TestPlanServiceImpl implements TestPlanService {
         int responser = testPlan.getResponser();
 
         Map<String, Object> dataMap = new HashMap<>();
-        dataMap.put("id", testPlan.getId());
+        dataMap.put(CommonParameter.ID, testPlan.getId());
         TestPlan oldPlan = testPlanDAO.testPlanQuery(dataMap).get(0);
 
         testPlan.setSubmitter(oldPlan.getSubmitter());
@@ -227,7 +228,7 @@ public class TestPlanServiceImpl implements TestPlanService {
         int userId = ParameterThreadLocal.getUserId();
 
         Map<String, Object> dataMap = new HashMap<>();
-        dataMap.put("id", id);
+        dataMap.put(CommonParameter.ID, id);
         TestPlan oldPlan = testPlanDAO.testPlanQuery(dataMap).get(0);
 
         String msg = "版本【" + oldPlan.getRelCode() + "】下的【" + oldPlan.getTypeName() + "】计划被删除";
@@ -254,7 +255,7 @@ public class TestPlanServiceImpl implements TestPlanService {
         SEPPHistory history = new SEPPHistory();
         history.setObjType(7);
         history.setObjId(oldPlan.getId());
-        history.setObjKey("id");
+        history.setObjKey(CommonParameter.ID);
         history.setProductId(productId);
         history.setOperUser(userId);
         history.setOperType(3);

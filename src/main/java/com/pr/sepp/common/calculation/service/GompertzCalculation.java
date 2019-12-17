@@ -1,5 +1,6 @@
 package com.pr.sepp.common.calculation.service;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.mgr.product.dao.ProductDAO;
 import com.pr.sepp.mgr.product.model.ProductConfig;
 import com.pr.sepp.sep.release.dao.ReleaseDAO;
@@ -178,7 +179,7 @@ public class GompertzCalculation {
 			samples.put("man", samples.get("man") + (float) releaseCmsMan.get("totalManpower"));
 
 			Map<String, Object> dataMap = new HashMap<>();
-			dataMap.put("relId", rel.getId());
+			dataMap.put(CommonParameter.REL_ID, rel.getId());
 			List<Map<String, Object>> defectFound = analysisDAO.defectFoundDate(dataMap);
 
 			int divided = (int) Math.floor(defectFound.size() / 3);
@@ -285,7 +286,7 @@ public class GompertzCalculation {
 	 */
 	private Double[] defectFoundDevide(Release release) {
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("relId", release.getId());
+		dataMap.put(CommonParameter.REL_ID, release.getId());
 		List<Map<String, Object>> defectFound = analysisDAO.defectFoundDate(dataMap);
 
 		Double dataCount = Math.floor(defectFound.size() / 3);
@@ -329,7 +330,7 @@ public class GompertzCalculation {
 		calendar.setTime(new Date());
 		calendar.add(Calendar.MONTH, -1 * gompertz.get("latestOffsetMonth"));
 		Map<String, Object> qryMap = new HashMap<>();
-		qryMap.put("productId", productId);
+		qryMap.put(CommonParameter.PRODUCT_ID, productId);
 		qryMap.put("relDateBegin", sdf.format(calendar.getTime()));
 		List<Release> releaseList = releaseDAO.releaseQuery(qryMap);
 
@@ -386,7 +387,7 @@ public class GompertzCalculation {
 		calendar.setTime(new Date());
 		calendar.add(Calendar.MONTH, -1 * gompertz.get("latestOffsetMonth"));
 		Map<String, Object> qryMap = new HashMap<>();
-		qryMap.put("productId", productId);
+		qryMap.put(CommonParameter.PRODUCT_ID, productId);
 		qryMap.put("relDateBegin", sdf.format(calendar.getTime()));
 		List<Release> releaseList = releaseDAO.releaseQuery(qryMap);
 

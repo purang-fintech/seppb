@@ -1,5 +1,6 @@
 package com.pr.sepp.common.filter;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import io.swagger.models.auth.In;
 import org.apache.commons.lang.StringUtils;
@@ -22,8 +23,8 @@ public class ParameterFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
-        String userId = request.getParameter("userId");
-        String productId = request.getParameter("productId");
+        String userId = request.getParameter(CommonParameter.USER_ID);
+        String productId = request.getParameter(CommonParameter.PRODUCT_ID);
         String pageNum = request.getParameter("pageNum");
         String pageSize = request.getParameter("pageSize");
         if (StringUtils.isNotBlank(userId)) {

@@ -31,10 +31,10 @@ import static org.apache.commons.lang.StringUtils.isNotBlank;
 public class DefinitionPropertySourceFactory implements PropertySourceFactory, EnvironmentPostProcessor, Ordered {
 
     //fixme
-    private static String CONFIG_PATH = "D://projects/spring.properties";
+    private static String CONFIG_PATH = "D:/projects/spring.properties";
     private static final String aesKey = "0807060504030201";
-    private static final String JDBC_USER_NAME = "jdbc.username";
-    private static final String JDBC_PASSWORD = "jdbc.password";
+    private static final String JDBC_UNAME_PROP = "jdbc.username";
+    private static final String JDBC_PWD_PROP = "jdbc.password";
     private ResourceLoader resourceLoader = new DefaultResourceLoader();
     private static final String SEPP_LOG_PATH = "seppLogPath";
 
@@ -100,8 +100,8 @@ public class DefinitionPropertySourceFactory implements PropertySourceFactory, E
     private Properties buildDecryptProperties(InputStream inputStream) throws IOException {
         Properties properties = new Properties();
         properties.load(inputStream);
-        properties.setProperty(JDBC_USER_NAME, convertProperty(properties.getProperty(JDBC_USER_NAME)));
-        properties.setProperty(JDBC_PASSWORD, convertProperty(properties.getProperty(JDBC_PASSWORD)));
+        properties.setProperty(JDBC_UNAME_PROP, convertProperty(properties.getProperty(JDBC_UNAME_PROP)));
+        properties.setProperty(JDBC_PWD_PROP, convertProperty(properties.getProperty(JDBC_PWD_PROP)));
         return properties;
     }
 

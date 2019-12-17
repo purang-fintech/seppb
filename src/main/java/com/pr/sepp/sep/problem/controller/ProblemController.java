@@ -1,6 +1,8 @@
 package com.pr.sepp.sep.problem.controller;
 
 import com.pr.sepp.base.service.BaseQueryService;
+import com.pr.sepp.common.constants.CommonParameter;
+import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.sep.problem.model.Problem;
 import com.pr.sepp.sep.problem.model.ProblemRefuse;
 import com.pr.sepp.sep.problem.service.ProblemService;
@@ -30,18 +32,18 @@ public class ProblemController {
     public PageInfo<Problem> reqQuery(HttpServletRequest request) {
 
         Map<String, Object> dataMap = new HashMap<>();
-        dataMap.put("id", request.getParameter("id"));
+        dataMap.put(CommonParameter.ID, request.getParameter(CommonParameter.ID));
         dataMap.put("transId", request.getParameter("transId"));
-        dataMap.put("productId", request.getParameter("productId"));
-        dataMap.put("submitter", request.getParameter("submitter"));
-        dataMap.put("responser", request.getParameter("responser"));
-        String status = request.getParameter("status");
+        dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
+        dataMap.put(CommonParameter.SUBMITTER, request.getParameter(CommonParameter.SUBMITTER));
+        dataMap.put(CommonParameter.RESPONSER, request.getParameter(CommonParameter.RESPONSER));
+        String status = request.getParameter(CommonParameter.STATUS);
         if (!StringUtils.isEmpty(status)) {
             dataMap.put("sts", Arrays.asList(status.split(",")));
         }
         dataMap.put("priority", request.getParameter("priority"));
         dataMap.put("influence", request.getParameter("influence"));
-        dataMap.put("moduleId", request.getParameter("moduleId"));
+        dataMap.put(CommonParameter.MODULE_ID, request.getParameter(CommonParameter.MODULE_ID));
         dataMap.put("typeFirst", request.getParameter("typeFirst"));
         dataMap.put("typeSecond", request.getParameter("typeSecond"));
         if (!StringUtils.isEmpty(request.getParameter("submitTimeBegin"))) {
@@ -63,8 +65,8 @@ public class ProblemController {
             dataMap.put("closeTimeEnd", request.getParameter("closeTimeEnd") + " 23:59:59");
         }
 
-        int pageNum = StringUtils.isEmpty(request.getParameter("pageNum")) ? 1 : Integer.parseInt(request.getParameter("pageNum"));
-        int pageSize = StringUtils.isEmpty(request.getParameter("pageSize")) ? 500 : Integer.parseInt(request.getParameter("pageSize"));
+        int pageNum = ParameterThreadLocal.getPageNum();
+        int pageSize = ParameterThreadLocal.getPageSize();
         PageHelper.startPage(pageNum, pageSize);
 
         List<Problem> list = problemService.problemQuery(dataMap);

@@ -1,5 +1,6 @@
 package com.pr.sepp.sep.testing.service.impl;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.history.model.SEPPHistory;
 import com.pr.sepp.history.service.HistoryService;
@@ -113,7 +114,7 @@ public class TestingServiceImpl implements TestingService {
 					continue;
 				}
 
-				qryMap.put("productId", productId);
+				qryMap.put(CommonParameter.PRODUCT_ID, productId);
 				qryMap.put("moduleNameFull", item[1]);
 				List<Module> module = moduleDAO.moduleQuery(qryMap);
 				if (null == module || module.size() == 0) {
@@ -133,7 +134,7 @@ public class TestingServiceImpl implements TestingService {
 				int parentId = 1;
 				boolean parentExist = false;
 				for (int j = 0; j < folders.length; j++) {
-					caseQryMap.put("productId", productId);
+					caseQryMap.put(CommonParameter.PRODUCT_ID, productId);
 					caseQryMap.put("folderName", folders[j]);
 					caseQryMap.put("parentId", parentId);
 					caseQryMap.put("type", "folder");
@@ -161,7 +162,7 @@ public class TestingServiceImpl implements TestingService {
 						parentId = folderId;
 					}
 				}
-				caseQryMap.put("productId", productId);
+				caseQryMap.put(CommonParameter.PRODUCT_ID, productId);
 				caseQryMap.put("folderName", item[3]);
 				caseQryMap.put("parentId", parentId);
 				caseQryMap.put("type", "case");
@@ -350,7 +351,7 @@ public class TestingServiceImpl implements TestingService {
 			history.setOperType(1);
 			history.setNewValue(caseFolder.toString());
 			history.setOperComment("创建测试用例【#" + caseFolder.getId() + "】：" + caseFolder.getName());
-			history.setObjKey("id");
+			history.setObjKey(CommonParameter.ID);
 			historyService.historyInsert(history);
 		}
 		return caseId;
@@ -362,7 +363,7 @@ public class TestingServiceImpl implements TestingService {
 		int userId = ParameterThreadLocal.getUserId();
 
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("id", caseId);
+		dataMap.put(CommonParameter.ID, caseId);
 		CaseFolder caseNode = testingDAO.treeQuery(dataMap).get(0);
 
 		int mainNode = testingDAO.caseFolderDelete(caseId);
@@ -381,7 +382,7 @@ public class TestingServiceImpl implements TestingService {
 			history.setReferUser(caseNode.getCreator());
 			history.setOperType(3);
 			history.setOperComment("测试用例：【#" + caseNode.getId() + " - " + caseNode.getName() + "】被删除");
-			history.setObjKey("id");
+			history.setObjKey(CommonParameter.ID);
 			historyService.historyInsert(history);
 		}
 
@@ -438,7 +439,7 @@ public class TestingServiceImpl implements TestingService {
 		CaseInfo OldCaseInfo = testingDAO.caseInfoQuery(caseInfo.getCaseId()).get(0);
 
 		Map<String, Object> treeMap = new HashMap<>();
-		treeMap.put("id", caseInfo.getCaseId());
+		treeMap.put(CommonParameter.ID, caseInfo.getCaseId());
 		CaseFolder caseNode = testingDAO.treeQuery(treeMap).get(0);
 
 		List<SEPPHistory> histories = new ArrayList<>();
@@ -516,7 +517,7 @@ public class TestingServiceImpl implements TestingService {
 		if (null == reqId || StringUtils.isEmpty(caseIds)) {
 			Integer caseId = caseRelationShip.getCaseId();
 			Map<String, Object> treeMap = new HashMap<>();
-			treeMap.put("id", caseId);
+			treeMap.put(CommonParameter.ID, caseId);
 			List<CaseFolder> caseNode = testingDAO.treeQuery(treeMap);
 			if (null == caseNode || caseNode.size() == 0) {
 				return 0;
@@ -526,7 +527,7 @@ public class TestingServiceImpl implements TestingService {
 			for (int i = 0; i < relates.length; i++) {
 				Map<String, Object> tempMap = new HashMap<>();
 				tempMap.put("caseId", caseId);
-				tempMap.put("id", Integer.parseInt(relates[i]));
+				tempMap.put(CommonParameter.ID, Integer.parseInt(relates[i]));
 				tempMap.put("relateType", relateType);
 				toRelate.add(tempMap);
 			}
@@ -537,7 +538,7 @@ public class TestingServiceImpl implements TestingService {
 			String namedType = relateType == 1 ? "缺陷数据" : "需求数据";
 			SEPPHistory history = new SEPPHistory();
 			history.setObjType(1);
-			history.setObjKey("id");
+			history.setObjKey(CommonParameter.ID);
 			history.setObjId(caseId);
 			history.setProductId(ParameterThreadLocal.getProductId());
 			history.setOperUser(userId);
@@ -547,7 +548,7 @@ public class TestingServiceImpl implements TestingService {
 			historyService.historyInsert(history);
 		} else {
 			Map<String, Object> reqQryMap = new HashMap<>();
-			reqQryMap.put("id", reqId);
+			reqQryMap.put(CommonParameter.ID, reqId);
 			List<Requirement> reqs = requirementDAO.reqQuery(reqQryMap);
 			if (null == reqs || reqs.size() == 0) {
 				return 0;
@@ -557,7 +558,7 @@ public class TestingServiceImpl implements TestingService {
 			for (int i = 0; i < relates.length; i++) {
 				Map<String, Object> tempMap = new HashMap<>();
 				tempMap.put("caseId", Integer.parseInt(relates[i]));
-				tempMap.put("id", reqId);
+				tempMap.put(CommonParameter.ID, reqId);
 				tempMap.put("relateType", relateType);
 				toRelate.add(tempMap);
 			}
@@ -567,7 +568,7 @@ public class TestingServiceImpl implements TestingService {
 			if (count > 0) {
 				SEPPHistory history = new SEPPHistory();
 				history.setObjType(2);
-				history.setObjKey("id");
+				history.setObjKey(CommonParameter.ID);
 				history.setObjId(reqId);
 				history.setProductId(ParameterThreadLocal.getProductId());
 				history.setOperUser(userId);
@@ -587,7 +588,7 @@ public class TestingServiceImpl implements TestingService {
 		Integer relateType = caseRelationShip.getRelateType();
 
 		Map<String, Object> treeMap = new HashMap<>();
-		treeMap.put("id", caseId);
+		treeMap.put(CommonParameter.ID, caseId);
 		CaseFolder caseNode = testingDAO.treeQuery(treeMap).get(0);
 
 		int count = testingDAO.caseRelateDelete(caseRelationShip);
@@ -595,7 +596,7 @@ public class TestingServiceImpl implements TestingService {
 		String namedType = relateType == 1 ? "缺陷关联数据" : "需求关联数据";
 		SEPPHistory history = new SEPPHistory();
 		history.setObjType(1);
-		history.setObjKey("id");
+		history.setObjKey(CommonParameter.ID);
 		history.setObjId(caseId);
 		history.setProductId(ParameterThreadLocal.getProductId());
 		history.setOperUser(ParameterThreadLocal.getUserId());
@@ -639,7 +640,7 @@ public class TestingServiceImpl implements TestingService {
 			history.setOperUser(ParameterThreadLocal.getUserId());
 			history.setOperType(1);
 			history.setOperComment("创建测试用例【#" + caseFolder.getId() + "】：" + caseFolder.getName());
-			history.setObjKey("id");
+			history.setObjKey(CommonParameter.ID);
 			historyService.historyInsert(history);
 		}
 		return caseFolder.getId();

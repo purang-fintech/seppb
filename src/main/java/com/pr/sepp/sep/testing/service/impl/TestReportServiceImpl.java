@@ -1,5 +1,6 @@
 package com.pr.sepp.sep.testing.service.impl;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.history.model.SEPPHistory;
 import com.pr.sepp.history.service.HistoryService;
@@ -48,7 +49,7 @@ public class TestReportServiceImpl implements TestReportService {
 	public synchronized int testReportCreate(TestReport testReport) {
 		if (null == testReport.getPlanId() && testReport.getPlanType() != 0) {
 			Map<String, Object> dataMap = new HashMap<>();
-			dataMap.put("relId", testReport.getRelId());
+			dataMap.put(CommonParameter.REL_ID, testReport.getRelId());
 			dataMap.put("planType", testReport.getPlanType());
 			Integer planId = testReportDAO.planSidQuery(dataMap);
 			testReport.setPlanId(planId);
@@ -60,7 +61,7 @@ public class TestReportServiceImpl implements TestReportService {
 		SEPPHistory history = new SEPPHistory();
 		history.setObjType(8);
 		history.setObjId(created);
-		history.setObjKey("id");
+		history.setObjKey(CommonParameter.ID);
 		history.setProductId(ParameterThreadLocal.getProductId());
 		history.setOperUser(ParameterThreadLocal.getUserId());
 		history.setOperType(1);
@@ -74,7 +75,7 @@ public class TestReportServiceImpl implements TestReportService {
 	@Override
 	public int testReportUpdate(TestReport testReport) throws IllegalAccessException {
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("id", testReport.getId());
+		dataMap.put(CommonParameter.ID, testReport.getId());
 		TestReport oldReport = testReportDAO.reportInfoQuery(dataMap).get(0);
 
 		testReport.setId(oldReport.getId());
@@ -133,8 +134,8 @@ public class TestReportServiceImpl implements TestReportService {
 		}
 
 		Map<String, Object> reqMap = new HashMap<>();
-		reqMap.put("productId", ParameterThreadLocal.getProductId());
-		reqMap.put("relId", dataMap.get("relId"));
+		reqMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
+		reqMap.put(CommonParameter.REL_ID, dataMap.get(CommonParameter.REL_ID));
 		List<Requirement> relReq = requirementService.reqQuery(reqMap);
 		int coveredReq = testReportDAO.coveredReqQuery(dataMap);
 

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,8 +31,8 @@ public class OrganizationController {
 	public List<Organization> teamQuery(HttpServletRequest request) throws Exception {
 		Map<String, Object> dataMap = new HashMap<>();
 		dataMap.put("teamName", request.getParameter("teamName"));
-		dataMap.put("id", request.getParameter("id"));
-		dataMap.put("responser", request.getParameter("responser"));
+		dataMap.put(CommonParameter.ID, request.getParameter(CommonParameter.ID));
+		dataMap.put(CommonParameter.RESPONSER, request.getParameter(CommonParameter.RESPONSER));
 		dataMap.put("parentId", request.getParameter("parentId"));
 
 		return teamService.teamQuery(dataMap);
@@ -45,7 +46,7 @@ public class OrganizationController {
 		team.setTeamName(request.getParameter("teamName"));
 		team.setTeamDescription(request.getParameter("teamDescription"));
 		team.setParentId(Integer.parseInt(request.getParameter("parentId")));
-		team.setResponser(Integer.parseInt(request.getParameter("responser")));
+		team.setResponser(Integer.parseInt(request.getParameter(CommonParameter.RESPONSER)));
 
 		teamService.teamCreate(team);
 
@@ -58,29 +59,29 @@ public class OrganizationController {
 		Organization team = new Organization();
 
 		team.setTeamName(request.getParameter("teamName"));
-		team.setId(Integer.parseInt(request.getParameter("id")));
+		team.setId(Integer.parseInt(request.getParameter(CommonParameter.ID)));
 		team.setTeamDescription(request.getParameter("teamDescription"));
 		team.setParentId(StringUtils.isNotEmpty(request.getParameter("parentId")) ? Integer.parseInt(request.getParameter("parentId")) : null);
-		team.setResponser(StringUtils.isNotEmpty(request.getParameter("responser")) ? Integer.parseInt(request.getParameter("responser")) : null);
+		team.setResponser(StringUtils.isNotEmpty(request.getParameter(CommonParameter.RESPONSER)) ? Integer.parseInt(request.getParameter(CommonParameter.RESPONSER)) : null);
 
 		return teamService.teamUpdate(team);
 	}
 
 	@RequestMapping(value = "/team/delete", method =  RequestMethod.POST)
-	public int teamDelete(@RequestParam(value = "id", required = true) int id) {
+	public int teamDelete(@RequestParam(value = CommonParameter.ID, required = true) int id) {
 		return teamService.teamDelete(id);
 	}
 
 	@RequestMapping(value = "/team/member_query", method =  RequestMethod.POST)
-	public List<User> teamMemberQuery(@RequestParam(value = "id", required = true) int id) throws Exception {
+	public List<User> teamMemberQuery(@RequestParam(value = CommonParameter.ID, required = true) int id) throws Exception {
 
 		return teamService.teamMemberQuery(id);
 	}
 
 	@RequestMapping(value = "/team/member_add", method =  RequestMethod.POST)
-	public int teamMemberAdd(@RequestParam(value = "id", required = true) int id, @RequestParam(value = "members", required = true) String members) throws Exception {
+	public int teamMemberAdd(@RequestParam(value = CommonParameter.ID, required = true) int id, @RequestParam(value = "members", required = true) String members) throws Exception {
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("id", id);
+		dataMap.put(CommonParameter.ID, id);
 		dataMap.put("members", Arrays.asList(members.split(",")));
 
 		return teamService.teamMemberAdd(dataMap);

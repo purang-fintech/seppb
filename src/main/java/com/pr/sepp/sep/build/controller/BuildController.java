@@ -1,5 +1,6 @@
 package com.pr.sepp.sep.build.controller;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.history.model.SEPPHistory;
 import com.pr.sepp.history.service.HistoryService;
@@ -79,7 +80,7 @@ public class BuildController {
 	 * 重试
 	 */
 	@PostMapping(value = "/build/retry-build/{id}")
-	public void retryBuild(@PathVariable("id") Integer id) {
+	public void retryBuild(@PathVariable(CommonParameter.ID) Integer id) {
 		jenkinsBuildService.retryBuild(id);
 	}
 
@@ -127,18 +128,18 @@ public class BuildController {
 	public PageInfo<ReleaseNote> releasenoteQuery(HttpServletRequest request) {
 
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("reqId", request.getParameter("reqId"));
-		dataMap.put("relId", request.getParameter("relId"));
-		String status = request.getParameter("status");
+		dataMap.put(CommonParameter.REQ_ID, request.getParameter(CommonParameter.REQ_ID));
+		dataMap.put(CommonParameter.REL_ID, request.getParameter(CommonParameter.REL_ID));
+		String status = request.getParameter(CommonParameter.STATUS);
 		if (!StringUtils.isEmpty(status)) {
-			dataMap.put("status", Arrays.asList(status.split(",")));
+			dataMap.put(CommonParameter.STATUS, Arrays.asList(status.split(",")));
 		}
 		String reqStatus = request.getParameter("reqStatus");
 		if (!StringUtils.isEmpty(reqStatus)) {
 			dataMap.put("reqStatus", Arrays.asList(reqStatus.split(",")));
 		}
-		dataMap.put("productId", request.getParameter("productId"));
-		dataMap.put("submitter", request.getParameter("submitter"));
+		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
+		dataMap.put(CommonParameter.SUBMITTER, request.getParameter(CommonParameter.SUBMITTER));
 
 		return buildService.releasenoteQuery(dataMap);
 	}
@@ -161,7 +162,7 @@ public class BuildController {
 		SEPPHistory history = new SEPPHistory();
 		history.setObjType(3);
 		history.setObjId(createdId);
-		history.setObjKey("id");
+		history.setObjKey(CommonParameter.ID);
 		history.setProductId(ParameterThreadLocal.getProductId());
 		history.setOperUser(ParameterThreadLocal.getUserId());
 		history.setOperType(1);

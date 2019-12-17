@@ -1,5 +1,6 @@
 package com.pr.sepp.sep.change.service.impl;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.sep.change.dao.ChangeDAO;
 import com.pr.sepp.sep.change.model.Change;
@@ -37,8 +38,8 @@ public class ChangeServiceImpl implements ChangeService {
 	public int changeInfoUpdate(int id) {
 		Map<String, Object> dataMap = new HashMap<>();
 		int userId = ParameterThreadLocal.getUserId();
-		dataMap.put("id", id);
-		dataMap.put("productId", ParameterThreadLocal.getProductId());
+		dataMap.put(CommonParameter.ID, id);
+		dataMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 		List<Change> changes = changeDAO.changeAuditQuery(dataMap);
 		if (changes.size() == 0) {
 			return 0;

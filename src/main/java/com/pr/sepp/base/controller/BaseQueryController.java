@@ -2,6 +2,7 @@ package com.pr.sepp.base.controller;
 
 import java.util.Map;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,7 +15,7 @@ public class BaseQueryController {
     private BaseQueryService baseQueryService;
 
     @RequestMapping(value = "/base/query_p", method = RequestMethod.POST)
-    public Map<String, Object> baseQueryProduct(@RequestParam(value = "productId", required = true) int productId) {
+    public Map<String, Object> baseQueryProduct(@RequestParam(value = CommonParameter.PRODUCT_ID, required = true) int productId) {
         return baseQueryService.baseQueryProduct(productId);
     }
 

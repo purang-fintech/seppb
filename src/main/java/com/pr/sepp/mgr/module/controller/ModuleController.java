@@ -1,5 +1,6 @@
 package com.pr.sepp.mgr.module.controller;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.mgr.module.model.Module;
 import com.pr.sepp.mgr.module.service.ModuleService;
@@ -23,8 +24,8 @@ public class ModuleController {
 	@RequestMapping(value = "/module/query", method = RequestMethod.POST)
 	public PageInfo<Module> moduleQuery(HttpServletRequest request) {
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("moduleId", request.getParameter("moduleId"));
-		dataMap.put("productId", request.getParameter("productId"));
+		dataMap.put(CommonParameter.MODULE_ID, request.getParameter(CommonParameter.MODULE_ID));
+		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
 		dataMap.put("moduleName", request.getParameter("moduleName"));
 		dataMap.put("isValid", request.getParameter("isValid"));
 
@@ -46,7 +47,7 @@ public class ModuleController {
 	}
 
 	@RequestMapping(value = "/module/delete/{moduleId}", method = RequestMethod.POST)
-	public int moduleDelete(@PathVariable("moduleId") Integer moduleId) {
+	public int moduleDelete(@PathVariable(CommonParameter.MODULE_ID) Integer moduleId) {
 		return moduleService.moduleDelete(moduleId);
 	}
 }

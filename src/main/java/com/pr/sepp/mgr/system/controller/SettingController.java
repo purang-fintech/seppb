@@ -5,6 +5,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,14 +47,14 @@ public class SettingController {
 		config.setSettingName(request.getParameter("settingName"));
 		config.setSettingLimit( Integer.parseInt(request.getParameter("settingLimit")));
 		config.setSettingKeys(request.getParameter("settingKeys"));
-		config.setId(Integer.parseInt(request.getParameter("id")));
+		config.setId(Integer.parseInt(request.getParameter(CommonParameter.ID)));
 		
 		return settingService.configUpdate(config);
 	}
 
 	@RequestMapping(value = "/config/delete", method =  RequestMethod.POST)
 	public int configDelete(HttpServletRequest request) {
-		return settingService.configDelete(Integer.parseInt(request.getParameter("id")));
+		return settingService.configDelete(Integer.parseInt(request.getParameter(CommonParameter.ID)));
 	}
 
 	@RequestMapping(value = "/setting/query", method =  RequestMethod.POST)
@@ -77,13 +78,13 @@ public class SettingController {
 	public int settingUpdate(HttpServletRequest request) {
 		SystemSetting setting = new SystemSetting(); 
 		setting.setSettingValue(request.getParameter("settingValue"));
-		setting.setId(Integer.parseInt(request.getParameter("id")));
+		setting.setId(Integer.parseInt(request.getParameter(CommonParameter.ID)));
 		
 		return settingService.settingUpdate(setting);
 	}
 
 	@RequestMapping(value = "/setting/delete", method =  RequestMethod.POST)
 	public int settingDelete(HttpServletRequest request) {
-		return settingService.settingDelete(Integer.parseInt(request.getParameter("id")));
+		return settingService.settingDelete(Integer.parseInt(request.getParameter(CommonParameter.ID)));
 	}
 }

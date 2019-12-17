@@ -2,6 +2,7 @@ package com.pr.sepp.sep.problem.service.impl;
 
 import com.pr.sepp.base.model.ProblemStatus;
 import com.pr.sepp.base.service.BaseQueryService;
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.history.model.SEPPHistory;
 import com.pr.sepp.history.service.HistoryService;
@@ -64,7 +65,7 @@ public class ProblemServiceImpl implements ProblemService {
 		SEPPHistory history = new SEPPHistory();
 		history.setObjType(17);
 		history.setObjId(createdId);
-		history.setObjKey("id");
+		history.setObjKey(CommonParameter.ID);
 		history.setProductId(productId);
 		history.setOperUser(userId);
 		history.setOperType(1);
@@ -76,14 +77,14 @@ public class ProblemServiceImpl implements ProblemService {
 
 		// 通知对应模块的开发、测试、产品负责人以及项目经理
 		Map<String, Object> moduleMap = new HashMap<>();
-		moduleMap.put("moduleId", problem.getModuleId());
+		moduleMap.put(CommonParameter.MODULE_ID, problem.getModuleId());
 		Module module = moduleDAO.moduleQuery(moduleMap).get(0);
 		messageTo.add(module.getPdResponser());
 		messageTo.add(module.getDevResponser());
 		messageTo.add(module.getTestResponser());
 		// 项目经理
 		Map<String, Object> userMap = new HashMap<>();
-		userMap.put("productId", productId);
+		userMap.put(CommonParameter.PRODUCT_ID, productId);
 		userMap.put("roleId", "10");
 		List<User> pms = userDAO.userQueryProductRole(userMap);
 		pms.forEach(user -> messageTo.add(user.getUserId()));
@@ -106,8 +107,8 @@ public class ProblemServiceImpl implements ProblemService {
 		int id = problem.getId();
 
 		Map<String, Object> queryOld = new HashMap<>();
-		queryOld.put("id", id);
-		queryOld.put("productId", productId);
+		queryOld.put(CommonParameter.ID, id);
+		queryOld.put(CommonParameter.PRODUCT_ID, productId);
 		Problem oldProblem = problemDAO.problemQuery(queryOld).get(0);
 
 		List<Integer> messageTo = new ArrayList<>();
@@ -179,8 +180,8 @@ public class ProblemServiceImpl implements ProblemService {
 		Integer id = problemRefuse.getId();
 
 		Map<String, Object> queryOld = new HashMap<>();
-		queryOld.put("id", id);
-		queryOld.put("productId", productId);
+		queryOld.put(CommonParameter.ID, id);
+		queryOld.put(CommonParameter.PRODUCT_ID, productId);
 		Problem oldProblem = problemDAO.problemQuery(queryOld).get(0);
 
 		if (null != oldProblem.getTransId()) {
@@ -195,7 +196,7 @@ public class ProblemServiceImpl implements ProblemService {
 		SEPPHistory history = new SEPPHistory();
 		history.setObjType(17);
 		history.setObjId(id);
-		history.setObjKey("status");
+		history.setObjKey(CommonParameter.STATUS);
 		history.setProductId(productId);
 		history.setOperUser(userId);
 		history.setOperType(2);

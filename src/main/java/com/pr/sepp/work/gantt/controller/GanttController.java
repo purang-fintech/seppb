@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -27,7 +28,7 @@ public class GanttController {
 		dataMap.put("planBeginEnd", request.getParameter("planBeginEnd") + " 23:59:59");
 		dataMap.put("planEndBegin", request.getParameter("planEndBegin") + " 00:00:00");
 		dataMap.put("planEndEnd", request.getParameter("planEndEnd") + " 23:59:59");
-		dataMap.put("productId", request.getParameter("productId"));
+		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
 
 		return ganttService.ganttMissionQuery(dataMap);
 	}

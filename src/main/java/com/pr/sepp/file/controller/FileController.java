@@ -1,5 +1,6 @@
 package com.pr.sepp.file.controller;
 
+import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.file.model.SEPPFile;
 import com.pr.sepp.file.model.TestMail;
@@ -53,7 +54,7 @@ public class FileController {
 			fileModel.setUrl(subPath.toString());
 			fileModel.setUploadUser(ParameterThreadLocal.getUserId());
 			fileService.attachCreate(fileModel);
-			data.put("id", fileModel.getId());
+			data.put(CommonParameter.ID, fileModel.getId());
 			data.put("name", fileName);
 			data.put("url", subPath);
 			result.add(data);
@@ -77,7 +78,7 @@ public class FileController {
 		fileModel.setUploadUser(ParameterThreadLocal.getUserId());
 		fileService.attachCreate(fileModel);
 		result.put("name", fileModel.getFileName());
-		result.put("id", fileModel.getId());
+		result.put(CommonParameter.ID, fileModel.getId());
 		result.put("url", fileUrl);
 		return result;
 	}
@@ -102,7 +103,7 @@ public class FileController {
 		fileModel.setUrl(fileUrl);
 		fileModel.setUploadUser(ParameterThreadLocal.getUserId());
 		fileService.attachCreate(fileModel);
-		result.put("id", fileModel.getId());
+		result.put(CommonParameter.ID, fileModel.getId());
 		result.put("url", fileUrl);
 		return result;
 	}
@@ -110,13 +111,13 @@ public class FileController {
 	@RequestMapping(value = "/file/delete/{attachIds}", method = RequestMethod.POST)
 	public int fileDelete(@PathVariable("attachIds") String id) {
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("id", id);
+		dataMap.put(CommonParameter.ID, id);
 		List<SEPPFile> files = fileService.attachQuery(dataMap);
 		SEPPFile toDel = files.get(0);
 		String url = toDel.getUrl().substring(toDel.getUrl().indexOf(properties.getGroupName()));
 		// 先逻辑删除，后物理删除
 		Map<String, String> delMap = new HashMap<>();
-		delMap.put("id", id);
+		delMap.put(CommonParameter.ID, id);
 		int result = fileService.attachDelete(delMap);
 		client.deleteFile(url);
 
