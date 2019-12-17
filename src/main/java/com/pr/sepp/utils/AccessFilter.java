@@ -75,7 +75,7 @@ public class AccessFilter implements Filter {
 		return true;
 	}
 
-	public void init(FilterConfig arg0) {
+	public void init(FilterConfig arg0) throws ServletException {
 
 	}
 }

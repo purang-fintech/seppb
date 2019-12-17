@@ -61,8 +61,7 @@ public class TestMissionServiceImpl implements TestMissionService {
 				a -> Objects.equals(a.getPeriodId(), testMission.getType())).findFirst().orElse(new TestPeriod()).getPeriodName();
 
 		Map<String, Object> reqMap = new HashMap<>();
-		reqMap.put(CommonParameter.PRODUCT_ID, productId);
-		reqMap.put(CommonParameter.REQ_ID, testMission.getReqId());
+		reqMap.put(CommonParameter.ID, testMission.getReqId());
 		Requirement req = requirementDAO.reqQuery(reqMap).get(0);
 		String reqSum = "【#" + req.getId() + " - " + req.getSummary() + "】";
 

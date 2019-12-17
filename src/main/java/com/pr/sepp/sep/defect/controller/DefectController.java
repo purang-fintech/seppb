@@ -68,7 +68,8 @@ public class DefectController {
 			String subName = users.stream().filter(u -> Objects.equals(u.getUserId(), item.getSubmitter())).findFirst().orElse(new User()).getUserName();
 			String conName = users.stream().filter(u -> Objects.equals(u.getUserId(), item.getConciliator())).findFirst().orElse(new User()).getUserName();
 			String resName = users.stream().filter(u -> Objects.equals(u.getUserId(), item.getResponser())).findFirst().orElse(new User()).getUserName();
-			String proName = users.stream().filter(u -> Objects.equals(u.getUserId(), item.getProductor())).findFirst().orElse(new User()).getUserName();
+			// 缺陷对应产品经理在无归属需求时清空
+			String proName = item.getReqId() - 0 == 0 ? "/" : users.stream().filter(u -> Objects.equals(u.getUserId(), item.getProductor())).findFirst().orElse(new User()).getUserName();
 			item.setSubmitterName(subName);
 			item.setConciliatorName(conName);
 			item.setResponserName(resName);
