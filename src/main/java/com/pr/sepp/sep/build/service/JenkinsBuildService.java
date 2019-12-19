@@ -1,5 +1,6 @@
 package com.pr.sepp.sep.build.service;
 
+import com.google.common.collect.Lists;
 import com.pr.sepp.common.exception.SeppClientException;
 import com.pr.sepp.common.exception.SeppServerException;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
@@ -20,7 +21,6 @@ import com.pr.sepp.sep.build.service.trigger.JenkinsStatusUpdater;
 import com.pr.sepp.utils.jenkins.JenkinsClient;
 import com.pr.sepp.utils.jenkins.JenkinsClientProvider;
 import com.pr.sepp.utils.jenkins.model.ParameterDefinition;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -95,10 +95,9 @@ public class JenkinsBuildService {
      * @return
      */
     public List<ParameterDefinition> getJobBuildParams(String jobName, InstanceType type) {
-        JenkinsClient jenkinsClient = jenkinsClientProvider.getJenkinsClient(type);
-        try {
+        try (JenkinsClient jenkinsClient = jenkinsClientProvider.getJenkinsClient(type)) {
             return jenkinsClient.jenkinsBuildParams(jobName);
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new SeppClientException("无法获取该job的构建参数列表");
         }
     }
@@ -126,8 +125,7 @@ public class JenkinsBuildService {
                 deploymentBuildReq.setBuildVersion(buildVersion);
                 deploymentService.saveDeploymentHistory(deploymentBuildReq);
             }
-        } catch (IOException e) {
-            jenkinsClientProvider.checkAndUpdateJenkinsClient(e);
+        } catch (Exception e) {
             throw new SeppServerException("服务器异常，请稍后再试", e);
         }
         deploymentBuildServer.pushByT(DeploymentWebSessionPayload.builder().branchId(deploymentBuildReq.getBranchId())
@@ -219,16 +217,19 @@ public class JenkinsBuildService {
             buildHistory.setType(buildInstance.getType());
             build(repeatBuildInstance, buildHistory, buildFilesToParamsMap(buildFiles));
         } catch (IOException e) {
-            jenkinsClientProvider.checkAndUpdateJenkinsClient(e);
             log.error("构建id为:{}的buildParams序列化失败{}", buildHistory.getId(), e);
             throw new SeppServerException(1001, "服务器异常");
         }
     }
 
     private Integer build(List<String> repeatBuildInstance, BuildHistory buildHistory, Map<String, String> paramsMap) {
-        if (jenkinsClientProvider.getJenkinsClient(buildHistory.getType()).checkRepeatBuild(buildHistory.getJobName(), paramsMap)) {
-            repeatBuildInstance.add(buildHistory.getJobName());
-            return null;
+        try (JenkinsClient jenkinsClient = jenkinsClientProvider.getJenkinsClient(buildHistory.getType())) {
+            if (jenkinsClient.checkRepeatBuild(buildHistory.getJobName(), paramsMap)) {
+                repeatBuildInstance.add(buildHistory.getJobName());
+                return null;
+            }
+        } catch (Exception e) {
+            log.error("校验构建重复性失败:{}", e);
         }
         log.debug("构建开始 {}", buildHistory.getJobName());
         startBuild(buildHistory.getJobName(), paramsMap, buildHistory.getType());
@@ -240,11 +241,9 @@ public class JenkinsBuildService {
     }
 
     private void startBuild(String jobName, Map<String, String> params, InstanceType instanceType) {
-        try {
-            JenkinsClient jenkinsClient = jenkinsClientProvider.getBuildJenkinsClient(instanceType);
+        try (JenkinsClient jenkinsClient = jenkinsClientProvider.getJenkinsClient(instanceType)) {
             jenkinsClient.startBuild(jobName, params);
-        } catch (IOException e) {
-            jenkinsClientProvider.checkAndUpdateJenkinsClient(e);
+        } catch (Exception e) {
             throw new SeppServerException("构建失败，请稍后重试", e);
         }
     }

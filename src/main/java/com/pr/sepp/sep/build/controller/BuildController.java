@@ -110,7 +110,7 @@ public class BuildController {
 	@GetMapping(value = "/build/build-log")
 	public Map<String, Object> buildLog(@RequestParam("jobName") String jobName,
 										@RequestParam("buildVersion") Integer buildVersion,
-										@RequestParam("instanceType") InstanceType instanceType) throws IOException {
+										@RequestParam("instanceType") InstanceType instanceType) {
 		return buildHistoryService.buildLog(jobName, buildVersion, instanceType);
 	}
 

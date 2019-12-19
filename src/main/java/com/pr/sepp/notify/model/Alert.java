@@ -10,13 +10,14 @@ import java.time.LocalDate;
 @AllArgsConstructor
 @NoArgsConstructor
 public class Alert {
-    //w.id,w.warningDate warningDate,w.category, w.type,l.levelName levelName,w.summary
-    private Integer id;
-    private Integer type;
-    private String category;
-    private LocalDate warningDate;
-    private Integer level;
-    private String summary;
-    private String content;
-
+	private Integer id;
+	private Integer productId;
+	private Integer type;
+	private Integer subType;
+	private String category;
+	private LocalDate warningDate;
+	private Integer level;
+	private Integer responser;
+	private String summary;
+	private String content;
 }

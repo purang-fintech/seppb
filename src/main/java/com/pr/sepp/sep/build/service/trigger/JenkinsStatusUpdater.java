@@ -17,7 +17,6 @@ import com.pr.sepp.utils.jenkins.JenkinsClient;
 import com.pr.sepp.utils.jenkins.JenkinsClientProvider;
 import com.pr.sepp.utils.jenkins.model.PipelineStep;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.http.conn.ConnectionPoolTimeoutException;
 
 import javax.annotation.PreDestroy;
 import java.io.IOException;
@@ -90,19 +89,21 @@ public class JenkinsStatusUpdater {
     }
 
     protected void updateBuild(InstanceType instanceType, Set<String> jobNames) {
+        int failedCount = 0;
         JenkinsClient jenkinsClient = jenkinsClientProvider.getJenkinsClient(instanceType);
         for (String jobName : jobNames) {
-            try {
-                List<Build> builds = jenkinsClient.allBuildsByJobName(jobName);
-                updateBuild(jobName, jenkinsClient, builds);
-            } catch (IOException e) {
-                jenkinsClientProvider.checkAndUpdateJenkinsClient(e);
-                jenkinsClient = jenkinsClientProvider.getJenkinsClient(instanceType);
-                log.error("获取{}的构建结果失败:{}", jobName, e);
-            } catch (Exception e1) {
-                log.error("更新{}数据库jenkins状态失败:{}", jobName, e1);
+            if (failedCount < 5) {
+                try {
+                    List<Build> builds = jenkinsClient.allBuildsByJobName(jobName);
+                    updateBuild(jobName, jenkinsClient, builds);
+                } catch (Exception e1) {
+                    failedCount++;
+                    log.error("更新构建结果失败:{}", e1);
+                }
             }
         }
+        jenkinsClient.close();
+
     }
 
     private void updateBuild(String jobName, JenkinsClient jenkinsClient, List<Build> builds) throws IOException {

@@ -22,11 +22,14 @@
             </when>
             <otherwise>
                 and parent_id = #{parentId}
-                <if test="currentProduct!=null and currentProduct!=''">
-                    and product_id = #{currentProduct}
+                <if test='productId!=null and productId!="" and parentId!="0"'>
+                    and product_id = #{productId}
                 </if>
             </otherwise>
         </choose>
+        <if test='isDesc=="Y"'>
+            order by id desc
+        </if>
     </select>
 
     <select id="caseFolderQuery" resultType="java.lang.Integer" parameterType="java.util.HashMap">

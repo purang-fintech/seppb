@@ -22,6 +22,8 @@ public interface ProductDAO {
 
 	List<ProductConfig> productConfigQuery(int productId);
 
+	int productConfigCreate(ProductConfig productConfig);
+
 	int productConfigUpdate(ProductConfig productConfig);
 
 	List<ProductDoc> productDocQuery(Map<String, Object> dataMap);
@@ -48,4 +50,5 @@ public interface ProductDAO {
 
 	ProductBranch findProductBranch(Integer branchId);
 
+	int productExists(String productName, String productCode);
 }

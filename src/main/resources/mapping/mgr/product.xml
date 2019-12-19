@@ -7,37 +7,48 @@
 
     <select id="productQuery" resultType="com.pr.sepp.mgr.product.model.Product" parameterType="java.util.HashMap">
         select
-            product_id      as productId,
-            product_code    as productCode,
-            product_name    as productName,
-            product_desc    as productDesc,
-            is_valid        as isValid,
-            owner
+            p.product_id      as productId,
+            p.product_code    as productCode,
+            p.product_name    as productName,
+            p.product_desc    as productDesc,
+            p.is_valid        as isValid,
+            p.owner,
+            u.user_name       as ownerName
         from
-            sepp_product
-        where 1 = 1
+            sepp_product p,
+            sepp_user u
+        where u.user_id = p.owner
         <choose>
             <when test="productId!=null and productId!=''">
-                and product_id = #{productId}
+                and p.product_id = #{productId}
             </when>
             <otherwise>
                 <if test="productCode!=null and productCode!=''">
-                    and product_code = #{productCode}
+                    and p.product_code = #{productCode}
                 </if>
                 <if test="productName!=null and productName!=''">
-                    and product_name like concat(#{productName}, '%')
+                    and p.product_name like concat(#{productName}, '%')
                 </if>
                 <if test="productNameFull!=null and productNameFull!=''">
-                    and product_name = #{productNameFull}
+                    and p.product_name = #{productNameFull}
                 </if>
                 <if test="owner!=null and owner!=''">
-                    and owner = #{owner}
+                    and p.owner = #{owner}
                 </if>
                 <if test="isValid!=null and isValid!=''">
-                    and is_valid = #{isValid}
+                    and p.is_valid = #{isValid}
                 </if>
             </otherwise>
         </choose>
+    </select>
+
+    <select id="productExists" resultType="java.lang.Integer">
+        select
+            count(1)
+        from
+            sepp_product
+        where product_code = #{productCode}
+          or product_name = #{productName}
     </select>
 
     <insert id="productCreate" useGeneratedKeys="true" parameterType="com.pr.sepp.mgr.product.model.Product">
@@ -96,6 +107,13 @@
             sepp_product_config(product_id, member_config, change_auditor, gompertz_define, gompertz_params, dre_target)
         values
             (#{productId}, #{memberConfig}, #{changeAuditor}, #{gompertzDefine}, #{gompertzParams}, #{dreTarget})
+    </update>
+
+    <update id="productConfigCreate" parameterType="com.pr.sepp.mgr.product.model.ProductConfig">
+        insert into
+            sepp_product_config(product_id, member_config)
+        values
+            (#{productId}, #{memberConfig})
     </update>
 
     <select id="productDocQuery" resultType="com.pr.sepp.mgr.product.model.ProductDoc" parameterType="java.util.HashMap">

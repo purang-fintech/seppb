@@ -10,5 +10,6 @@ public class Product {
 	private String productCode;
 	private String productName;
 	private String productDesc;
+	private String ownerName;
 	private String isValid;
 }

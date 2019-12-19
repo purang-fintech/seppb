@@ -12,6 +12,7 @@ import com.pr.sepp.mgr.product.model.ProductDoc;
 import com.pr.sepp.mgr.product.service.ProductService;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.pr.sepp.mgr.role.dao.RoleDAO;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -28,6 +29,9 @@ public class ProductServiceImpl implements ProductService {
 	private ProductDAO productDAO;
 
 	@Autowired
+	private RoleDAO roleDAO;
+
+	@Autowired
 	private HistoryService historyService;
 
 	@Override
@@ -36,11 +40,32 @@ public class ProductServiceImpl implements ProductService {
 	}
 
 	@Override
+	public int productExists(String productName, String productCode) {
+		return productDAO.productExists(productName, productCode);
+	}
+
+	@Override
 	public int productCreate(Product product) {
 		int userId = ParameterThreadLocal.getUserId();
 
 		productDAO.productCreate(product);
 		int created = product.getProductId();
+
+		// 创建产品之后默认为创建人授予项目管理员权限
+		Map<String, Object> dataMap = new HashMap<>();
+		dataMap.put(CommonParameter.USER_ID, ParameterThreadLocal.getUserId());
+		dataMap.put("products", Arrays.asList(created));
+		dataMap.put("roles", Arrays.asList(0));
+		roleDAO.privUpdate(dataMap);
+
+		// 创建产品之后创建默认的产品配置
+		ProductConfig productConfig = new ProductConfig();
+		final String members = "{\"pdResponser\":" + userId + ",\"devResponser\":" + userId +
+				",\"testResponser\":" + userId + ",\"pdAssistant\":\"" + userId +
+				"\",\"devAssistant\":\"" + userId + "\",\"testAssistant\":\"" + userId + "\"}";
+		productConfig.setProductId(created);
+		productConfig.setMemberConfig(members);
+		productDAO.productConfigCreate(productConfig);
 
 		SEPPHistory history = new SEPPHistory();
 		history.setObjType(11);

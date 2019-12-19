@@ -3,6 +3,7 @@ package com.pr.sepp.utils.jenkins;
 import com.pr.sepp.mgr.system.dao.SettingDAO;
 import com.pr.sepp.sep.build.model.constants.InstanceType;
 import com.pr.sepp.utils.jenkins.model.JenkinsProperties;
+import com.pr.sepp.utils.jenkins.pool.JenkinsPool;
 
 /**
  * 该类仅在本地开发时会读取配置文件中的jenkins的信息
@@ -23,43 +24,33 @@ import com.pr.sepp.utils.jenkins.model.JenkinsProperties;
 
 public class ConfigurationJenkinsClientProvider extends JenkinsClientProvider {
 
-	public ConfigurationJenkinsClientProvider(JenkinsProperties jenkinsProperties, SettingDAO settingDAO) {
-		super(jenkinsProperties, settingDAO);
-	}
+    public ConfigurationJenkinsClientProvider(JenkinsProperties jenkinsProperties, SettingDAO settingDAO) {
+        super(jenkinsProperties, settingDAO);
+    }
 
-	@Override
-	protected boolean shouldUpdateJenkinsClient() {
-		return false;
-	}
+    @Override
+    protected boolean shouldUpdateJenkinsClient() {
+        return false;
+    }
 
-	@Override
-	protected void retrieveJenkinsClient() {
-		if (jenkinsProperties.androidJenkinsNonNull()) {
-			JenkinsClient androidJenkinsClient = createJenkinsClient(jenkinsProperties.getAndroidUrl(),
-					jenkinsProperties.getAndroidUsername(), jenkinsProperties.getAndroidPassword());
-			JenkinsClient buildAndroidClient = createJenkinsClient(jenkinsProperties.getAndroidUrl(),
-					jenkinsProperties.getAndroidUsername(), jenkinsProperties.getAndroidPassword());
-			jenkinsClientProviderMap.put(InstanceType.ANDROID.getBeanName(), androidJenkinsClient);
-			buildJenkinsClientProviderMap.put(InstanceType.ANDROID.getBeanName(), buildAndroidClient);
-		}
+    @Override
+    protected void retrieveJenkinsClient() {
+        if (jenkinsProperties.androidJenkinsNonNull()) {
+            JenkinsPool jenkinsPool = new JenkinsPool(createJenkinsPoolConfig(), jenkinsProperties.getAndroidUrl(),
+                    jenkinsProperties.getAndroidUsername(), jenkinsProperties.getAndroidPassword());
+            jenkinsClientProviderMap.put(InstanceType.ANDROID.getBeanName(), jenkinsPool);
+        }
 
-		if (jenkinsProperties.iosJenkinsNonNull()) {
-			JenkinsClient iosJenkinsClient = createJenkinsClient(jenkinsProperties.getIosUrl(),
-					jenkinsProperties.getIosUsername(), jenkinsProperties.getIosPassword());
-			JenkinsClient buildIosClient = createJenkinsClient(jenkinsProperties.getIosUrl(),
-					jenkinsProperties.getIosUsername(), jenkinsProperties.getIosPassword());
+        if (jenkinsProperties.iosJenkinsNonNull()) {
+            JenkinsPool jenkinsPool = new JenkinsPool(createJenkinsPoolConfig(), jenkinsProperties.getIosUrl(),
+                    jenkinsProperties.getIosUsername(), jenkinsProperties.getIosPassword());
+            jenkinsClientProviderMap.put(InstanceType.IOS.getBeanName(), jenkinsPool);
+        }
 
-			jenkinsClientProviderMap.put(InstanceType.IOS.getBeanName(), iosJenkinsClient);
-			buildJenkinsClientProviderMap.put(InstanceType.IOS.getBeanName(), buildIosClient);
-		}
-
-		if (jenkinsProperties.webJenkinsNonNull()) {
-			JenkinsClient webJenkinsClient = createJenkinsClient(jenkinsProperties.getWebUrl(),
-					jenkinsProperties.getWebUsername(), jenkinsProperties.getWebPassword());
-			JenkinsClient buildWebClient = createJenkinsClient(jenkinsProperties.getWebUrl(),
-					jenkinsProperties.getWebUsername(), jenkinsProperties.getWebPassword());
-			jenkinsClientProviderMap.put(InstanceType.ORDINARY.getBeanName(), webJenkinsClient);
-			buildJenkinsClientProviderMap.put(InstanceType.ORDINARY.getBeanName(), buildWebClient);
-		}
-	}
+        if (jenkinsProperties.webJenkinsNonNull()) {
+            JenkinsPool jenkinsPool = new JenkinsPool(createJenkinsPoolConfig(), jenkinsProperties.getWebUrl(),
+                    jenkinsProperties.getWebUsername(), jenkinsProperties.getWebPassword());
+            jenkinsClientProviderMap.put(InstanceType.ORDINARY.getBeanName(), jenkinsPool);
+        }
+    }
 }

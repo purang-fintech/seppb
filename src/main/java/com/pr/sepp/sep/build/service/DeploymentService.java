@@ -1,5 +1,8 @@
 package com.pr.sepp.sep.build.service;
 
+import com.google.common.collect.Maps;
+import com.offbytwo.jenkins.model.Build;
+import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.pr.sepp.common.exception.SeppClientException;
 import com.pr.sepp.common.exception.SeppServerException;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
@@ -15,9 +18,6 @@ import com.pr.sepp.sep.build.model.resp.JenkinsBuildResp;
 import com.pr.sepp.utils.jenkins.JenkinsClient;
 import com.pr.sepp.utils.jenkins.JenkinsClientProvider;
 import com.pr.sepp.utils.jenkins.model.PipelineStep;
-import com.google.common.collect.Maps;
-import com.offbytwo.jenkins.model.Build;
-import com.offbytwo.jenkins.model.BuildWithDetails;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -65,11 +65,10 @@ public class DeploymentService implements InitializingBean {
      * @return
      */
     public List<JenkinsBuildResp> selectDeployVersion(String jobName, InstanceType instanceType) {
-        JenkinsClient jenkinsClient = jenkinsClientProvider.getJenkinsClient(instanceType);
-        try {
+        try (JenkinsClient jenkinsClient = jenkinsClientProvider.getJenkinsClient(instanceType)) {
             List<Build> builds = jenkinsClient.allBuildsByJobName(jobName);
             return builds.stream().map(this::buildJenkinsBuildResp).filter(JenkinsBuildResp::canDeploy).collect(toList());
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new SeppClientException(String.format("无法获取%s的可以部署的版本", jobName));
         }
     }
@@ -86,16 +85,15 @@ public class DeploymentService implements InitializingBean {
         putDeploymentJob(deploymentBuildReq.getJobName(), deploymentBuildReq.getInstanceType());
         String deployJobName = String.format(DEPLOYMENT_JOB_NAME, deploymentBuildReq.getJobName());
         deploymentBuildReq.setDeployJobName(deployJobName);
-        try {
+        try (JenkinsClient jenkinsClient = jenkinsClientProvider.getJenkinsClient(deploymentBuildReq.getInstanceType())) {
             //记录部署开始日志
             saveDeploymentHistory(deploymentBuildReq);
-            JenkinsClient jenkinsClient = jenkinsClientProvider.getJenkinsClient(deploymentBuildReq.getInstanceType());
             jenkinsClient.startBuild(deployJobName, deploymentBuildReq.deployParams());
             deploymentBuildServer.pushByT(DeploymentWebSessionPayload.builder().branchId(deploymentBuildReq.getBranchId())
                     .envType(deploymentBuildReq.getEnvType())
                     .jobName(deploymentBuildReq.getJobName())
                     .build());
-        } catch (IOException e) {
+        } catch (Exception e) {
             throw new SeppServerException("部署失败，请稍后再试", e);
         }
     }
@@ -123,13 +121,13 @@ public class DeploymentService implements InitializingBean {
      * @param deploymentBuildReq
      * @throws IOException
      */
-    public void saveDeploymentHistory(DeploymentBuildReq deploymentBuildReq) throws IOException {
+    public void saveDeploymentHistory(DeploymentBuildReq deploymentBuildReq) {
         DeploymentHistory deploymentHistory = deploymentBuildReq.reqCopyToDeploymentHistory();
         deploymentHistory.setDeployJobName(deploymentBuildReq.getDeployJobName());
         if (isNull(deploymentBuildReq.getBuildType())) {
             deploymentHistory.setDeployVersion(buildVersionGenerator(deploymentBuildReq.getDeployJobName(), deploymentBuildReq.getInstanceType()));
         }
-        deploymentHistory.setUserName(userDAO.findUserByUserId(Integer.valueOf(ParameterThreadLocal.getUserId())).getUserName());
+        deploymentHistory.setUserName(userDAO.findUserByUserId(ParameterThreadLocal.getUserId()).getUserName());
         deploymentDAO.insertDeploymentHistory(deploymentHistory);
     }
 
@@ -141,9 +139,12 @@ public class DeploymentService implements InitializingBean {
      * @return
      * @throws IOException
      */
-    private synchronized Integer buildVersionGenerator(String jobName, InstanceType instanceType) throws IOException {
-        JenkinsClient jenkinsClient = jenkinsClientProvider.getJenkinsClient(instanceType);
-        return jenkinsClient.buildVersionGenerator(jobName, getBuildVersionByJobName(jobName));
+    private synchronized Integer buildVersionGenerator(String jobName, InstanceType instanceType) {
+        try (JenkinsClient jenkinsClient = jenkinsClientProvider.getJenkinsClient(instanceType)) {
+            return jenkinsClient.buildVersionGenerator(jobName, getBuildVersionByJobName(jobName));
+        } catch (Exception e) {
+            throw new SeppClientException(String.format("获取%s的构建号失败", jobName), e);
+        }
     }
 
     /**
@@ -165,14 +166,13 @@ public class DeploymentService implements InitializingBean {
         try {
             details = build.details();
         } catch (IOException e) {
-            throw new SeppClientException(String.format("无法该job可以部署的版本"));
+            throw new SeppClientException("无法该job可以部署的版本");
         }
         return JenkinsBuildResp.apply(build.getNumber(), details.getResult());
     }
 
     private void updateDeploymentResult(String jobName, InstanceType instanceType) {
-        try {
-            JenkinsClient jenkinsClient = jenkinsClientProvider.getJenkinsClient(instanceType);
+        try (JenkinsClient jenkinsClient = jenkinsClientProvider.getJenkinsClient(instanceType)) {
             List<Build> builds = jenkinsClient.allBuildsByJobName(jobName);
             for (Build build : builds) {
                 PipelineStep pipelineStep = jenkinsClient.pipelineStep(jobName, build.getNumber());
@@ -182,6 +182,7 @@ public class DeploymentService implements InitializingBean {
                 deploymentDAO.createOrUpdate(deploymentHistory);
             }
         } catch (Exception e) {
+            log.error("更新{}部署结果失败:{}", jobName, e);
         }
     }
 

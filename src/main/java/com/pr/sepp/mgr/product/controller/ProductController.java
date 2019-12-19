@@ -23,12 +23,15 @@ public class ProductController {
 	@Autowired
 	private ProductService productService;
 
-	@RequestMapping(value = "/product/query", method = RequestMethod.POST)
+	private static final String PD_NAME = "productName";
+	private static final String PD_CODE = "productCode";
+
+	@PostMapping(value = "/product/query")
 	public PageInfo<Product> productQuery(HttpServletRequest request) {
 		Map<String, Object> dataMap = new HashMap<>();
 		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
-		dataMap.put("productCode", request.getParameter("productCode"));
-		dataMap.put("productName", request.getParameter("productName"));
+		dataMap.put(PD_CODE, request.getParameter(PD_CODE));
+		dataMap.put(PD_NAME, request.getParameter(PD_NAME));
 		dataMap.put("owner", request.getParameter("owner"));
 		dataMap.put("isValid", request.getParameter("isValid"));
 
@@ -39,32 +42,37 @@ public class ProductController {
 		return pageInfo;
 	}
 
-	@RequestMapping(value = "/product/create", method = RequestMethod.POST)
+	@PostMapping(value = "/product/exists")
+	public int productExists(HttpServletRequest request) {
+		return productService.productExists(request.getParameter(PD_NAME), request.getParameter(PD_CODE));
+	}
+
+	@PostMapping(value = "/product/create")
 	public int productCreate(@RequestBody Product product) {
 		return productService.productCreate(product);
 	}
 
-	@RequestMapping(value = "/product/update", method = RequestMethod.POST)
+	@PostMapping(value = "/product/update")
 	public int productUpdate(@RequestBody Product product) throws IllegalAccessException {
 		return productService.productUpdate(product);
 	}
 
-	@RequestMapping(value = "/product/delete/{productId}", method = RequestMethod.POST)
+	@PostMapping(value = "/product/delete/{productId}")
 	public int productDelete(@PathVariable(CommonParameter.PRODUCT_ID) Integer productId) {
 		return productService.productDelete(productId);
 	}
 
-	@RequestMapping(value = "/product/config_query/{productId}", method = RequestMethod.POST)
+	@PostMapping(value = "/product/config_query/{productId}")
 	public Map<String, Object> productConfigQuery(@PathVariable(CommonParameter.PRODUCT_ID) Integer productId) {
 		return productService.productConfigQuery(productId);
 	}
 
-	@RequestMapping(value = "/product/config_update", method = RequestMethod.POST)
+	@PostMapping(value = "/product/config_update")
 	public int productConfigUpdate(@RequestBody ProductConfig productConfig) {
 		return productService.productConfigUpdate(productConfig);
 	}
 
-	@RequestMapping(value = "/document/query", method = RequestMethod.POST)
+	@PostMapping(value = "/document/query")
 	public List<ProductDoc> productDocQuery(HttpServletRequest request) {
 		Map<String, Object> dataMap = new HashMap<>();
 		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
@@ -75,7 +83,7 @@ public class ProductController {
 		return productService.productDocQuery(dataMap);
 	}
 
-	@RequestMapping(value = "/document/fuzz_query", method = RequestMethod.POST)
+	@PostMapping(value = "/document/fuzz_query")
 	public PageInfo<ProductDoc> documentFuzzQuery(HttpServletRequest request) {
 		Map<String, Object> dataMap = new HashMap<>();
 		dataMap.put("searchText", request.getParameter("searchText"));
@@ -88,7 +96,7 @@ public class ProductController {
 		return pageInfo;
 	}
 
-	@RequestMapping(value = "/document/version_query/{productId}", method = RequestMethod.POST)
+	@PostMapping(value = "/document/version_query/{productId}")
 	public List<String> documentVersionQuery(@PathVariable(CommonParameter.PRODUCT_ID) Integer productId) {
 		return productService.documentVersionQuery(productId);
 	}
@@ -98,17 +106,17 @@ public class ProductController {
 		return productService.documentReqQuery(attachmentId);
 	}
 
-	@RequestMapping(value = "/document/create", method = RequestMethod.POST)
+	@PostMapping(value = "/document/create")
 	public int productDocCreate(@RequestBody ProductDoc doc) {
 		return productService.productDocCreate(doc);
 	}
 
-	@RequestMapping(value = "/document/update", method = RequestMethod.POST)
+	@PostMapping(value = "/document/update")
 	public int productDocUpdate(@RequestBody ProductDoc doc) throws IllegalAccessException {
 		return productService.productDocUpdate(doc);
 	}
 
-	@RequestMapping(value = "/branch/query", method = RequestMethod.POST)
+	@PostMapping(value = "/branch/query")
 	public PageInfo<ProductBranch> productBranchQuery(HttpServletRequest request) {
 		Map<String, Object> dataMap = new HashMap<>();
 		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
@@ -121,17 +129,17 @@ public class ProductController {
 		return pageInfo;
 	}
 
-	@RequestMapping(value = "/branch/create", method = RequestMethod.POST)
+	@PostMapping(value = "/branch/create")
 	public int productBranchCreate(@RequestBody ProductBranch branch) {
 		return productService.productBranchCreate(branch);
 	}
 
-	@RequestMapping(value = "/branch/update", method = RequestMethod.POST)
+	@PostMapping(value = "/branch/update")
 	public int productBranchUpdate(@RequestBody ProductBranch branch) throws IllegalAccessException {
 		return productService.productBranchUpdate(branch);
 	}
 
-	@RequestMapping(value = "/branch/delete/{branchId}", method = RequestMethod.POST)
+	@PostMapping(value = "/branch/delete/{branchId}")
 	public int productBranchDelete(@PathVariable(CommonParameter.BRANCH_ID) Integer branchId) {
 		return productService.productBranchDelete(branchId);
 	}

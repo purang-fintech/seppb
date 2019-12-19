@@ -29,6 +29,19 @@ public class JenkinsProperties {
      */
     private boolean enableSyncStatus = true;
 
+    //连接池相关配置
+    private boolean testWhileIdle = true;
+    private boolean testOnBorrow = true;
+    private boolean testOnReturn = true;
+    private int minEvictableIdleTimeMillis = 240_000;
+    private int timeBetweenEvictionRunsMillis = 30_000;
+    private int evictorShutdownTimeoutMillis = 5_000;
+    private int maxWaitMillis = 4_000;
+    private int numTestsPerEvictionRun = -1;
+    private int maxTotal = 6;
+    private int maxIdle = 6;
+
+
     public boolean webJenkinsNonNull() {
         return isNotBlank(webUrl) && isNotBlank(webUsername) && isNotBlank(webPassword);
     }

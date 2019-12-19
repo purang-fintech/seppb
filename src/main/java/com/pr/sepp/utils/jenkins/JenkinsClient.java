@@ -9,21 +9,28 @@ import com.offbytwo.jenkins.client.util.UrlUtils;
 import com.offbytwo.jenkins.model.Queue;
 import com.offbytwo.jenkins.model.*;
 import com.pr.sepp.common.exception.SeppClientException;
+import com.pr.sepp.common.exception.SeppServerException;
 import com.pr.sepp.utils.jenkins.model.ParameterDefinition;
 import com.pr.sepp.utils.jenkins.model.PipelineStep;
+import com.pr.sepp.utils.jenkins.pool.JenkinsPoolAbstract;
 import lombok.Data;
 import lombok.NonNull;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.http.impl.client.HttpClientBuilder;
 
 import java.io.Closeable;
 import java.io.IOException;
+import java.net.URI;
 import java.util.*;
 
 import static java.util.Objects.nonNull;
 import static java.util.Optional.ofNullable;
 import static java.util.stream.Collectors.toList;
 
+/**
+ * jenkins由连接池所创建，每次使用请调用close方法手动关闭，不然会造成连接泄露
+ */
 @Slf4j
 public class JenkinsClient implements Closeable {
     private static final String BUILD_LOG_CSS = "%s<style scoped>.pipeline-new-node {color: #9A9999;}</style>";
@@ -31,36 +38,53 @@ public class JenkinsClient implements Closeable {
 
     private JenkinsServer jenkinsServer;
     private JenkinsHttpClient client;
+    private JenkinsPoolAbstract source;
+    private boolean broken = false;
 
     public JenkinsClient(JenkinsServer jenkinsServer, JenkinsHttpClient client) {
         this.jenkinsServer = jenkinsServer;
         this.client = client;
     }
 
-    public void startBuild(@NonNull String jobName, Map<String, String> params) throws IOException {
-        JobWithDetails job = job(jobName);
-        if (nonNull(job)) job.build(params);
+    public JenkinsClient(String url, String username, String password, HttpClientBuilder builder) {
+        this.client = new JenkinsHttpClient(URI.create(url), builder, username, password);
+        this.jenkinsServer = new JenkinsServer(client);
     }
 
-    public List<Build> allBuildsByJobName(@NonNull String jobName) throws IOException {
+    public void startBuild(@NonNull String jobName, Map<String, String> params) {
+        JobWithDetails job = job(jobName);
+        try {
+            if (nonNull(job)) job.build(params);
+        } catch (IOException e) {
+            broken = true;
+            throw new SeppServerException("构建失败", e);
+        }
+    }
+
+    public List<Build> allBuildsByJobName(@NonNull String jobName) {
         JobWithDetails job = job(jobName);
         if (Objects.isNull(job)) return Lists.newArrayList();
         return job.getBuilds();
     }
 
-    public Integer lastBuildNumber(@NonNull String jobName) throws IOException {
+    public Integer lastBuildNumber(@NonNull String jobName) {
         return ofNullable(job(jobName)).map(JobWithDetails::getLastBuild).orElse(new Build()).getNumber();
     }
 
-    public BuildProgress buildProgress(String jobName, Integer version) throws IOException {
-        return client.get("/job/" + EncodingUtils.encode(jobName) + "/" + version + "?tree=executor[progress]", BuildProgress.class);
+    public BuildProgress buildProgress(String jobName, Integer version) {
+        try {
+            return client.get("/job/" + EncodingUtils.encode(jobName) + "/" + version + "?tree=executor[progress]", BuildProgress.class);
+        } catch (IOException e) {
+            broken = true;
+            throw new SeppServerException("获取job构建进度失败", e);
+        }
     }
 
     public Queue queue() throws IOException {
         return jenkinsServer.getQueue();
     }
 
-    public Integer buildVersionGenerator(String jobName, Integer maxBuildVersion) throws IOException {
+    public Integer buildVersionGenerator(String jobName, Integer maxBuildVersion) {
         int lastNumber = lastBuildNumber(jobName);
         if (lastNumber <= 0) {
             return 1;
@@ -77,12 +101,17 @@ public class JenkinsClient implements Closeable {
      * @param jobName
      * @return
      */
-    public PipelineStep pipelineStep(@NonNull String jobName, @NonNull Integer version) throws IOException {
-        return client.get("/job/" + EncodingUtils.encode(jobName) + "/" + version + "/wfapi/describe", PipelineStep.class);
+    public PipelineStep pipelineStep(@NonNull String jobName, @NonNull Integer version) {
+        try {
+            return client.get("/job/" + EncodingUtils.encode(jobName) + "/" + version + "/wfapi/describe", PipelineStep.class);
+        } catch (IOException e) {
+            broken = true;
+            throw new SeppServerException("获取jenkins构建流水失败", e);
+        }
     }
 
-    public List<String> jobParams(@NonNull String jobName) throws IOException {
-        List<ParameterProperty> property = parameterPropertys(jobName);
+    public List<String> jobParams(@NonNull String jobName) {
+        List<ParameterProperty> property = parameterProperties(jobName);
         if (CollectionUtils.isNotEmpty(property)) {
             Optional<ParameterProperty> first = property.stream().filter(ParameterProperty::allNonNull).findFirst();
             return first.map(ParameterProperty::getParameterDefinitions).orElse(Lists.newArrayList())
@@ -91,13 +120,18 @@ public class JenkinsClient implements Closeable {
         return Lists.newArrayList();
     }
 
-    public List<ParameterProperty> parameterPropertys(@NonNull String jobName) throws IOException {
-        MyJobWithDetails myJobWithDetails = client.get(UrlUtils.toJobBaseUrl(null, jobName), MyJobWithDetails.class);
-        return myJobWithDetails.getProperty();
+    public List<ParameterProperty> parameterProperties(@NonNull String jobName) {
+        try {
+            MyJobWithDetails myJobWithDetails = client.get(UrlUtils.toJobBaseUrl(null, jobName), MyJobWithDetails.class);
+            return myJobWithDetails.getProperty();
+        } catch (IOException e) {
+            broken = true;
+            throw new SeppServerException("获取参数失败", e);
+        }
     }
 
-    public List<ParameterDefinition> jenkinsBuildParams(@NonNull String jobName) throws IOException {
-        Optional<ParameterProperty> parameterPropertyOptional = parameterPropertys(jobName).stream()
+    public List<ParameterDefinition> jenkinsBuildParams(@NonNull String jobName) {
+        Optional<ParameterProperty> parameterPropertyOptional = parameterProperties(jobName).stream()
                 .filter(details -> JENKINS_BUILD_PARAM_CLASS.equalsIgnoreCase(details.get_class()))
                 .findFirst();
         return parameterPropertyOptional.map(ParameterProperty::getParameterDefinitions).orElse(Lists.newArrayList());
@@ -134,8 +168,23 @@ public class JenkinsClient implements Closeable {
 
     @Override
     public void close() {
-        client.close();
-        jenkinsServer.close();
+        if (source != null) {
+            JenkinsPoolAbstract jenkinsPoolAbstract = this.source;
+            this.source = null;
+            if (broken) {
+                jenkinsPoolAbstract.returnBrokenResource(this);
+            } else {
+                jenkinsPoolAbstract.returnResource(this);
+            }
+        } else {
+            disconnect();
+        }
+    }
+
+    public static void close(JenkinsClient jenkinsClient) {
+        if (Objects.nonNull(jenkinsClient)) {
+            jenkinsClient.close();
+        }
     }
 
     /**
@@ -151,23 +200,44 @@ public class JenkinsClient implements Closeable {
                 .collect(toList());
     }
 
-    private JobWithDetails job(String jobName) throws IOException {
-        return jenkinsServer.getJob(jobName);
+    private JobWithDetails job(String jobName) {
+        try {
+            return jenkinsServer.getJob(jobName);
+        } catch (IOException e) {
+            broken = true;
+            throw new SeppServerException("获取job失败", e);
+        }
     }
 
     public boolean isRunning() {
         return jenkinsServer.isRunning();
     }
 
-    public Map<String, Object> getLog(@NonNull String jobName, @NonNull Integer buildVersion) throws IOException {
+    public Map<String, Object> getLog(@NonNull String jobName, @NonNull Integer buildVersion) {
         Map<String, Object> buildLogMap = Maps.newHashMap();
-        Build build = job(jobName).getBuildByNumber(buildVersion);
+        JobWithDetails job = job(jobName);
+        if (job == null) return Maps.newHashMap();
+        Build build = job.getBuildByNumber(buildVersion);
         if (Objects.isNull(build)) {
             throw new SeppClientException("无法获取该版本的构建日志");
         }
-        buildLogMap.put("continue", build.details().isBuilding());
-        buildLogMap.put("buildLog", String.format(BUILD_LOG_CSS, job(jobName).getBuildByNumber(buildVersion).details().getConsoleOutputHtml()));
+        try {
+            buildLogMap.put("continue", build.details().isBuilding());
+            buildLogMap.put("buildLog", String.format(BUILD_LOG_CSS, job.getBuildByNumber(buildVersion).details().getConsoleOutputHtml()));
+        } catch (IOException e) {
+            broken = true;
+            throw new SeppServerException("获取日志信息失败", e);
+        }
         return buildLogMap;
+    }
+
+    public void setSource(final JenkinsPoolAbstract source) {
+        this.source = source;
+    }
+
+    public void disconnect() {
+        client.close();
+        jenkinsServer.close();
     }
 
     @Data

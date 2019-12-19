@@ -12,6 +12,8 @@ public interface ProductService {
 
 	List<Product> productQuery(Map<String, Object> dataMap);
 
+	int productExists(String productName, String productCode);
+
 	int productCreate(Product product);
 
 	int productUpdate(Product product) throws IllegalAccessException;
