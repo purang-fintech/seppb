@@ -4,7 +4,7 @@
 
 - Main Class：com.pr.sepp.SeppApplication（线上可注释掉@EnableSwagger2）
 - 本地VM options：-Denv=local
-- 注意：<b>本地开发请务必安装好IDE的lombok插件<b>
+- 注意：<b>本地开发请务必安装好IDE的lombok插件</b>
 - 线上部署：
     - rm -rf src/main/resources/spring.properties
     - mvn clean package -Dmaven.test.skip=true
