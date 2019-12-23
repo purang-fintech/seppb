@@ -12,7 +12,6 @@ import org.springframework.context.annotation.Configuration;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
-import java.util.Properties;
 
 
 @Configuration
@@ -31,9 +30,7 @@ public class PerformanceInterceptorAutoConfiguration {
     @PostConstruct
     public void addPageInterceptor() {
         PerformanceInterceptor interceptor = new PerformanceInterceptor();
-        Properties properties = new Properties();
-        properties.putAll(this.properties.getProperties());
-        interceptor.setProperties(properties);
+        interceptor.setProperties(this.properties.getProperties());
         for (SqlSessionFactory sqlSessionFactory : sqlSessionFactoryList) {
             sqlSessionFactory.getConfiguration().addInterceptor(interceptor);
         }

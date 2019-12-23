@@ -28,4 +28,5 @@ public class CommonParameter {
     public static final String BUILD_VERSION = "buildVersion";
     public static final String BUILD_TYPE = "buildType";
     public static final String DEPLOY_JOB_NAME = "JENKINS";
+    public static final String UNKNOWN = "UNKNOWN";
 }

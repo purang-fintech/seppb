@@ -23,7 +23,6 @@ public class DynamicJenkinsClientProvider extends JenkinsClientProvider {
 
     @Override
     protected void retrieveJenkinsClient() {
-        //fixme 以id为死参数当配置增删时该参数都会改变，所以使用者可以调整该查询方式
         SystemSetting setting = settingDAO.findSetting(3);
         try {
             List<SystemSetting.JenkinsConfig> jenkinsConfigs = SystemSetting.settingToJenkinsConfig(setting);

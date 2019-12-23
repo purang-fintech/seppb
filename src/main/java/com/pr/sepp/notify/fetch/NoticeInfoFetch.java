@@ -20,10 +20,6 @@ public class NoticeInfoFetch implements BaseFetch {
 
     @Override
     public PageInfo<MessageResp> fetch(WebSocketSession session) {
-        Optional<Integer> optionPageNum = attributesFetch(session, MESSAGE_PAGE_NUM);
-        Integer pageNum = optionPageNum.orElse(1);
-        Optional<Integer> optionPageSize = attributesFetch(session, MESSAGE_PAGE_SIZE);
-        Integer pageSize = optionPageSize.orElse(10);
         Optional<Integer> optionalUserId = attributesFetch(session, USER_ID);
         Optional<Integer> optionalProductId = attributesFetch(session, PRODUCT_ID);
         return optionalUserId.map(userId -> messageService.messageListPaging(userId, optionalProductId.get()))

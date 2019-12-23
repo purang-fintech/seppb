@@ -3,6 +3,7 @@ package com.pr.sepp.common.websocket.model;
 import lombok.Data;
 import org.codehaus.jackson.map.ObjectMapper;
 
+import java.io.IOException;
 import java.util.List;
 
 @Data
@@ -27,7 +28,7 @@ public class WebSessionPayload {
         private Integer pageSize;
     }
 
-    public static WebSessionPayload apply(String payload) throws Exception {
+    public static WebSessionPayload apply(String payload) throws IOException {
         ObjectMapper mapper = new ObjectMapper();
         return mapper.readValue(payload, WebSessionPayload.class);
     }

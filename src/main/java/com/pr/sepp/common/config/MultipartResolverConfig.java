@@ -7,18 +7,17 @@ import org.springframework.web.multipart.commons.CommonsMultipartResolver;
 @Configuration
 public class MultipartResolverConfig {
 
-    //fixme 这些配置需要放到配置中心
     private static final String ENCODING = "utf-8";
-    private static final Long maxUploadSize = 10485760000L;
-    private static final Integer maxInMemorySize = 40960;
+    private static final Long MAX_UPLOAD_SIZE = 10485760000L;
+    private static final Integer MAX_IN_MEMORY_SIZE = 40960;
 
 
     @Bean
     public CommonsMultipartResolver multipartResolver() {
         CommonsMultipartResolver commonsMultipartResolver = new CommonsMultipartResolver();
         commonsMultipartResolver.setDefaultEncoding(ENCODING);
-        commonsMultipartResolver.setMaxUploadSize(maxUploadSize);
-        commonsMultipartResolver.setMaxInMemorySize(maxInMemorySize);
+        commonsMultipartResolver.setMaxUploadSize(MAX_UPLOAD_SIZE);
+        commonsMultipartResolver.setMaxInMemorySize(MAX_IN_MEMORY_SIZE);
         return commonsMultipartResolver;
     }
 }

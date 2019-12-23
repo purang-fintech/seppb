@@ -36,4 +36,6 @@ public interface UserService {
 	List<User> memberQuery(Integer productId);
 
 	List<Map<String, Object>> userProductList();
+
+	List<User> distinctUsersByPrivIds(List<String> privList);
 }

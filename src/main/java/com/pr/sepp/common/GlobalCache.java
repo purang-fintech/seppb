@@ -11,9 +11,12 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentMap;
 
-public class GlobalCache {
-    public static ConcurrentMap<String, Set<WebSocketSession>> userSessionMap;
-    public static Map<DeploymentWebSessionPayload, Set<WebSocketSession>> jobSessionMap;
+public final class GlobalCache {
+    private GlobalCache() {
+
+    }
+    public static final ConcurrentMap<String, Set<WebSocketSession>> userSessionMap;
+    public static final Map<DeploymentWebSessionPayload, Set<WebSocketSession>> jobSessionMap;
     //记录每次session的告警值
     private static Map<Integer, Long> alertsCountMap;
 

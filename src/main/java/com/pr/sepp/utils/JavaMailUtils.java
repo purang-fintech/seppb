@@ -13,6 +13,7 @@ import org.springframework.mail.javamail.MimeMessageHelper;
 import javax.mail.MessagingException;
 import javax.mail.internet.MimeMessage;
 import java.io.File;
+import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ThreadPoolExecutor;
 
 import static com.google.common.base.Verify.verifyNotNull;
@@ -32,7 +33,7 @@ public final class JavaMailUtils {
      * @param mailDTO
      * @throws MessagingException
      */
-    public static boolean sendMail(@NonNull final MailDTO mailDTO) throws Exception {
+    public static boolean sendMail(@NonNull final MailDTO mailDTO) throws InterruptedException, ExecutionException,MessagingException {
         ApplicationContext appCtx = CommonFactory.getApplicationContext();
         JavaMailSender javaMailSender = appCtx.getBean(JavaMailSender.class);
         MimeMessage mimeMessage = javaMailSender.createMimeMessage();
@@ -50,7 +51,8 @@ public final class JavaMailUtils {
      * @return
      * @throws Exception
      */
-    private static boolean failRetrySendMail(@NonNull MailDTO mailDTO, JavaMailSender javaMailSender, MimeMessage mimeMessage) throws Exception {
+    private static boolean failRetrySendMail(@NonNull MailDTO mailDTO, JavaMailSender javaMailSender, MimeMessage mimeMessage)
+            throws InterruptedException, ExecutionException {
         if (mailDTO.isBlock()) {
             return asynchronousMailFailRetry(mailDTO, javaMailSender, mimeMessage);
 
@@ -63,7 +65,7 @@ public final class JavaMailUtils {
     /**
      * 同步发送邮件(不包含重试机制)
      */
-    public static boolean sendMail(JavaMailSender javaMailSender, MimeMessage message) throws Exception {
+    public static boolean sendMail(JavaMailSender javaMailSender, MimeMessage message) {
         javaMailSender.send(message);
         return true;
     }
@@ -76,7 +78,8 @@ public final class JavaMailUtils {
      * @param javaMailSender
      * @param mimeMessage
      */
-    public static Boolean asynchronousMailFailRetry(MailDTO mailDTO, JavaMailSender javaMailSender, MimeMessage mimeMessage) throws Exception {
+    public static Boolean asynchronousMailFailRetry(MailDTO mailDTO, JavaMailSender javaMailSender, MimeMessage mimeMessage)
+            throws InterruptedException, ExecutionException {
         ThreadPoolExecutor executor = TaskSchedulerConfig.getExecutor();
         return executor.submit(() -> new FailMailRetryThread(mailDTO, javaMailSender, mimeMessage).call()).get();
     }
@@ -90,7 +93,7 @@ public final class JavaMailUtils {
      * @param mimeMessage
      * @throws Exception
      */
-    public static void synchronizedMailFailRetry(MailDTO mailDTO, JavaMailSender javaMailSender, MimeMessage mimeMessage) throws Exception {
+    public static void synchronizedMailFailRetry(MailDTO mailDTO, JavaMailSender javaMailSender, MimeMessage mimeMessage) {
         ThreadPoolExecutor executor = TaskSchedulerConfig.getExecutor();
         executor.execute(() -> new FailMailRetryThread(mailDTO, javaMailSender, mimeMessage).call());
     }

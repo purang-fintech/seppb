@@ -80,6 +80,7 @@ public class JenkinsFactory implements PooledObjectFactory<JenkinsClient> {
         try {
             return jenkinsClient.isRunning();
         } catch (final Exception e) {
+            log.error("jenkins client health check failed", e);
             return false;
         }
     }

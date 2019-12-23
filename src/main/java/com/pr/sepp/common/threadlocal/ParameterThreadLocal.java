@@ -2,9 +2,10 @@ package com.pr.sepp.common.threadlocal;
 
 import static org.apache.commons.lang.StringUtils.EMPTY;
 
-public class ParameterThreadLocal {
+public final class ParameterThreadLocal {
+    private ParameterThreadLocal() {}
 
-    public static ThreadLocal<Parameter> parameterThreadLocal = new ThreadLocal<>();
+    public static final ThreadLocal<Parameter> PARAMETER_THREAD_LOCAL = new ThreadLocal<>();
 
     public static void setUserId(Integer uid) {
         Parameter parameter = getParameter();
@@ -12,7 +13,7 @@ public class ParameterThreadLocal {
     }
 
     public static Integer getUserId() {
-        Parameter parameter = parameterThreadLocal.get();
+        Parameter parameter = PARAMETER_THREAD_LOCAL.get();
         if (parameter != null) {
             return parameter.getUserId();
         }
@@ -25,7 +26,7 @@ public class ParameterThreadLocal {
     }
 
     public static Integer getProductId() {
-        Parameter parameter = parameterThreadLocal.get();
+        Parameter parameter = PARAMETER_THREAD_LOCAL.get();
         if (parameter != null) {
             return parameter.getProductId();
         }
@@ -38,7 +39,7 @@ public class ParameterThreadLocal {
     }
 
     public static Integer getPageSize() {
-        Parameter parameter = parameterThreadLocal.get();
+        Parameter parameter = PARAMETER_THREAD_LOCAL.get();
         if (parameter != null) {
             return parameter.getPageSize();
         }
@@ -51,7 +52,7 @@ public class ParameterThreadLocal {
     }
 
     public static Integer getPageNum() {
-        Parameter parameter = parameterThreadLocal.get();
+        Parameter parameter = PARAMETER_THREAD_LOCAL.get();
         if (parameter != null) {
             return parameter.getPageNum();
         }
@@ -59,7 +60,7 @@ public class ParameterThreadLocal {
     }
 
     public static String getHttpId() {
-        Parameter parameter = parameterThreadLocal.get();
+        Parameter parameter = PARAMETER_THREAD_LOCAL.get();
         if (parameter != null) {
             return parameter.getHttpId();
         }
@@ -72,16 +73,16 @@ public class ParameterThreadLocal {
     }
 
     private static Parameter getParameter() {
-        Parameter parameter = parameterThreadLocal.get();
+        Parameter parameter = PARAMETER_THREAD_LOCAL.get();
         if (parameter == null) {
             parameter = Parameter.builder().build();
-            parameterThreadLocal.set(parameter);
+            PARAMETER_THREAD_LOCAL.set(parameter);
         }
         return parameter;
     }
 
     public static void clear() {
-        parameterThreadLocal.remove();
+        PARAMETER_THREAD_LOCAL.remove();
     }
 
 }

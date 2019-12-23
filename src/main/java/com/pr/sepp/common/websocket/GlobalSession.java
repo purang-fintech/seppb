@@ -1,9 +1,8 @@
 package com.pr.sepp.common.websocket;
 
+import com.google.common.collect.Sets;
 import com.pr.sepp.common.websocket.model.DeploymentWebSessionPayload;
 import com.pr.sepp.common.websocket.model.WebSessionPayload;
-import com.google.common.collect.Sets;
-import io.swagger.models.auth.In;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.socket.TextMessage;
 import org.springframework.web.socket.WebSocketSession;
@@ -13,17 +12,17 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.Set;
 
+import static com.google.common.base.Objects.equal;
+import static com.google.common.base.Strings.nullToEmpty;
 import static com.pr.sepp.common.GlobalCache.jobSessionMap;
 import static com.pr.sepp.common.GlobalCache.userSessionMap;
 import static com.pr.sepp.common.constants.CommonParameter.*;
 import static com.pr.sepp.common.websocket.model.MessageType.MESSAGE_TYPE;
-import static com.google.common.base.Objects.equal;
-import static com.google.common.base.Strings.nullToEmpty;
 import static org.apache.commons.collections.CollectionUtils.isNotEmpty;
 
 @Slf4j
-public class GlobalSession {
-    //fixme 应该有具体的缓存策略，防止内存消耗过大
+public final class GlobalSession {
+    private GlobalSession() {}
 
     public static WebSocketSession setSessionForUser(Integer userId, Integer productId, WebSocketSession webSession) {
         webSession.getAttributes().put(USER_ID, userId);

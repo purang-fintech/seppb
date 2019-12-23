@@ -180,7 +180,6 @@ public class JenkinsBuildService {
     }
 
     /**
-     * todo 该方法不属于该类
      *
      * @param buildHistory
      * @param buildFiles

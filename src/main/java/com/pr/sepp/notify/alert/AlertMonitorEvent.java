@@ -17,6 +17,7 @@ public class AlertMonitorEvent<T> extends ApplicationEvent {
         this.t = t;
     }
 
+    @Override
     public T getSource() {
         return t;
     }

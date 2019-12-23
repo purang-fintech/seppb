@@ -27,7 +27,7 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
 
     @Autowired
     private MessageServer messageServer;
-    private final static String HEART_BEAT = "HeartBeat";
+    private static final String HEART_BEAT = "HeartBeat";
 
     /**
      * 客户端与服务端建立连接后，将该连接与用户绑定
@@ -53,7 +53,7 @@ public class MessageWebSocketHandler extends TextWebSocketHandler {
                 messageServer.pushBySession(session, null);
             }
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            log.error("消息推送错误:{}", e);
         }
     }
 

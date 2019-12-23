@@ -266,11 +266,7 @@ public class UserServiceImpl implements UserService {
 		userSettingDAO.userSettingCreate(setting);
 
 		// 初始授权DEMO
-		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put(CommonParameter.USER_ID, userId);
-		dataMap.put("products", Arrays.asList(new Integer[]{0}));
-		dataMap.put("roles", Arrays.asList(new Integer[]{13}));
-		roleDAO.privUpdate(dataMap);
+		roleDAO.privUpdate(0, userId, Arrays.asList(new String[]{"13"}));
 
 		return userId;
 	}
@@ -288,6 +284,11 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public List<Map<String, Object>> userProductList() {
 		return userDAO.userProductList(ParameterThreadLocal.getUserId());
+	}
+
+	@Override
+	public List<User> distinctUsersByPrivIds(List<String> privList) {
+		return userDAO.distinctUsersByPrivIds(privList);
 	}
 
 	/**

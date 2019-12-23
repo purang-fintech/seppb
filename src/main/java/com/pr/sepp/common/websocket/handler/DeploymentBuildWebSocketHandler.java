@@ -22,20 +22,10 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 @Component
 public class DeploymentBuildWebSocketHandler extends TextWebSocketHandler {
 
-    private final static String HEART_BEAT = "HeartBeat";
+    private static final String HEART_BEAT = "HeartBeat";
 
     @Autowired
     private DeploymentBuildServer deploymentBuildServer;
-
-    /**
-     * 客户端与服务端建立连接后，将该连接与应用绑定
-     *
-     * @param session
-     */
-    @Override
-    public void afterConnectionEstablished(WebSocketSession session) {
-
-    }
 
     @Override
     public void handleTextMessage(WebSocketSession session, TextMessage message) {

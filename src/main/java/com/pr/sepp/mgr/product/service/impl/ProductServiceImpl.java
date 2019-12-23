@@ -52,11 +52,7 @@ public class ProductServiceImpl implements ProductService {
 		int created = product.getProductId();
 
 		// 创建产品之后默认为创建人授予项目管理员权限
-		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put(CommonParameter.USER_ID, ParameterThreadLocal.getUserId());
-		dataMap.put("products", Arrays.asList(created));
-		dataMap.put("roles", Arrays.asList(0));
-		roleDAO.privUpdate(dataMap);
+		roleDAO.privUpdate(created, userId, Arrays.asList(new String[]{"0"}));
 
 		// 创建产品之后创建默认的产品配置
 		ProductConfig productConfig = new ProductConfig();

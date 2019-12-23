@@ -8,7 +8,7 @@ import lombok.Data;
 public class Parameter {
     private Integer userId;
     private String userName;
-    private String Name;
+    private String name;
     private Integer productId;
     private String email;
     private String httpId;

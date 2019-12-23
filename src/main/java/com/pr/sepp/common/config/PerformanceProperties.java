@@ -13,14 +13,15 @@ import static java.lang.String.valueOf;
 public class PerformanceProperties {
 
     public static final String PERFORMANCE_PREFIX = "performance";
+    private static final String SLOW_TIME = "slowTime";
 
     private Long slowTime;
 
     private Properties properties = new Properties();
 
     public Properties getProperties() {
-        if (Objects.isNull(properties.getProperty("slowTime"))) {
-            properties.setProperty("slowTime", valueOf(500));
+        if (Objects.isNull(properties.getProperty(SLOW_TIME))) {
+            properties.setProperty(SLOW_TIME, valueOf(500));
         }
         return properties;
     }
@@ -31,6 +32,6 @@ public class PerformanceProperties {
 
     public void setSlowTime(Long slowTime) {
         this.slowTime = slowTime;
-        properties.setProperty("slowTime", verifyNotNull(valueOf(slowTime)));
+        properties.setProperty(SLOW_TIME, verifyNotNull(valueOf(slowTime)));
     }
 }

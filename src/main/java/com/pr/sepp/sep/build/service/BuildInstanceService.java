@@ -36,7 +36,7 @@ public class BuildInstanceService {
 
 	public void createInstance(BuildInstance buildInstance) {
 		buildInstance.setProductId(ParameterThreadLocal.getProductId());
-		buildInstance.setUser(userDAO.findUserByUserId(Integer.valueOf(ParameterThreadLocal.getUserId())).getUserName());
+		buildInstance.setUser(userDAO.findUserByUserId(ParameterThreadLocal.getUserId()).getUserName());
 		buildInstanceDAO.save(buildInstance);
 	}
 
@@ -56,7 +56,7 @@ public class BuildInstanceService {
 
 	public void updateInstance(BuildInstance buildInstance) {
 		buildInstance.setProductId(ParameterThreadLocal.getProductId());
-		buildInstance.setUser(userDAO.findUserByUserId(Integer.valueOf(ParameterThreadLocal.getUserId())).getUserName());
+		buildInstance.setUser(userDAO.findUserByUserId(ParameterThreadLocal.getUserId()).getUserName());
 		buildInstanceDAO.update(buildInstance);
 	}
 

@@ -2,24 +2,17 @@ package com.pr.sepp.common.filter;
 
 import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
-import io.swagger.models.auth.In;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.servlet.*;
 import javax.servlet.annotation.WebFilter;
 import java.io.IOException;
-import java.util.Arrays;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 @Component
 @WebFilter(urlPatterns = "/*", filterName = "parameterFilter")
 public class ParameterFilter implements Filter {
-    @Override
-    public void init(FilterConfig filterConfig) {
-
-    }
 
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain) throws IOException, ServletException {
@@ -47,8 +40,4 @@ public class ParameterFilter implements Filter {
         chain.doFilter(request, response);
     }
 
-    @Override
-    public void destroy() {
-
-    }
 }

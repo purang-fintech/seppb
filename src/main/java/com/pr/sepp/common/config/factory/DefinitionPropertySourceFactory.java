@@ -1,6 +1,7 @@
 package com.pr.sepp.common.config.factory;
 
 import com.pr.sepp.common.constants.Env;
+import com.pr.sepp.common.exception.SeppServerException;
 import com.pr.sepp.utils.AESEncryptor;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
@@ -23,16 +24,14 @@ import java.io.InputStream;
 import java.util.Properties;
 import java.util.UUID;
 
-import static com.pr.sepp.common.constants.Env.LOCAL;
 import static com.google.common.base.Strings.nullToEmpty;
-import static org.apache.commons.lang.StringUtils.isNotBlank;
+import static com.pr.sepp.common.constants.Env.LOCAL;
+import static org.apache.commons.lang.StringUtils.defaultIfBlank;
 
 @Slf4j
 public class DefinitionPropertySourceFactory implements PropertySourceFactory, EnvironmentPostProcessor, Ordered {
 
-    //fixme
-    private static String CONFIG_PATH = "D:/projects/spring.properties";
-    private static final String aesKey = "0807060504030201";
+    private static final String AES_KEY = "0807060504030201";
     private static final String JDBC_UNAME_PROP = "jdbc.username";
     private static final String JDBC_PWD_PROP = "jdbc.password";
     private ResourceLoader resourceLoader = new DefaultResourceLoader();
@@ -69,18 +68,14 @@ public class DefinitionPropertySourceFactory implements PropertySourceFactory, E
             eagerLoad(environment);
             return;
         }
-        if (isNotBlank(configPath)) {
-            CONFIG_PATH = configPath;
-        }
-        File file = new File(CONFIG_PATH);
-        log.info("configPath:{}", CONFIG_PATH);
+        File file = new File(defaultIfBlank(configPath, "/opt/sqcs_backend/spring.properties"));
+        log.info("configPath:{}", configPath);
         try (InputStream input = new FileInputStream(file)) {
             Properties properties = buildDecryptProperties(input);
             PropertiesPropertySource propertySource = new PropertiesPropertySource("spring", properties);
             environment.getPropertySources().addLast(propertySource);
         } catch (Exception e) {
-            log.error("配置文件读取错误", e);
-            throw new RuntimeException(e);
+            throw new SeppServerException("配置文件读取错误", e);
         }
     }
 
@@ -93,7 +88,7 @@ public class DefinitionPropertySourceFactory implements PropertySourceFactory, E
         try {
             initialize(environment);
         } catch (IOException e) {
-            throw new RuntimeException(e);
+            throw new SeppServerException("日志加载失败", e);
         }
     }
 
@@ -121,7 +116,7 @@ public class DefinitionPropertySourceFactory implements PropertySourceFactory, E
     }
 
     private String convertProperty(String value) {
-        return AESEncryptor.decrypt(nullToEmpty(value), aesKey);
+        return AESEncryptor.decrypt(nullToEmpty(value), AES_KEY);
     }
 
     @Override

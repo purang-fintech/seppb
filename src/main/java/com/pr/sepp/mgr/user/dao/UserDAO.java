@@ -24,4 +24,6 @@ public interface UserDAO {
     List<User> userQueryByIds(Map<String, Object> dataMap);
 
     List<Map<String, Object>> userProductList(int userId);
+
+	List<User> distinctUsersByPrivIds(List<String> privList);
 }

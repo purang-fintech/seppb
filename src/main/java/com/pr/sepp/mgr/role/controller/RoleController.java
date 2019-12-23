@@ -1,54 +1,38 @@
 package com.pr.sepp.mgr.role.controller;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.history.model.SEPPHistory;
 import com.pr.sepp.history.service.HistoryService;
-import com.pr.sepp.mgr.role.model.Role;
 import com.pr.sepp.mgr.role.service.RoleService;
 import com.pr.sepp.mgr.user.model.User;
 import com.pr.sepp.mgr.user.service.UserService;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @RestController
 @ResponseBody
 public class RoleController {
+
 	@Autowired
 	private RoleService roleService;
+
 	@Autowired
 	private UserService userService;
+
 	@Autowired
 	private HistoryService historyService;
 
-	@RequestMapping(value = "/role/query", method =  RequestMethod.POST)
-	public PageInfo<Role> roleQuery(HttpServletRequest request) throws Exception {
-		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("roleId", request.getParameter("roleId"));
-		dataMap.put("roleCode", request.getParameter("roleCode"));
-		dataMap.put("roleName", request.getParameter("roleName"));
-		dataMap.put("isValid", request.getParameter("isValid"));
-
-		PageHelper.startPage(ParameterThreadLocal.getPageNum(), ParameterThreadLocal.getPageSize());
-
-		List<Role> list = roleService.roleQuery(dataMap);
-		PageInfo<Role> pageInfo = new PageInfo<>(list);
-		return pageInfo;
-	}
-
 	@RequestMapping(value = "/priv/query", method =  RequestMethod.POST)
 	public PageInfo<Map<String, Object>> privQuery(HttpServletRequest request) throws Exception {
-		Map<String, String> dataMap = new HashMap<>();
-		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
-		dataMap.put(CommonParameter.USER_ID, request.getParameter(CommonParameter.USER_ID));
+		Map<String, Object> dataMap = new HashMap<>();
+		dataMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId()); //只允许当前项目
+		dataMap.put(CommonParameter.USER_ID, request.getParameter(CommonParameter.USER_ID)); //可指定所有用户
 		dataMap.put("roleId", request.getParameter("roleId"));
 		dataMap.put("privId", request.getParameter("privId"));
 		dataMap.put("isValid", request.getParameter("isValid"));
@@ -62,30 +46,25 @@ public class RoleController {
 
 	@RequestMapping(value = "/priv/update", method =  RequestMethod.POST)
 	public int privUpdate(HttpServletRequest request) {
-		Map<String, Object> dataMap = new HashMap<>();
-		String[] products = request.getParameter("products").split(",");
 		String[] roles = request.getParameter("roles").split(",");
-		dataMap.put(CommonParameter.USER_ID, request.getParameter("operUser"));
-		dataMap.put("products", Arrays.asList(products));
-		dataMap.put("roles", Arrays.asList(roles));
-
-		int privedUser = Integer.parseInt(request.getParameter("operUser"));
+		Integer userId = ParameterThreadLocal.getUserId();	//当前操作用户
+		Integer productId = ParameterThreadLocal.getProductId();//只允许当前项目
+		Integer privedUser = Integer.parseInt(request.getParameter("operUser")); //指定授权用户
 
 		Map<String, Object> userMap = new HashMap<>();
 		userMap.put(CommonParameter.USER_ID, privedUser);
 		User user = userService.userQuery(userMap).get(0);
 
-		int count = roleService.privUpdate(dataMap);
+		int count = roleService.privUpdate(productId, privedUser, Arrays.asList(roles));
 
 		SEPPHistory history = new SEPPHistory();
 		history.setObjType(13);
 		history.setObjId(privedUser);
 		history.setObjKey("priv_id");
-		history.setProductId(ParameterThreadLocal.getProductId());
-		history.setOperUser(ParameterThreadLocal.getUserId());
+		history.setProductId(productId);
+		history.setOperUser(userId);
 		history.setOperType(2);
-		history.setOperComment("为用户【" + user.getUserAccount() + "/" + user.getUserName() + "】增加了来自【" + products.length + "】个产品、【"
-				+ roles.length + "】个角色的【" + count + "】条权限");
+		history.setOperComment("为用户【" + user.getUserAccount() + "/" + user.getUserName() + "】增加了【" + count + "】条权限");
 		history.setReferUser(privedUser);
 		historyService.historyInsert(history);
 
@@ -93,34 +72,29 @@ public class RoleController {
 	}
 
 	@RequestMapping(value = "/priv/delete", method =  RequestMethod.POST)
-	public int privDelete(HttpServletRequest request) {
-		String privs = request.getParameter("privId");
-		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("privId", Arrays.asList(privs.split(",")));
-		
-		Map<String, String> queryMap = new HashMap<>();
-		queryMap.put("privId", privs.split(",")[0]);
-		Map<String, Object> privilege = roleService.privQuery(queryMap).get(0);
-		int privedUser = (int) privilege.get(CommonParameter.USER_ID);
+	public int privDelete(@RequestParam(value = "privId") String privIds) {
+		List<String> privList = Arrays.asList(privIds.split(","));
+		List<User> users = userService.distinctUsersByPrivIds(privList);
+		Map<String, Integer> result = new HashMap<>();
+		result.put("result", 0);
 
-		Map<String, Object> userMap = new HashMap<>();
-		userMap.put(CommonParameter.USER_ID, privedUser);
-		User user = userService.userQuery(userMap).get(0);
-		
-		int count = roleService.privDelete(dataMap);
+		users.forEach(user -> {
+			int count = roleService.privDelete(user.getUserId(), privList);
+			result.put("result", count + result.get("result"));
 
-		SEPPHistory history = new SEPPHistory();
-		history.setObjType(13);
-		history.setObjId(privedUser);
-		history.setObjKey("priv_id");
-		history.setProductId(ParameterThreadLocal.getProductId());
-		history.setOperUser(ParameterThreadLocal.getUserId());
-		history.setOperType(3);
-		history.setOperComment("删除了用户【" + user.getUserAccount() + "/" + user.getUserName() + "】的【" + count + "】条权限");
-		history.setReferUser(privedUser);
-		historyService.historyInsert(history);
+			SEPPHistory history = new SEPPHistory();
+			history.setObjType(13);
+			history.setObjId(user.getUserId());
+			history.setObjKey("priv_id");
+			history.setProductId(ParameterThreadLocal.getProductId());
+			history.setOperUser(ParameterThreadLocal.getUserId());
+			history.setOperType(3);
+			history.setOperComment("删除了用户【" + user.getUserAccount() + "/" + user.getUserName() + "】的【" + count + "】条权限");
+			history.setReferUser(user.getUserId());
+			historyService.historyInsert(history);
+		});
 
-		return count;
+		return result.get("result");
 	}
 
 	@RequestMapping(value = "/role/p_r_query_user", method =  RequestMethod.POST)

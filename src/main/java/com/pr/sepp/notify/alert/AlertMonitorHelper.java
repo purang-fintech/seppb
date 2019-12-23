@@ -15,6 +15,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -71,7 +72,7 @@ public class AlertMonitorHelper {
         }
     }
 
-    private MailDTO mailDTOBuilder(String email, List<AlertNotice> alertNotices) throws Exception {
+    private MailDTO mailDTOBuilder(String email, List<AlertNotice> alertNotices) throws IOException {
         return MailDTO.builder()
                 .failRetry(true)
                 .failRetryCount(3)
@@ -107,7 +108,7 @@ public class AlertMonitorHelper {
         return content;
     }
 
-    public HtmlCanvas createHtml(List<AlertNotice> alertNotices) throws Exception {
+    public HtmlCanvas createHtml(List<AlertNotice> alertNotices) throws IOException {
         HtmlCanvas html = new HtmlCanvas();
         HtmlAttributes attributes = new HtmlAttributes();
         attributes.add(TABLE_CLASS, TABLE_CLASS_VALUE);

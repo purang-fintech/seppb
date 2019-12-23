@@ -1,12 +1,15 @@
 package com.pr.sepp.auth.service;
 
-import com.pr.sepp.auth.core.jwt.Sessions;
-import com.pr.sepp.auth.dao.UserRoleDAO;
-import com.pr.sepp.auth.model.*;
-import com.pr.sepp.auth.model.resp.CurrentUserRoleResp;
-import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
+import com.pr.sepp.auth.core.jwt.Sessions;
+import com.pr.sepp.auth.dao.UserRoleDAO;
+import com.pr.sepp.auth.model.CurrentUserRole;
+import com.pr.sepp.auth.model.Privilege;
+import com.pr.sepp.auth.model.Role;
+import com.pr.sepp.auth.model.Session;
+import com.pr.sepp.auth.model.resp.CurrentUserRoleResp;
+import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -20,7 +23,6 @@ import java.util.Objects;
 import java.util.stream.Collectors;
 
 import static com.pr.sepp.auth.core.jwt.Sessions.getSession;
-import static com.pr.sepp.auth.model.Menu.stringToList;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 import static java.util.stream.Collectors.groupingBy;
@@ -37,8 +39,7 @@ public class UserRoleService {
     public PageInfo<Role> allRoles(String valid, Integer pageNum, Integer pageSize) {
         PageHelper.startPage(pageNum, pageSize);
         List<Role> roles = allRoles(valid);
-        PageInfo<Role> pageInfo = new PageInfo<>(roles);
-        return pageInfo;
+        return new PageInfo<>(roles);
     }
 
     public List<Role> allRoles(String valid) {

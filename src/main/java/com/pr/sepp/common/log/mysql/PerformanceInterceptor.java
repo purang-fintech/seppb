@@ -18,7 +18,7 @@ import java.util.concurrent.TimeUnit;
 		@Signature(args = {Statement.class}, method = "update", type = StatementHandler.class),
 		@Signature(args = {Statement.class}, method = "batch", type = StatementHandler.class)})
 public class PerformanceInterceptor implements Interceptor {
-	private static Logger MYSQL_SLOW_QUERY = LoggerFactory.getLogger("sepp.sql.slow");
+	private static Logger mysqlSlowQuery = LoggerFactory.getLogger("sepp.sql.slow");
 
 	private PerformanceProperties properties = new PerformanceProperties();
 
@@ -32,7 +32,7 @@ public class PerformanceInterceptor implements Interceptor {
 		if (properties.getSlowTime() <= endTime) {
 			BoundSql boundSql = statementHandler.getBoundSql();
 			String sql = boundSql.getSql();
-			MYSQL_SLOW_QUERY.info("执行耗时：{} 毫秒[slowSql]{} ", endTime, sql);
+            mysqlSlowQuery.info("执行耗时：{} 毫秒[slowSql]{} ", endTime, sql);
 		}
 		return obj;
 	}
