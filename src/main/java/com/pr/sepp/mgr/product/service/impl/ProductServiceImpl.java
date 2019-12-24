@@ -4,6 +4,8 @@ import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.history.model.SEPPHistory;
 import com.pr.sepp.history.service.HistoryService;
+import com.pr.sepp.mgr.module.dao.ModuleDAO;
+import com.pr.sepp.mgr.module.model.Module;
 import com.pr.sepp.mgr.product.dao.ProductDAO;
 import com.pr.sepp.mgr.product.model.Product;
 import com.pr.sepp.mgr.product.model.ProductBranch;
@@ -32,6 +34,9 @@ public class ProductServiceImpl implements ProductService {
 	private RoleDAO roleDAO;
 
 	@Autowired
+	private ModuleDAO moduleDAO;
+
+	@Autowired
 	private HistoryService historyService;
 
 	@Override
@@ -53,6 +58,25 @@ public class ProductServiceImpl implements ProductService {
 
 		// 创建产品之后默认为创建人授予项目管理员权限
 		roleDAO.privUpdate(created, userId, Arrays.asList(new String[]{"0"}));
+
+		// 创建产品之后为产品创建默认的模块
+		Module module = new Module();
+		module.setProductId(created);
+		module.setModuleName(product.getProductName());
+		module.setModuleDesc(product.getProductDesc());
+		module.setIsValid("Y");
+		module.setPdResponser(userId);
+		module.setDevResponser(userId);
+		module.setTestResponser(userId);
+		moduleDAO.moduleCreate(module);
+
+		// 创建产品之后为产品创建默认的分支
+		ProductBranch branch = new ProductBranch();
+		branch.setProductId(created);
+		branch.setCreator(userId);
+		branch.setBranchName("默认");
+		branch.setIsValid(1);
+		productDAO.productBranchCreate(branch);
 
 		// 创建产品之后创建默认的产品配置
 		ProductConfig productConfig = new ProductConfig();
