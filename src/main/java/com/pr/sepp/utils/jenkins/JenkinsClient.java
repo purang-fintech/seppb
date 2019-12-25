@@ -67,6 +67,13 @@ public class JenkinsClient implements Closeable {
         return job.getBuilds();
     }
 
+    public List<Build> buildsLimit(@NonNull String jobName, int limit) {
+        if (limit <= 0) throw new SeppServerException(1001, "limit必须大于0");
+        return allBuildsByJobName(jobName).stream()
+                .sorted(Comparator.comparing(Build::getNumber)
+                        .reversed()).limit(limit).collect(toList());
+    }
+
     public Integer lastBuildNumber(@NonNull String jobName) {
         return ofNullable(job(jobName)).map(JobWithDetails::getLastBuild).orElse(new Build()).getNumber();
     }

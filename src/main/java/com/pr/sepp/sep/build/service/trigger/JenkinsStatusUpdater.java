@@ -11,7 +11,6 @@ import com.pr.sepp.sep.build.model.BuildHistory;
 import com.pr.sepp.sep.build.model.BuildInstance;
 import com.pr.sepp.sep.build.model.DeploymentHistory;
 import com.pr.sepp.sep.build.model.constants.InstanceType;
-import com.pr.sepp.sep.build.service.DeploymentService;
 import com.pr.sepp.sep.build.service.impl.BuildHistoryService;
 import com.pr.sepp.utils.jenkins.JenkinsClient;
 import com.pr.sepp.utils.jenkins.JenkinsClientProvider;
@@ -26,6 +25,7 @@ import java.util.Objects;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ConcurrentMap;
+import java.util.function.Consumer;
 
 import static com.pr.sepp.common.constants.CommonParameter.DEPLOY_JOB_NAME;
 import static com.pr.sepp.sep.build.model.BuildHistory.apply;
@@ -33,20 +33,20 @@ import static com.pr.sepp.sep.build.model.constants.DeploymentStatus.convertJenk
 import static java.util.stream.Collectors.toList;
 
 @Slf4j
-public class JenkinsStatusUpdater {
+public class JenkinsStatusUpdater implements Updater<JenkinsStatusUpdater> {
 
     private ConcurrentMap<InstanceType, Set<String>> jobInstancesMap = new ConcurrentHashMap<>();
     private ConcurrentMap<InstanceType, Set<String>> sectionJobsMap = new ConcurrentHashMap<>();
     private JenkinsClientProvider jenkinsClientProvider;
     private BuildHistoryService buildHistoryService;
-    private DeploymentService deploymentService;
+    private DeploymentStatusUpdater deploymentStatusUpdater;
     private ObjectMapper mapper;
     private EnvInfoDAO envInfoDAO;
     private BuildInstanceDAO buildInstanceDAO;
 
     public JenkinsStatusUpdater(JenkinsClientProvider jenkinsClientProvider,
                                 BuildHistoryService buildHistoryService,
-                                DeploymentService deploymentService,
+                                DeploymentStatusUpdater deploymentStatusUpdater,
                                 ObjectMapper mapper,
                                 EnvInfoDAO envInfoDAO,
                                 BuildInstanceDAO buildInstanceDAO) {
@@ -54,17 +54,8 @@ public class JenkinsStatusUpdater {
         this.buildInstanceDAO = buildInstanceDAO;
         this.jenkinsClientProvider = jenkinsClientProvider;
         this.buildHistoryService = buildHistoryService;
-        this.deploymentService = deploymentService;
+        this.deploymentStatusUpdater = deploymentStatusUpdater;
         this.mapper = mapper;
-    }
-
-    public void updateJobStatus() {
-        sectionJobsMap.forEach(this::updateBuild);
-    }
-
-    public void updateWholeJobStatus() {
-        initWholeJobNames();
-        jobInstancesMap.forEach(this::updateBuild);
     }
 
     public void computeIfAbsent(InstanceType type, String jobName) {
@@ -94,11 +85,11 @@ public class JenkinsStatusUpdater {
         for (String jobName : jobNames) {
             if (failedCount < 5) {
                 try {
-                    List<Build> builds = jenkinsClient.allBuildsByJobName(jobName);
+                    List<Build> builds = jenkinsClient.buildsLimit(jobName, 5);
                     updateBuild(jobName, jenkinsClient, builds);
                 } catch (Exception e1) {
                     failedCount++;
-                    log.error("更新构建结果失败:{}", e1);
+                    log.error("更新{}构建结果失败:{}", jobName, e1);
                 }
             }
         }
@@ -120,7 +111,7 @@ public class JenkinsStatusUpdater {
         String pipeline = mapper.writeValueAsString(pipelineStep);
         buildHistory.setPipelineStep(pipeline);
         buildHistoryService.createOrUpdate(buildHistory);
-        deploymentService.updateDeploymentRsult(DeploymentHistory.builder()
+        deploymentStatusUpdater.updateDeploymentResult(DeploymentHistory.builder()
                 .jobName(jobName)
                 .deployStatus(convertJenkinsStatus(details))
                 .buildVersion(build.getNumber())
@@ -134,4 +125,17 @@ public class JenkinsStatusUpdater {
         sectionJobsMap.clear();
     }
 
+    public void updateWhole() {
+        initWholeJobNames();
+        jobInstancesMap.forEach(this::updateBuild);
+    }
+
+    public void updateSome() {
+        sectionJobsMap.forEach(this::updateBuild);
+    }
+
+    @Override
+    public void update(Consumer<JenkinsStatusUpdater> consumer) {
+        consumer.accept(this);
+    }
 }

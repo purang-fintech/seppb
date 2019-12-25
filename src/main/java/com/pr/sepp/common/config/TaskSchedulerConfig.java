@@ -1,5 +1,6 @@
 package com.pr.sepp.common.config;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.scheduling.TaskScheduler;
@@ -10,6 +11,7 @@ import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+@Slf4j
 @EnableScheduling
 @Configuration
 public class TaskSchedulerConfig {
@@ -21,6 +23,16 @@ public class TaskSchedulerConfig {
 
     public static ThreadPoolExecutor getExecutor() {
         return executor;
+    }
+
+    @Bean
+    public static ThreadPoolTaskScheduler createThreadPoolTaskScheduler() {
+        ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
+        taskScheduler.setPoolSize(4);
+        taskScheduler.setRemoveOnCancelPolicy(true);
+        taskScheduler.setBeanName("status-update-pool");
+        taskScheduler.setErrorHandler(e -> log.error("error:", e));
+        return taskScheduler;
     }
 
     @Bean

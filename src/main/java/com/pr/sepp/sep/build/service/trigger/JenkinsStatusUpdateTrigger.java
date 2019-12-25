@@ -2,55 +2,45 @@ package com.pr.sepp.sep.build.service.trigger;
 
 import com.pr.sepp.utils.jenkins.model.JenkinsProperties;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.event.ContextClosedEvent;
 import org.springframework.context.event.EventListener;
 import org.springframework.core.annotation.Order;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskScheduler;
 
-import javax.security.auth.DestroyFailedException;
-import javax.security.auth.Destroyable;
 import java.time.Duration;
 import java.util.concurrent.ScheduledFuture;
 
 @Slf4j
-public class JenkinsStatusUpdateTrigger implements InitializingBean, Destroyable {
+public class JenkinsStatusUpdateTrigger extends AbstractStatusTrigger implements StatusTimer {
 
-    private final ThreadPoolTaskScheduler taskScheduler;
     private Duration checkPeriodOne = Duration.ofSeconds(10);
     private Duration checkPeriodTow = Duration.ofMinutes(30);
-    private volatile ScheduledFuture<?> scheduledTaskOne;
-    private volatile ScheduledFuture<?> scheduledTaskTow;
-    private JenkinsStatusUpdater jenkinsStatusUpdater;
+    private ScheduledFuture<?> scheduledTaskOne;
+    private ScheduledFuture<?> scheduledTaskTow;
+    private Updater<JenkinsStatusUpdater> updater;
     private JenkinsProperties jenkinsProperties;
 
-    public JenkinsStatusUpdateTrigger(JenkinsStatusUpdater jenkinsStatusUpdater,
-                                      JenkinsProperties jenkinsProperties) {
+    public JenkinsStatusUpdateTrigger(Updater<JenkinsStatusUpdater> updater,
+                                      JenkinsProperties jenkinsProperties,
+                                      ThreadPoolTaskScheduler taskScheduler) {
+        super(taskScheduler);
         this.jenkinsProperties = jenkinsProperties;
-        this.jenkinsStatusUpdater = jenkinsStatusUpdater;
-        this.taskScheduler = createThreadPoolTaskScheduler();
-    }
-
-    private static ThreadPoolTaskScheduler createThreadPoolTaskScheduler() {
-        ThreadPoolTaskScheduler taskScheduler = new ThreadPoolTaskScheduler();
-        taskScheduler.setPoolSize(3);
-        taskScheduler.setRemoveOnCancelPolicy(true);
-        taskScheduler.setBeanName("jenkins-update-pool");
-        taskScheduler.setErrorHandler(e -> log.error("error:", e));
-        return taskScheduler;
+        this.updater = updater;
     }
 
     @EventListener
     @Order()
+    @Override
     public void onApplicationReady(ApplicationReadyEvent event) {
         if (jenkinsProperties.isEnableSyncStatus()) {
-            updateStatus();
+            schedule();
         }
     }
 
     @EventListener
     @Order()
+    @Override
     public void onClosedContext(ContextClosedEvent event) {
         if (event.getApplicationContext().getParent() == null ||
                 "bootstrap".equals(event.getApplicationContext().getParent().getId())) {
@@ -58,17 +48,19 @@ public class JenkinsStatusUpdateTrigger implements InitializingBean, Destroyable
         }
     }
 
-    private void updateStatus() {
+    @Override
+    public void schedule() {
         if (scheduledTaskOne == null || scheduledTaskOne.isDone()) {
-            scheduledTaskOne = taskScheduler.scheduleAtFixedRate(jenkinsStatusUpdater::updateJobStatus, checkPeriodOne);
+            scheduledTaskOne = taskScheduler.scheduleAtFixedRate(() -> updater.update(JenkinsStatusUpdater::updateSome), checkPeriodOne);
             log.debug("Scheduled update status task1 for every {}seconds", checkPeriodOne);
         }
         if (scheduledTaskTow == null || scheduledTaskTow.isDone()) {
-            scheduledTaskTow = taskScheduler.scheduleAtFixedRate(jenkinsStatusUpdater::updateWholeJobStatus, checkPeriodTow);
+            scheduledTaskTow = taskScheduler.scheduleAtFixedRate(() -> updater.update(JenkinsStatusUpdater::updateWhole), checkPeriodTow);
             log.debug("Scheduled update status task2 for every {}minutes", checkPeriodTow);
         }
     }
 
+    @Override
     public void stopUpdateStatus() {
         if (scheduledTaskOne != null && !scheduledTaskOne.isDone()) {
             scheduledTaskOne.cancel(true);
@@ -81,13 +73,4 @@ public class JenkinsStatusUpdateTrigger implements InitializingBean, Destroyable
         }
     }
 
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        taskScheduler.afterPropertiesSet();
-    }
-
-    @Override
-    public void destroy() throws DestroyFailedException {
-        taskScheduler.destroy();
-    }
 }

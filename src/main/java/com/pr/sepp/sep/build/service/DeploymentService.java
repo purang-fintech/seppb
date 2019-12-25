@@ -1,6 +1,5 @@
 package com.pr.sepp.sep.build.service;
 
-import com.google.common.collect.Maps;
 import com.offbytwo.jenkins.model.Build;
 import com.offbytwo.jenkins.model.BuildWithDetails;
 import com.pr.sepp.common.exception.SeppClientException;
@@ -15,35 +14,28 @@ import com.pr.sepp.sep.build.model.constants.DeploymentStatus;
 import com.pr.sepp.sep.build.model.constants.InstanceType;
 import com.pr.sepp.sep.build.model.req.DeploymentBuildReq;
 import com.pr.sepp.sep.build.model.resp.JenkinsBuildResp;
+import com.pr.sepp.sep.build.service.trigger.DeploymentStatusUpdater;
 import com.pr.sepp.utils.jenkins.JenkinsClient;
 import com.pr.sepp.utils.jenkins.JenkinsClientProvider;
-import com.pr.sepp.utils.jenkins.model.PipelineStep;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
-import org.codehaus.jackson.map.ObjectMapper;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 import static com.pr.sepp.sep.build.model.constants.DeploymentStatus.RESET;
+import static com.pr.sepp.sep.build.service.trigger.DeploymentStatusUpdater.DEPLOYMENT_JOB_NAME;
 import static java.util.Objects.isNull;
 import static java.util.stream.Collectors.toList;
 
 
 @Slf4j
 @Service
-public class DeploymentService implements InitializingBean {
+public class DeploymentService {
 
-    private Map<String, InstanceType> deploymentJobMap = Maps.newConcurrentMap();
-    private static final String DEPLOYMENT_JOB_NAME = "%s_Deploy";
     @Autowired
     private JenkinsClientProvider jenkinsClientProvider;
     @Autowired
@@ -52,8 +44,8 @@ public class DeploymentService implements InitializingBean {
     private DeploymentBuildServer deploymentBuildServer;
     @Autowired
     private UserDAO userDAO;
-
-    private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+    @Autowired
+    private DeploymentStatusUpdater deploymentStatusUpdater;
 
 
     /**
@@ -66,7 +58,7 @@ public class DeploymentService implements InitializingBean {
      */
     public List<JenkinsBuildResp> selectDeployVersion(String jobName, InstanceType instanceType) {
         try (JenkinsClient jenkinsClient = jenkinsClientProvider.getJenkinsClient(instanceType)) {
-            List<Build> builds = jenkinsClient.allBuildsByJobName(jobName);
+            List<Build> builds = jenkinsClient.buildsLimit(jobName, 5);
             return builds.stream().map(this::buildJenkinsBuildResp).filter(JenkinsBuildResp::canDeploy).collect(toList());
         } catch (Exception e) {
             throw new SeppClientException(String.format("无法获取%s的可以部署的版本", jobName));
@@ -82,7 +74,7 @@ public class DeploymentService implements InitializingBean {
     public void autoDeploy(DeploymentBuildReq deploymentBuildReq) {
         //检查是否正在部署
         checkJobDeploying(deploymentBuildReq.getJobName(), deploymentBuildReq.getEnvType(), deploymentBuildReq.getBranchId());
-        putDeploymentJob(deploymentBuildReq.getJobName(), deploymentBuildReq.getInstanceType());
+        deploymentStatusUpdater.putDeploymentJob(deploymentBuildReq.getJobName(), deploymentBuildReq.getInstanceType());
         String deployJobName = String.format(DEPLOYMENT_JOB_NAME, deploymentBuildReq.getJobName());
         deploymentBuildReq.setDeployJobName(deployJobName);
         try (JenkinsClient jenkinsClient = jenkinsClientProvider.getJenkinsClient(deploymentBuildReq.getInstanceType())) {
@@ -157,10 +149,6 @@ public class DeploymentService implements InitializingBean {
         return deploymentDAO.maxBuildVersion(deployJobName);
     }
 
-    public void putDeploymentJob(String jobName, InstanceType instanceType) {
-        deploymentJobMap.put(String.format(DEPLOYMENT_JOB_NAME, jobName), instanceType);
-    }
-
     private JenkinsBuildResp buildJenkinsBuildResp(Build build) {
         BuildWithDetails details;
         try {
@@ -169,30 +157,6 @@ public class DeploymentService implements InitializingBean {
             throw new SeppClientException("无法该job可以部署的版本");
         }
         return JenkinsBuildResp.apply(build.getNumber(), details.getResult());
-    }
-
-    private void updateDeploymentResult(String jobName, InstanceType instanceType) {
-        try (JenkinsClient jenkinsClient = jenkinsClientProvider.getJenkinsClient(instanceType)) {
-            List<Build> builds = jenkinsClient.allBuildsByJobName(jobName);
-            for (Build build : builds) {
-                PipelineStep pipelineStep = jenkinsClient.pipelineStep(jobName, build.getNumber());
-                DeploymentHistory deploymentHistory = DeploymentHistory.buildToDeploymentHistory(build, jobName);
-                ObjectMapper mapper = new ObjectMapper();
-                deploymentHistory.setPipelineStep(mapper.writeValueAsString(pipelineStep));
-                deploymentDAO.createOrUpdate(deploymentHistory);
-            }
-        } catch (Exception e) {
-            log.error("更新{}部署结果失败:{}", jobName, e);
-        }
-    }
-
-    public void updateDeploymentRsult(DeploymentHistory deploymentHistory) {
-        deploymentDAO.updateDeploymentRsult(deploymentHistory);
-    }
-
-    @Override
-    public void afterPropertiesSet() {
-        executorService.scheduleAtFixedRate(() -> deploymentJobMap.forEach(this::updateDeploymentResult), 2, 10, TimeUnit.SECONDS);
     }
 
     public List<DeploymentHistory> deploymentHistories(String jobName, Integer envType, Integer branchId) {
