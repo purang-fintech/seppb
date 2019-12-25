@@ -103,7 +103,6 @@ public class CodeMissionServiceImpl implements CodeMissionService {
 
 		Map<String, Object> queryMap = new HashMap<>();
 		queryMap.put(CommonParameter.ID, codeMission.getId());
-		queryMap.put(CommonParameter.PRODUCT_ID, productId);
 		CodeMission oldCms = codeMissionDAO.cmsQuery(queryMap).get(0);
 
 		Map<String, Object> operMap = new HashMap<>();
@@ -201,7 +200,7 @@ public class CodeMissionServiceImpl implements CodeMissionService {
 
 		Map<String, Object> dataMap = new HashMap<>();
 		dataMap.put(CommonParameter.ID, id);
-		CodeMission cms = codeMissionDAO.cmsQuery(dataMap).get(0);
+		CodeMission oldCms = codeMissionDAO.cmsQuery(dataMap).get(0);
 
 		Map<String, Object> operMap = new HashMap<>();
 		operMap.put(CommonParameter.USER_ID, userId);
@@ -212,8 +211,8 @@ public class CodeMissionServiceImpl implements CodeMissionService {
 		List<CodeMissionStatus> sts = baseQueryDAO.codeMissionStatus();
 		String newStatusName = sts.stream().filter(f -> Objects.equals(f.getStatusId(), status)).findFirst().orElse(new CodeMissionStatus()).getStatusName();
 
-		String msg = "开发任务：【#" + id + " - " + cms.getSummary() + "】由用户【"
-				+ operName + "】操作，状态从【" + cms.getStatusName() + "】变为【" + newStatusName + "】";
+		String msg = "开发任务：【#" + id + " - " + oldCms.getSummary() + "】由用户【"
+				+ operName + "】操作，状态从【" + oldCms.getStatusName() + "】变为【" + newStatusName + "】";
 		SEPPHistory history = new SEPPHistory();
 		history.setObjType(6);
 		history.setObjId(id);
@@ -221,14 +220,14 @@ public class CodeMissionServiceImpl implements CodeMissionService {
 		history.setOperUser(userId);
 		history.setOperType(2);
 		history.setOperComment(msg);
-		history.setReferUser(cms.getResponser());
-		history.setOrgValue(String.valueOf(cms.getStatus()));
+		history.setReferUser(oldCms.getResponser());
+		history.setOrgValue(String.valueOf(oldCms.getStatus()));
 		history.setNewValue(String.valueOf(status));
 		history.setObjKey(CommonParameter.STATUS);
 		historyService.historyInsert(history);
 
 		List<Integer> messageToSub = new ArrayList<>();
-		messageToSub.add(cms.getSpliter());
+		messageToSub.add(oldCms.getSpliter());
 
 		Message message = new Message();
 		message.setProductId(productId);
@@ -238,9 +237,9 @@ public class CodeMissionServiceImpl implements CodeMissionService {
 		message.setContent("您拆分的" + msg);
 		messageService.businessMessageGenerator(message, userId, messageToSub);
 
-		if (cms.getResponser() - cms.getSpliter() != 0) { //非开发任务负责人本人操作
+		if (oldCms.getResponser() - oldCms.getSpliter() != 0) { //非开发任务负责人本人操作
 			List<Integer> messageToRes = new ArrayList<>();
-			messageToRes.add(cms.getResponser());
+			messageToRes.add(oldCms.getResponser());
 			message.setContent("您负责的" + msg);
 			messageService.businessMessageGenerator(message, userId, messageToRes);
 		}
