@@ -5,33 +5,6 @@
 <!-- 该xml需先在mybatis.xml中注册 -->
 <mapper namespace="com.pr.sepp.mgr.role.dao.RoleDAO">
 
-    <select id="roleQuery" resultType="com.pr.sepp.mgr.role.model.Role" parameterType="java.util.HashMap">
-        select
-            role_id as roleId,
-            role_code as roleCode,
-            role_name as roleName,
-            is_valid as isValid
-        from
-            sepp_user_role
-        where 1 = 1
-        <choose>
-            <when test="roleId!=null and roleId!=''">
-                and role_id = #{roleId}
-            </when>
-            <otherwise>
-                <if test="roleCode!=null and roleCode!=''">
-                    and role_code = #{roleCode}
-                </if>
-                <if test="roleName!=null and roleName!=''">
-                    and role_name like concat(#{roleName}, '%')
-                </if>
-                <if test="isValid!=null and isValid!=''">
-                    and is_valid = #{isValid}
-                </if>
-            </otherwise>
-        </choose>
-    </select>
-
     <select id="privQuery" resultMap="privQueryr">
         select
             p.priv_id       as privId,
@@ -86,25 +59,24 @@
         <result column="roleName" property="roleName" javaType="String"/>
     </resultMap>
 
-    <update id="privUpdate" parameterType="java.util.HashMap">
+    <update id="privUpdate">
         insert into
             sepp_privileges(user_id, product_id, role_id)
         values
-        <foreach collection="products" index="index" item="productId" separator=",">
-            <foreach collection="roles" index="index" item="roleId" separator=",">
-                (#{userId}, #{productId}, #{roleId})
-            </foreach>
+        <foreach collection="roles" index="index" item="roleId" separator=",">
+            (#{userId}, #{productId}, #{roleId})
         </foreach>
         on duplicate key update updated_date = now()
     </update>
 
-    <delete id="privDelete" parameterType="java.util.HashMap">
+    <delete id="privDelete">
         delete from
             sepp_privileges
         where priv_id in
-        <foreach collection="privId" index="index" item="id" open="(" separator="," close=")">
+        <foreach collection="privIds" index="index" item="id" open="(" separator="," close=")">
             #{id}
         </foreach>
+        and user_id = #{userId}
     </delete>
 
     <select id="productRoleQueryUser" resultMap="productRoleQueryUser_result">

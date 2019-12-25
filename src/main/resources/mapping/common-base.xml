@@ -108,6 +108,7 @@
     <select id="objectType" resultType="com.pr.sepp.base.model.ObjectType">
         select type_id    as typeId,
                type_name  as typeName,
+               router_to  as routerTo,
                table_name as tableName
         from sepp_object_type
     </select>

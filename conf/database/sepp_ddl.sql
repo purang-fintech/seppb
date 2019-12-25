@@ -532,10 +532,11 @@ CREATE TABLE `sepp_object_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `type_name` varchar(40) NOT NULL COMMENT '状态描述',
   `table_name` varchar(100) NOT NULL COMMENT '数据表名称',
+  `router_to` varchar(50) DEFAULT NULL COMMENT '目标对象跳转链接',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8
 
 /*Table structure for table `sepp_organization` */
 DROP TABLE IF EXISTS `sepp_organization`;

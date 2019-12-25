@@ -6,5 +6,6 @@ import lombok.Data;
 public class ObjectType {
 	private Integer typeId;
 	private String typeName;
+	private String routerTo;
 	private String tableName;
 }

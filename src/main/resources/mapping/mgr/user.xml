@@ -132,6 +132,21 @@
         order by p.product_id
     </select>
 
+    <select id="distinctUsersByPrivIds" resultType="com.pr.sepp.mgr.user.model.User">
+        select distinct
+               u.user_id      as userId,
+               u.user_account as userAccount,
+               u.user_email   as userEmail,
+               u.user_name    as userName
+        from sepp_privileges p,
+             sepp_user u
+        where p.user_id = u.user_id
+          and p.priv_id in
+        <foreach collection="list" index="index" item="privId" open="(" separator="," close=")">
+            #{privId}
+        </foreach>
+    </select>
+
     <select id="findUserByUserId" resultType="com.pr.sepp.mgr.user.model.User">
         select u.user_id        as userId,
                u.user_account   as userAccount,
