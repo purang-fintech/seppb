@@ -102,7 +102,7 @@ public class CodeMissionServiceImpl implements CodeMissionService {
 		int status = codeMission.getStatus();
 
 		Map<String, Object> queryMap = new HashMap<>();
-		queryMap.put("cmId", codeMission.getId());
+		queryMap.put(CommonParameter.ID, codeMission.getId());
 		queryMap.put(CommonParameter.PRODUCT_ID, productId);
 		CodeMission oldCms = codeMissionDAO.cmsQuery(queryMap).get(0);
 
