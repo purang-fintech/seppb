@@ -174,8 +174,7 @@ public class RequirementServiceImpl implements RequirementService {
 		Change change = new Change();
 
 		Map<String, Object> queryMap = new HashMap<>();
-		queryMap.put(CommonParameter.REQ_ID, reqId);
-		queryMap.put(CommonParameter.PRODUCT_ID, productId);
+		queryMap.put(CommonParameter.ID, reqId);
 		Requirement oldReq = requirementDAO.reqQuery(queryMap).get(0);
 
 		change.setReqId(reqId);
