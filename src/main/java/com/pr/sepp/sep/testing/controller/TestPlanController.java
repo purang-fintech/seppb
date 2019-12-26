@@ -26,6 +26,7 @@ public class TestPlanController {
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
         dataMap.put(CommonParameter.REL_ID, request.getParameter(CommonParameter.REL_ID));
+        dataMap.put(CommonParameter.ID, request.getParameter("planId"));
         dataMap.put("planType", request.getParameter("planType"));
         dataMap.put("planStatus", request.getParameter("planStatus"));
         dataMap.put(CommonParameter.RESPONSER, request.getParameter(CommonParameter.RESPONSER));
