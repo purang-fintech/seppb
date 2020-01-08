@@ -11,6 +11,12 @@ public interface UserService {
 
 	List<User> userQuery(Map<String, Object> dataMap);
 
+	int userAccountExists(String userAccount);
+
+	int userEmailExists(String userEmail);
+
+	int userNameExists(String userName);
+
 	int userCreate(User user);
 
 	int userUpdate(User user);

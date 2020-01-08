@@ -251,4 +251,19 @@ public class UserController {
 	public void logout(HttpServletResponse response) {
 		Sessions.logout(response);
 	}
+
+	@GetMapping(value = "/user/exists/account/{userAccount}")
+	public int userAccountExists(@PathVariable("userAccount") String userAccount) {
+		return userService.userAccountExists(userAccount);
+	}
+
+	@GetMapping(value = "/user/exists/email/{userEmail}")
+	public int userEmailExists(@PathVariable("userEmail") String userEmail) {
+		return userService.userEmailExists(userEmail);
+	}
+
+	@GetMapping(value = "/user/exists/name/{userName}")
+	public int userNameExists(@PathVariable("userName") String userName) {
+		return userService.userNameExists(userName);
+	}
 }

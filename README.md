@@ -28,6 +28,8 @@
 
 - 邮件服务、Jenkins服务、git仓库服务、sonarQube服务、LDAP认证服务，皆可使用超级管理员进入系统设置进行配置，持久化到数据库，同时Jenkins服务和邮件服务也可以通过配置文件实现，其中Jenkins使用持久化的配置需要配置jenkins.enable-programmatic=false
 
+- 基础设置 \ 监控中心，请参考：https://github.com/fudax/octopus工程说明，并且更新spring.properties和前端src/components/monitor/MonitorAdmin.vue文件配置
+
 ## License
 
 - 开原协议为MIT，请参考[LICENSE](./LICENSE)

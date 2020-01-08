@@ -184,6 +184,7 @@ public class ProductServiceImpl implements ProductService {
 		Map<String, Object> config = new HashMap<>();
 		config.put("changeAuditor", productConfig.getChangeAuditor());
 		config.put("dreTarget", productConfig.getDreTarget());
+		config.put("qaWarning", productConfig.getQaWarning());
 
 		if (StringUtils.isNotEmpty(productConfig.getMemberConfig())) {
 			config.put("memberConfig", new Gson().fromJson(productConfig.getMemberConfig(), new TypeToken<Map<String, Object>>() {

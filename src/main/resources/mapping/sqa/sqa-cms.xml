@@ -170,7 +170,17 @@
 		    and c.id = h.obj_id
 		    and h.obj_key = 'status'
 		    and c.status IN (0, 3, 4, 5, 6)
-		    and h.new_value >= 3
+		    and h.new_value IN ('0', '3', '4', '5', '6')
+			AND NOT EXISTS
+				(SELECT
+					'X'
+				FROM
+					sepp_history hh
+				WHERE hh.obj_id = h.obj_id
+				  AND hh.obj_type = 6
+				  AND hh.obj_key = 'status'
+				  AND hh.new_value IN ('0', '3', '4', '5', '6')
+			      AND h.id > hh.id)
 			<choose>
                 <when test="relId!=null and relId!=''">
                     and r.rel_id = #{relId}

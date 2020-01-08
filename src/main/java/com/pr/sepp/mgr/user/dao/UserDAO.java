@@ -9,7 +9,13 @@ public interface UserDAO {
 
     List<User> userQuery(Map<String, Object> dataMap);
 
-    int userCreate(User user);
+	int userCreate(User user);
+
+    int userAccountExists(String userAccount);
+
+	int userEmailExists(String userEmail);
+
+	int userNameExists(String userName);
 
     int userUpdate(User user);
 

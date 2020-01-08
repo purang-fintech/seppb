@@ -283,7 +283,7 @@
 				WHERE hh.obj_id = h.obj_id
 				  AND hh.obj_key = 'status'
 				  AND hh.obj_type = 2
-				  AND hh.id > h.id)
+				  AND h.id > hh.id)
 		    and r.status in (0, 6)
 		    and r.close_style = 1
 		    and r.product_id = #{productId}
@@ -293,10 +293,10 @@
 				</when>
 				<otherwise>
 					<if test="qTimeBegin!=null and qTimeBegin!=''">
-						<![CDATA[and r.submit_date >= #{qTimeBegin}]]>
+						<![CDATA[and h.oper_time >= #{qTimeBegin}]]>
 					</if>
 					<if test="qTimeEnd!=null and qTimeEnd!=''">
-						<![CDATA[and r.submit_date <= #{qTimeEnd}]]>
+						<![CDATA[and h.oper_time <= #{qTimeEnd}]]>
 					</if>
 				</otherwise>
 			</choose>) a

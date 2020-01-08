@@ -212,9 +212,19 @@
 		    sepp_history h
 		  where h.obj_type = 18 
 		    and c.id = h.obj_id
-			and c.status = 0
+			and c.status in (0, 3)
 		    and h.obj_key = 'status' 
 		    and h.new_value in ('0', '3')
+			AND NOT EXISTS
+				(SELECT
+					'X'
+				FROM
+					sepp_history hh
+				WHERE hh.obj_id = h.obj_id
+				  AND hh.obj_type = 18
+				  AND hh.obj_key = 'status'
+				  AND hh.new_value IN ('0', '3')
+			      AND h.id > hh.id)
 			<choose>
 				<when test="relId!=null and relId!=''">
 					and exists

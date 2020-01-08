@@ -69,6 +69,21 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
+	public int userAccountExists(String userAccount) {
+		return userDAO.userAccountExists(userAccount);
+	}
+
+	@Override
+	public int userEmailExists(String userEmail) {
+		return userDAO.userEmailExists(userEmail);
+	}
+
+	@Override
+	public int userNameExists(String userName) {
+		return userDAO.userNameExists(userName);
+	}
+
+	@Override
 	public int userCreate(User user) {
 		userDAO.userCreate(user);
 		int userId = user.getUserId();

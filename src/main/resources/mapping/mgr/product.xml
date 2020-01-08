@@ -95,6 +95,7 @@
         select product_id       as productId,
                member_config    as memberConfig,
                change_auditor   as changeAuditor,
+               qa_warning       as qaWarning,
                gompertz_define  as gompertzDefine,
                gompertz_params  as gompertzParams,
                dre_target       as dreTarget
@@ -104,9 +105,9 @@
 
     <update id="productConfigUpdate" parameterType="com.pr.sepp.mgr.product.model.ProductConfig">
         replace into
-            sepp_product_config(product_id, member_config, change_auditor, gompertz_define, gompertz_params, dre_target)
+            sepp_product_config(product_id, member_config, change_auditor, qa_warning, gompertz_define, gompertz_params, dre_target)
         values
-            (#{productId}, #{memberConfig}, #{changeAuditor}, #{gompertzDefine}, #{gompertzParams}, #{dreTarget})
+            (#{productId}, #{memberConfig}, #{changeAuditor}, #{qaWarning}, #{gompertzDefine}, #{gompertzParams}, #{dreTarget})
     </update>
 
     <update id="productConfigCreate" parameterType="com.pr.sepp.mgr.product.model.ProductConfig">

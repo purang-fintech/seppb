@@ -6,37 +6,37 @@
 <mapper namespace="com.pr.sepp.sep.build.dao.BuildDAO">
     <select id="releasenoteQuery" resultType="com.pr.sepp.sep.build.model.ReleaseNote" resultMap="noteMaps">
         select
-            rn.id,
-            rn.req_id as reqId,
-            rn.rel_id as relId,
-            rn.status,
-            rn.description,
-            rn.submitter,
-            rn.files,
-            rn.others,
-            rn.attachment,
-            r.summary as reqSummary,
-            r.sit_date as sitDate,
-            r.uat_date as uatDate,
-            r.submitter as reqSubmitter,
-            r.expect_date as expectDate,
-            r.submit_date as submitDate,
-            bs.status_name as statusName,
-            rel.rel_code as relCode,
-            m.pd_responser as pdResponser,
-            m.dev_responser as devResponser,
-            m.test_responser as testResponser
+        rn.id,
+        rn.req_id as reqId,
+        r.rel_id as relId,
+        rn.status,
+        rn.description,
+        rn.submitter,
+        rn.files,
+        rn.others,
+        rn.attachment,
+        r.summary as reqSummary,
+        r.sit_date as sitDate,
+        r.uat_date as uatDate,
+        r.submitter as reqSubmitter,
+        r.expect_date as expectDate,
+        r.submit_date as submitDate,
+        bs.status_name as statusName,
+        rel.rel_code as relCode,
+        m.pd_responser as pdResponser,
+        m.dev_responser as devResponser,
+        m.test_responser as testResponser
         from
-            sepp_requirement r,
-            sepp_prod_module m,
-            sepp_release_note rn,
-            sepp_releasenote_status bs,
-            sepp_release rel
+        sepp_requirement r,
+        sepp_prod_module m,
+        sepp_release_note rn,
+        sepp_releasenote_status bs,
+        sepp_release rel
         where r.id = rn.req_id
-          and r.product_id = #{productId}
-          and rn.status = bs.status_id
-          and rel.id = rn.rel_id
-          and m.module_id = r.module_id
+        and r.product_id = #{productId}
+        and rn.status = bs.status_id
+        and rel.id = r.rel_id
+        and m.module_id = r.module_id
         <if test="reqId!=null and reqId!=''">
             and rn.req_id = #{reqId}
         </if>
@@ -44,7 +44,7 @@
             and rn.id = #{id}
         </if>
         <if test="relId!=null and relId!=''">
-            and rn.rel_id = #{relId}
+            and r.rel_id = #{relId}
         </if>
         <if test="reqStatus!=null">
             and r.status in
@@ -89,21 +89,21 @@
 
     <insert id="releasenoteCreate" keyProperty="id" useGeneratedKeys="true" parameterType="com.pr.sepp.sep.build.model.ReleaseNote">
         insert into sepp_release_note
-            (req_id, status, rel_id, submitter, attachment, description, others)
+        (req_id, status,  submitter, attachment, description, others)
         values
-            (#{reqId}, #{status}, #{relId}, #{submitter}, #{attachment}, #{description}, #{others})
+        (#{reqId}, #{status},#{submitter}, #{attachment}, #{description}, #{others})
     </insert>
 
     <update id="releasenoteUpdate" parameterType="com.pr.sepp.sep.build.model.ReleaseNote">
         update
-            sepp_release_note
+        sepp_release_note
         set
-            status=#{status},
-            description=#{description},
-            others=#{others},
-            attachment=#{attachment}
+        status=#{status},
+        description=#{description},
+        others=#{others},
+        attachment=#{attachment}
         where
-            id=#{id}
+        id=#{id}
     </update>
 
     <select id="buildQuery" resultType="com.pr.sepp.sep.build.model.Build">
@@ -149,68 +149,68 @@
     <insert id="startBuild" parameterType="com.pr.sepp.sep.build.model.ReleaseNote">
         insert into sepp_build
         (
-            note_id,
-            product_id,
-            prodBranch,
-            env_type,
-            instance,
-            submit_time,
-            submitter,
-            build_result,
-            build_host
+        note_id,
+        product_id,
+        prodBranch,
+        env_type,
+        instance,
+        submit_time,
+        submitter,
+        build_result,
+        build_host
         )
         values (
-            #{noteId},
-            #{productId},
-            #{prodBranch},
-            #{envType},
-            #{instance},
-            #{submitTime},
-            #{submitter},
-            2,
-            #{ip}
+        #{noteId},
+        #{productId},
+        #{prodBranch},
+        #{envType},
+        #{instance},
+        #{submitTime},
+        #{submitter},
+        2,
+        #{ip}
         )
     </insert>
 
     <insert id="saveBuild" parameterType="com.pr.sepp.sep.build.model.BuildHistory">
         insert into sepp_build_history
         (
-            note_id,
-            job_name,
-            product_id,
-            env_type,
-            instance,
-            submitter,
-            build_version,
-            build_status,
-            build_params,
-            code_change,
-            build_interval,
-            tag,
-            branch_id,
-            branch_name,
-            env_name,
-            instance_type,
-            build_type
+        note_id,
+        job_name,
+        product_id,
+        env_type,
+        instance,
+        submitter,
+        build_version,
+        build_status,
+        build_params,
+        code_change,
+        build_interval,
+        tag,
+        branch_id,
+        branch_name,
+        env_name,
+        instance_type,
+        build_type
         )
         values (
-            #{noteId},
-            #{jobName},
-            #{productId},
-            #{envType},
-            #{instance},
-            #{submitter},
-            #{buildVersion},
-            #{buildStatus},
-            #{buildParams},
-            #{codeChange},
-            #{buildInterval},
-            #{tag},
-            #{branchId},
-            #{branchName},
-            #{envName},
-            #{type},
-            #{buildType}
+        #{noteId},
+        #{jobName},
+        #{productId},
+        #{envType},
+        #{instance},
+        #{submitter},
+        #{buildVersion},
+        #{buildStatus},
+        #{buildParams},
+        #{codeChange},
+        #{buildInterval},
+        #{tag},
+        #{branchId},
+        #{branchName},
+        #{envName},
+        #{type},
+        #{buildType}
         )
     </insert>
 
@@ -220,21 +220,21 @@
         </selectKey>
         <if test="id > 0">
             UPDATE
-                sepp_build_history
+            sepp_build_history
             SET
-                build_status=#{buildStatus},
-                build_interval=#{buildInterval},
-                pipeline_step=#{pipelineStep},
-                code_change = #{codeChange}
+            build_status=#{buildStatus},
+            build_interval=#{buildInterval},
+            pipeline_step=#{pipelineStep},
+            code_change = #{codeChange}
             WHERE job_name=#{jobName}
-              AND build_version=#{buildVersion}
-              AND build_status NOT IN('SUCCESS','FAILURE','UNSTABLE','ABORTED')
+            AND build_version=#{buildVersion}
+            AND build_status NOT IN('SUCCESS','FAILURE','UNSTABLE','ABORTED')
         </if>
         <if test="id==0">
             insert into sepp_build_history
-                (job_name, build_version, build_status, build_interval, pipeline_step, code_change)
+            (job_name, build_version, build_status, build_interval, pipeline_step, code_change)
             values
-                (#{jobName}, #{buildVersion}, #{buildStatus}, #{buildInterval}, #{pipelineStep}, #{codeChange})
+            (#{jobName}, #{buildVersion}, #{buildStatus}, #{buildInterval}, #{pipelineStep}, #{codeChange})
         </if>
     </update>
 
