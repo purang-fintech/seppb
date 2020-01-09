@@ -536,7 +536,7 @@ CREATE TABLE `sepp_object_type` (
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8
+) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_organization` */
 DROP TABLE IF EXISTS `sepp_organization`;
