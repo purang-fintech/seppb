@@ -109,6 +109,7 @@ insert into `sepp_object_type` (`type_id`, `type_name`, `table_name`, `router_to
 insert  into `sepp_pr_status`(`status_id`,`status_name`,`created_date`,`updated_date`) values (0,'需求作废','2019-09-10 19:03:21','2019-09-10 19:05:13'),(1,'已提交','2019-09-10 19:03:21','2019-09-10 19:05:29'),(2,'已送审','2019-09-10 19:03:21','2019-09-10 19:05:31'),(3,'审核通过','2019-09-10 19:03:21','2019-09-10 19:05:34'),(4,'审核拒绝','2019-09-10 19:03:40','2019-09-10 19:05:34');
 
 /*Data for the table `sepp_privileges` */
+insert  into `sepp_privileges`(`priv_id`,`user_id`,`role_id`,`product_id`,`created_date`,`updated_date`) values (1,0,0,1,'2018-04-13 15:29:26','2018-05-07 12:31:49');
 insert  into `sepp_privileges`(`priv_id`,`user_id`,`role_id`,`product_id`,`created_date`,`updated_date`) values (1,0,17,1,'2018-04-13 15:29:26','2018-05-07 12:31:49');
 
 /*Data for the table `sepp_problem_improve` */
