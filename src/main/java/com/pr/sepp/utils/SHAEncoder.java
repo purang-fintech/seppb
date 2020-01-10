@@ -1,7 +1,7 @@
 package com.pr.sepp.utils;
 
-import java.security.MessageDigest;
 import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
+import java.security.MessageDigest;
 
 public class SHAEncoder {
 	public static String encodeSHA(byte[] data) throws Exception {

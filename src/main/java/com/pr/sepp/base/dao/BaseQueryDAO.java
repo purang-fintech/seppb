@@ -1,9 +1,9 @@
 package com.pr.sepp.base.dao;
 
-import java.util.List;
-
 import com.pr.sepp.base.model.*;
 import com.pr.sepp.mgr.product.model.ProductBranch;
+
+import java.util.List;
 
 public interface BaseQueryDAO {
 	List<AutotestType> autotestType();

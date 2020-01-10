@@ -1,24 +1,21 @@
 package com.pr.sepp.history.controller;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
-import javax.servlet.http.HttpServletRequest;
-
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
-import org.apache.commons.lang.StringUtils;
+import com.pr.sepp.history.model.SEPPHistory;
+import com.pr.sepp.history.service.HistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.pr.sepp.history.model.SEPPHistory;
-import com.pr.sepp.history.service.HistoryService;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
+import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @RestController
 @ResponseBody

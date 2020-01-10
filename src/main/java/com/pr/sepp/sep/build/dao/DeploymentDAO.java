@@ -7,18 +7,18 @@ import java.util.List;
 
 public interface DeploymentDAO {
 
-    void insertDeploymentHistory(DeploymentHistory deploymentHistory);
+	void insertDeploymentHistory(DeploymentHistory deploymentHistory);
 
-    Integer maxBuildVersion(String deployJobName);
+	Integer maxBuildVersion(String deployJobName);
 
-    void createOrUpdate(DeploymentHistory deploymentHistory);
+	void createOrUpdate(DeploymentHistory deploymentHistory);
 
-    List<DeploymentHistory> deploymentHistories(String jobName, Integer envType, Integer branchId);
+	List<DeploymentHistory> deploymentHistories(String jobName, Integer envType, Integer branchId);
 
-    void deploymentStatusReset(DeploymentStatus status, String jobName, Integer envType, Integer branchId);
+	void deploymentStatusReset(DeploymentStatus status, String jobName, Integer envType, Integer branchId);
 
-    List<DeploymentHistory> selectDeploymentHistories(String jobName, Integer envType,
-                                                      Integer branchId, DeploymentStatus status);
+	List<DeploymentHistory> selectDeploymentHistories(String jobName, Integer envType,
+													  Integer branchId, DeploymentStatus status);
 
-    void updateDeploymentRsult(DeploymentHistory deploymentHistory);
+	void updateDeploymentRsult(DeploymentHistory deploymentHistory);
 }

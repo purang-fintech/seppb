@@ -1,5 +1,7 @@
 package com.pr.sepp.sqa.service.impl;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.pr.sepp.common.calculation.service.GompertzCalculation;
 import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.mgr.product.dao.ProductDAO;
@@ -8,8 +10,6 @@ import com.pr.sepp.sep.release.dao.ReleaseDAO;
 import com.pr.sepp.sep.release.model.Release;
 import com.pr.sepp.sqa.dao.AnalysisDAO;
 import com.pr.sepp.sqa.service.AnalysisService;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.MapUtils;
 import org.apache.commons.lang.StringUtils;
@@ -21,7 +21,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
-import static com.pr.sepp.common.constants.CommonParameter.*;
+import static com.pr.sepp.common.constants.CommonParameter.PRODUCT_ID;
+import static com.pr.sepp.common.constants.CommonParameter.REL_ID;
 
 @Transactional
 @Service("analysisService")

@@ -1,9 +1,9 @@
 package com.pr.sepp.sep.testing.dao;
 
+import com.pr.sepp.sep.testing.model.*;
+
 import java.util.List;
 import java.util.Map;
-
-import com.pr.sepp.sep.testing.model.*;
 
 public interface TestingDAO {
 

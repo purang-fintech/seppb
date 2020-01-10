@@ -5,6 +5,6 @@ import java.util.function.Consumer;
 
 public interface Updater<T> {
 
-    void update(Consumer<T> t);
+	void update(Consumer<T> t);
 
 }

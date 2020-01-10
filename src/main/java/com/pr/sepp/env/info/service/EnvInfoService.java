@@ -1,9 +1,9 @@
 package com.pr.sepp.env.info.service;
 
+import com.pr.sepp.env.info.model.EnvInfo;
+
 import java.util.List;
 import java.util.Map;
-
-import com.pr.sepp.env.info.model.EnvInfo;
 
 public interface EnvInfoService {
 

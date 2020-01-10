@@ -5,14 +5,15 @@ import lombok.Data;
 
 @Data
 public class BuildInstance {
-    private Integer id;
-    private String instance;
-    private Integer productId;
-    private String user;
-    private InstanceType type;
-    private String description;
-    private String params;
+	private Integer id;
+	private String instance;
+	private Integer productId;
+	private String projectName;
+	private String user;
+	private InstanceType type;
+	private String description;
+	private String params;
 
-    private String createdDate;
-    private String updatedDate;
+	private String createdDate;
+	private String updatedDate;
 }

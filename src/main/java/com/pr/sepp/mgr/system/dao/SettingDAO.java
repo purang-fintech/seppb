@@ -1,9 +1,10 @@
 package com.pr.sepp.mgr.system.dao;
 
-import java.util.List;
-import java.util.Map;
 import com.pr.sepp.mgr.system.model.SettingConfig;
 import com.pr.sepp.mgr.system.model.SystemSetting;
+
+import java.util.List;
+import java.util.Map;
 
 public interface SettingDAO {
 	List<Map<String, Object>> listConfig();

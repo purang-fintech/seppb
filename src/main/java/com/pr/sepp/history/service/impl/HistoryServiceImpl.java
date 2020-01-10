@@ -1,15 +1,14 @@
 package com.pr.sepp.history.service.impl;
 
-import java.util.List;
-import java.util.Map;
-
+import com.pr.sepp.history.dao.HistoryDAO;
+import com.pr.sepp.history.model.SEPPHistory;
+import com.pr.sepp.history.service.HistoryService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pr.sepp.history.dao.HistoryDAO;
-import com.pr.sepp.history.model.SEPPHistory;
-import com.pr.sepp.history.service.HistoryService;
+import java.util.List;
+import java.util.Map;
 
 @Transactional
 @Service("historyService")

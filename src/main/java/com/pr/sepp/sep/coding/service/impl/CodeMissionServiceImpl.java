@@ -18,7 +18,6 @@ import com.pr.sepp.sep.requirement.model.Requirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PathVariable;
 
 import java.lang.reflect.Field;
 import java.util.*;
@@ -133,7 +132,7 @@ public class CodeMissionServiceImpl implements CodeMissionService {
 		messageService.businessMessageGenerator(message, userId, messageToSub);
 
 		if (oldCms.getResponser() - codeMission.getResponser() == 0) {    //开发负责人不发生变化的情况
-			if (oldCms.getResponser() != userId && oldCms.getResponser() != oldCms.getSpliter()) { //非开发任务负责人本人操作
+			if (oldCms.getResponser() != userId && oldCms.getResponser() - oldCms.getSpliter() != 0) { //非开发任务负责人本人操作
 				List<Integer> messageToRes = new ArrayList<>();
 				messageToRes.add(oldCms.getResponser());
 				message.setContent(suffix + msg);
@@ -342,8 +341,8 @@ public class CodeMissionServiceImpl implements CodeMissionService {
 		int res = codeMissionDAO.reqCmsStatusSync(reqId, status);
 
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put("product_id", productId);
-		dataMap.put("rel_id", reqId);
+		dataMap.put(CommonParameter.PRODUCT_ID, productId);
+		dataMap.put(CommonParameter.REQ_ID, reqId);
 		List<CodeMission> cmss = codeMissionDAO.cmsQuery(dataMap);
 
 		cmss.forEach(cms -> {

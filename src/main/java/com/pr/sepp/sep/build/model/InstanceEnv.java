@@ -15,16 +15,16 @@ import java.util.stream.Collectors;
 @NoArgsConstructor
 @AllArgsConstructor
 public class InstanceEnv {
-    private Integer id;
-    private Integer productId;
-    private Integer envType;
-    private Integer branchId;
-    private String instance;
-    private String jobName;
-    private String createdDate;
+	private Integer id;
+	private Integer productId;
+	private Integer envType;
+	private Integer branchId;
+	private String instance;
+	private String jobName;
+	private String createdDate;
 
-    public static Map<Integer, List<InstanceEnv>> groupingByEnvType(List<InstanceEnv> instanceEnvs) {
-        return instanceEnvs.stream().collect(Collectors.groupingBy(InstanceEnv::getEnvType));
-    }
+	public static Map<Integer, List<InstanceEnv>> groupingByEnvType(List<InstanceEnv> instanceEnvs) {
+		return instanceEnvs.stream().collect(Collectors.groupingBy(InstanceEnv::getEnvType));
+	}
 
 }

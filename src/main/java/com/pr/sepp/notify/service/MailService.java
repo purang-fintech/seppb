@@ -1,8 +1,8 @@
 package com.pr.sepp.notify.service;
 
 import com.pr.sepp.common.constants.MailDTO;
-import com.pr.sepp.notify.model.Mail;
 import com.pr.sepp.notify.dao.MessageDAO;
+import com.pr.sepp.notify.model.Mail;
 import com.pr.sepp.utils.JavaMailUtils;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;

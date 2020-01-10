@@ -1,15 +1,14 @@
 package com.pr.sepp.sep.defect.service;
 
+import com.pr.sepp.sep.defect.model.Defect;
+
 import java.util.List;
 import java.util.Map;
 
-import com.pr.sepp.sep.defect.model.Defect;
-import com.pr.sepp.sep.defect.model.DefectRequestParam;
-
 public interface DefectService {
-	
+
 	List<Defect> defectQuery(Map<String, Object> dataMap);
-	
+
 	int defectInfoCreate(Defect defect);
 
 	int defectInfoUpdate(Defect defect) throws IllegalAccessException;

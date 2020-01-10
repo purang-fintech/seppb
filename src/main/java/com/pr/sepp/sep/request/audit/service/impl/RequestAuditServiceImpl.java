@@ -1,5 +1,7 @@
 package com.pr.sepp.sep.request.audit.service.impl;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.history.model.SEPPHistory;
@@ -16,11 +18,6 @@ import com.pr.sepp.sep.request.data.dao.RequestDAO;
 import com.pr.sepp.sep.request.data.model.ProductRequirement;
 import com.pr.sepp.sep.requirement.model.Requirement;
 import com.pr.sepp.sep.requirement.service.RequirementService;
-import com.google.common.base.Predicates;
-import com.google.common.collect.ImmutableSet;
-import com.google.common.collect.Iterables;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -82,7 +79,7 @@ public class RequestAuditServiceImpl implements RequestAuditService {
 		if (StringUtils.isEmpty(baseAuditor) && StringUtils.isEmpty(leaderAuditor) && StringUtils.isNotEmpty(chiefAuditor)) {
 			Arrays.asList(chiefAuditor.split(",")).forEach(f -> messageTo.add(Integer.parseInt(f)));
 		}
-		
+
 		Message message = new Message();
 		message.setProductId(productId);
 		message.setObjectType(21);
@@ -90,7 +87,7 @@ public class RequestAuditServiceImpl implements RequestAuditService {
 		message.setTitle("产品需求已提交至您审批，请及时处理");
 		message.setContent(msg);
 		messageService.businessMessageGenerator(message, userId, messageTo);
-		
+
 		return requestAuditDAO.requestAuditCreate(requestAudit);
 	}
 
@@ -123,7 +120,7 @@ public class RequestAuditServiceImpl implements RequestAuditService {
 		String[] toBases = StringUtils.isEmpty(baseAuditor) ? new String[]{} : baseAuditor.split(",");
 		String[] toLeaders = StringUtils.isEmpty(leaderAuditor) ? new String[]{} : leaderAuditor.split(",");
 		String[] toChiefs = StringUtils.isEmpty(chiefAuditor) ? new String[]{} : chiefAuditor.split(",");
-		String [] newAuditors = StringUtils.isEmpty(newAuditorStr) ? new String[]{} : newAuditorStr.split(",");
+		String[] newAuditors = StringUtils.isEmpty(newAuditorStr) ? new String[]{} : newAuditorStr.split(",");
 		if (toChiefs.length > 0) {
 			System.arraycopy(toChiefs, 0, newAuditors, newAuditors.length - 1, toChiefs.length);
 		}
@@ -133,7 +130,7 @@ public class RequestAuditServiceImpl implements RequestAuditService {
 			for (RequestAuditResult result : baseResults) {
 				// ParameterThreadLocal.getUserId() 与 requestAuditResult.getAuditor()类型不同但效果等同
 				if (result.getAuditor().equals(userId)) {
-					return -1;	//已审批过
+					return -1;    //已审批过
 				}
 			}
 		}
@@ -160,7 +157,7 @@ public class RequestAuditServiceImpl implements RequestAuditService {
 		reqMap.put(CommonParameter.ID, requestAudit.getPrId());
 		reqMap.put(CommonParameter.PRODUCT_ID, productId);
 		ProductRequirement request = requestDAO.requestQuery(reqMap).get(0);
-		
+
 		Message message = new Message();
 		message.setProductId(productId);
 		message.setObjectType(21);
@@ -168,17 +165,17 @@ public class RequestAuditServiceImpl implements RequestAuditService {
 
 		// 基础审批
 		if (toBases.length > 0 && Arrays.asList(toBases).indexOf(String.valueOf(userId)) > -1) {
-			if (requestAuditResult.getPassed() == 0) {	//审核拒绝则流程终止
+			if (requestAuditResult.getPassed() == 0) {    //审核拒绝则流程终止
 				requestAuditComplete(requestAudit, 0, requestAuditResult.getAuditTime());
 				List<Integer> messageTo = new ArrayList<>();
 				String msg = "您提交的产品需求【" + request.getId() + " - " + request.getSummary() + "】已被审核拒绝，拒绝原因为：【"
-						+ requestAuditResult.getAuditComment() +  "】，详情请查看审核历史记录！";
+						+ requestAuditResult.getAuditComment() + "】，详情请查看审核历史记录！";
 				messageTo.add(request.getSubmitter());
 				message.setTitle("产品需求已被审核拒绝");
 				message.setContent(msg);
 				messageService.businessMessageGenerator(message, userId, messageTo);
-			} else {	// 基础审核全部通过，且后续审批人皆为空，直接结束流程，生成正式数据
-				if (toLeaders.length == 0 && newAuditors.length == 0 && toBases.length == baseResults.size() + 1) {	//这种情况基本不存在，但是程序支持一下
+			} else {    // 基础审核全部通过，且后续审批人皆为空，直接结束流程，生成正式数据
+				if (toLeaders.length == 0 && newAuditors.length == 0 && toBases.length == baseResults.size() + 1) {    //这种情况基本不存在，但是程序支持一下
 					requestAuditComplete(requestAudit, 1, requestAuditResult.getAuditTime());
 
 					List<Integer> messageTo = new ArrayList<>();
@@ -205,20 +202,20 @@ public class RequestAuditServiceImpl implements RequestAuditService {
 		// 主管审批
 		if (toLeaders.length > 0 && Arrays.asList(toLeaders).indexOf(String.valueOf(userId)) > -1) {
 			StringBuffer sf = new StringBuffer();
-			if (null != leaderResults && leaderResults.size() > 0){
+			if (null != leaderResults && leaderResults.size() > 0) {
 				leaderResults.forEach(res -> sf.append(new Gson().toJson(res) + ","));
 			}
 			sf.append(new Gson().toJson(requestAuditResult));
-			if (requestAuditResult.getPassed() == 0) {	//审核拒绝则流程终止
+			if (requestAuditResult.getPassed() == 0) {    //审核拒绝则流程终止
 				requestAuditComplete(requestAudit, 0, requestAuditResult.getAuditTime());
 				List<Integer> messageTo = new ArrayList<>();
 				String msg = "您提交的产品需求【" + request.getId() + " - " + request.getSummary() + "】已被审核拒绝，拒绝原因为：【"
-						+ requestAuditResult.getAuditComment() +  "】，详情请查看审核历史记录！";
+						+ requestAuditResult.getAuditComment() + "】，详情请查看审核历史记录！";
 				messageTo.add(request.getSubmitter());
 				message.setTitle("产品需求已被审核拒绝");
 				message.setContent(msg);
 				messageService.businessMessageGenerator(message, userId, messageTo);
-			} else {	// 主管审核全部通过，且后续审批人为空，直接结束流程，生成正式数据
+			} else {    // 主管审核全部通过，且后续审批人为空，直接结束流程，生成正式数据
 				int resCount = null != leaderResults ? leaderResults.size() + 1 : 1;
 				if (newAuditors.length == 0 && toLeaders.length == resCount) {
 					requestAuditComplete(requestAudit, 1, requestAuditResult.getAuditTime());
@@ -253,16 +250,16 @@ public class RequestAuditServiceImpl implements RequestAuditService {
 			}
 			sf.append(new Gson().toJson(requestAuditResult));
 			int chiefResultsSize = null != chiefResults ? chiefResults.size() + 1 : 1;
-			if (requestAuditResult.getPassed() == 0) {	//审核拒绝则流程终止
+			if (requestAuditResult.getPassed() == 0) {    //审核拒绝则流程终止
 				requestAuditComplete(requestAudit, 0, requestAuditResult.getAuditTime());
 				List<Integer> messageTo = new ArrayList<>();
 				String msg = "您提交的产品需求【" + request.getId() + " - " + request.getSummary() + "】已被审核拒绝，拒绝原因为：【"
-						+ requestAuditResult.getAuditComment() +  "】，详情请查看审核历史记录！";
+						+ requestAuditResult.getAuditComment() + "】，详情请查看审核历史记录！";
 				messageTo.add(request.getSubmitter());
 				message.setTitle("产品需求已被审核拒绝");
 				message.setContent(msg);
 				messageService.businessMessageGenerator(message, userId, messageTo);
-			} else {	// 高管审核全部通过，直接结束流程，生成正式数据
+			} else {    // 高管审核全部通过，直接结束流程，生成正式数据
 				if (toChiefs.length == chiefResultsSize) {
 					requestAuditComplete(requestAudit, 1, requestAuditResult.getAuditTime());
 

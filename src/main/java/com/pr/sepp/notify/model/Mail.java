@@ -1,11 +1,8 @@
 package com.pr.sepp.notify.model;
 
 import lombok.Data;
-import org.apache.commons.lang3.StringUtils;
 
 import java.time.LocalDateTime;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 @Data
 public class Mail {

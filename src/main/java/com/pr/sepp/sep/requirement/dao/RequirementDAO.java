@@ -8,17 +8,17 @@ import java.util.Map;
 
 public interface RequirementDAO {
 
-    int reqCreate(Requirement dataMap);
+	int reqCreate(Requirement dataMap);
 
-    int reqUpdate(Requirement dataMap);
+	int reqUpdate(Requirement dataMap);
 
-    int reqStatusUpdate(ReqStatusUpdate reqStatusUpdate);
+	int reqStatusUpdate(ReqStatusUpdate reqStatusUpdate);
 
-    List<Requirement> reqQuery(Map<String, Object> dataMap);
+	List<Requirement> reqQuery(Map<String, Object> dataMap);
 
-    List<Requirement> reqBatchQuery(Map<String, Object> dataMap);
+	List<Requirement> reqBatchQuery(Map<String, Object> dataMap);
 
-    List<Map<String, String>> reqHistoryQuery(Integer reqId);
+	List<Map<String, String>> reqHistoryQuery(Integer reqId);
 
 	int reqRelease(Map<String, Object> dataMap);
 

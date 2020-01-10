@@ -16,9 +16,9 @@ public interface TestExecDAO {
 	int testScenarioUpdate(TestScenario testExec);
 
 	int testScenarioDelete(Integer id);
-	
+
 	List<Map<String, Object>> scenarioCaseQuery(Map<String, Object> dataMap);
-	
+
 	List<Map<String, Object>> caseRunHisQuery(Integer caseId);
 
 	int testRunBegin(TestRun run);
@@ -26,7 +26,7 @@ public interface TestExecDAO {
 	int testRunEnd(TestRun run);
 
 	int caseResultRecord(Map<String, Object> dataMap);
-	
+
 	int stepResultRecord(Map<String, Object> dataMap);
 
 	int caseRunCancel(CaseResult caseResult);

@@ -1,5 +1,8 @@
 package com.pr.sepp.mgr.user.service.impl;
 
+import com.google.common.collect.Maps;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.pr.sepp.auth.core.jwt.Sessions;
 import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.exception.SeppServerException;
@@ -9,14 +12,10 @@ import com.pr.sepp.mgr.system.service.SettingService;
 import com.pr.sepp.mgr.user.dao.UserDAO;
 import com.pr.sepp.mgr.user.dao.UserSettingDAO;
 import com.pr.sepp.mgr.user.model.User;
-import com.pr.sepp.mgr.user.model.UserSetting;
 import com.pr.sepp.mgr.user.service.UserService;
 import com.pr.sepp.notify.model.Message;
 import com.pr.sepp.notify.service.MessageService;
 import com.pr.sepp.utils.SHAEncoder;
-import com.google.common.collect.Maps;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -88,9 +87,7 @@ public class UserServiceImpl implements UserService {
 		userDAO.userCreate(user);
 		int userId = user.getUserId();
 
-		UserSetting setting = new UserSetting();
-		setting.setUserId(userId);
-		userSettingDAO.userSettingCreate(setting);
+		userSettingDAO.userSettingCreate(userId);
 
 		return userId;
 	}
@@ -276,9 +273,7 @@ public class UserServiceImpl implements UserService {
 		userDAO.userCreate(newUser);
 		int userId = newUser.getUserId();
 
-		UserSetting setting = new UserSetting();
-		setting.setUserId(userId);
-		userSettingDAO.userSettingCreate(setting);
+		userSettingDAO.userSettingCreate(userId);
 
 		// 初始授权DEMO
 		roleDAO.privUpdate(0, userId, Arrays.asList(new String[]{"13"}));
@@ -351,9 +346,7 @@ public class UserServiceImpl implements UserService {
 					.isValid("Y")
 					.isVendor("N").build();
 			userDAO.userCreate(newUser);
-			UserSetting setting = new UserSetting();
-			setting.setUserId(newUser.getUserId());
-			userSettingDAO.userSettingCreate(setting);
+			userSettingDAO.userSettingCreate(newUser.getUserId());
 			dataMap.put(USER_ID, newUser.getUserId());
 			users = userDAO.userQuery(dataMap);
 		}

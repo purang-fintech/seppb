@@ -1,5 +1,6 @@
 package com.pr.sepp.auth.service;
 
+import com.google.common.collect.Lists;
 import com.pr.sepp.auth.dao.MenuDAO;
 import com.pr.sepp.auth.dao.UserRoleDAO;
 import com.pr.sepp.auth.model.Menu;
@@ -7,7 +8,6 @@ import com.pr.sepp.auth.model.Privilege;
 import com.pr.sepp.auth.model.resp.MenuResp;
 import com.pr.sepp.auth.model.resp.UserAuthResp;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
-import com.google.common.collect.Lists;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

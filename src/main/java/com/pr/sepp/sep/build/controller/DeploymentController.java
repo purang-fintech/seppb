@@ -12,22 +12,22 @@ import java.util.List;
 @RestController
 public class DeploymentController {
 
-    @Autowired
-    private DeploymentService deploymentService;
+	@Autowired
+	private DeploymentService deploymentService;
 
-    @GetMapping(value = "/deployment/deploy-versions")
-    public List<JenkinsBuildResp> deployVersion(@RequestParam("jobName") String jobName,
-                                                @RequestParam("instanceType") InstanceType instanceType) {
-        return deploymentService.selectDeployVersion(jobName, instanceType);
-    }
+	@GetMapping(value = "/deployment/deploy-versions")
+	public List<JenkinsBuildResp> deployVersion(@RequestParam("jobName") String jobName,
+												@RequestParam("instanceType") InstanceType instanceType) {
+		return deploymentService.selectDeployVersion(jobName, instanceType);
+	}
 
-    @PostMapping(value = "/deployment/auto-deploy")
-    public void deployArtifacts(@RequestBody DeploymentBuildReq deploymentBuildReq) {
-        deploymentService.autoDeploy(deploymentBuildReq);
-    }
+	@PostMapping(value = "/deployment/auto-deploy")
+	public void deployArtifacts(@RequestBody DeploymentBuildReq deploymentBuildReq) {
+		deploymentService.autoDeploy(deploymentBuildReq);
+	}
 
-    @PostMapping(value = "/deployment/status-reset")
-    public void deployStatusReset(@RequestBody DeploymentBuildReq deploymentBuildReq) {
-        deploymentService.deploymentStatusReset(deploymentBuildReq);
-    }
+	@PostMapping(value = "/deployment/status-reset")
+	public void deployStatusReset(@RequestBody DeploymentBuildReq deploymentBuildReq) {
+		deploymentService.deploymentStatusReset(deploymentBuildReq);
+	}
 }

@@ -16,9 +16,9 @@ public interface TestExecService {
 	int testScenarioUpdate(TestScenario testExec) throws IllegalAccessException;
 
 	int testScenarioDelete(Integer id);
-	
+
 	List<Map<String, Object>> scenarioCaseQuery(Map<String, Object> dataMap);
-	
+
 	List<Map<String, Object>> caseRunHisQuery(Integer caseId);
 
 	int testRunBegin(TestRun run);
@@ -26,7 +26,7 @@ public interface TestExecService {
 	int testRunCancel(TestRun run);
 
 	int caseResultRecord(CaseResult caseResult);
-	
+
 	int stepResultRecord(CaseResult caseResult);
 
 	int caseRunCancel(CaseResult caseResult);

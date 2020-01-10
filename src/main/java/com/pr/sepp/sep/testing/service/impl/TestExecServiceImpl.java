@@ -1,5 +1,7 @@
 package com.pr.sepp.sep.testing.service.impl;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.history.model.SEPPHistory;
@@ -10,8 +12,6 @@ import com.pr.sepp.sep.testing.model.CaseResult;
 import com.pr.sepp.sep.testing.model.TestRun;
 import com.pr.sepp.sep.testing.model.TestScenario;
 import com.pr.sepp.sep.testing.service.TestExecService;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -171,7 +171,7 @@ public class TestExecServiceImpl implements TestExecService {
 
 		testExecDAO.testRunEnd(run);
 
-		for (int i = 0 ; i < cases.size(); i ++) {
+		for (int i = 0; i < cases.size(); i++) {
 			testingDAO.caseStatusUpdate(Integer.valueOf(cases.get(i).get("caseId")), 4);
 		}
 		return runs;
@@ -185,7 +185,8 @@ public class TestExecServiceImpl implements TestExecService {
 	@Override
 	public int stepResultRecord(CaseResult caseResult) {
 		Map<String, Object> dataMap = new HashMap<>();
-		List<Map<String, String>> steps = new Gson().fromJson(caseResult.getStepResults(), new TypeToken<List<Map<String, String>>>() {}.getType());
+		List<Map<String, String>> steps = new Gson().fromJson(caseResult.getStepResults(), new TypeToken<List<Map<String, String>>>() {
+		}.getType());
 
 		dataMap.put("scenarioId", caseResult.getScenarioId());
 		dataMap.put("runId", caseResult.getRunId());

@@ -18,7 +18,6 @@ import com.pr.sepp.sep.problem.model.ProblemRefuse;
 import com.pr.sepp.sep.problem.service.ProblemService;
 import com.pr.sepp.sep.requirement.dao.RequirementDAO;
 import com.pr.sepp.sep.requirement.model.ReqStatusUpdate;
-import com.pr.sepp.sep.requirement.model.Requirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

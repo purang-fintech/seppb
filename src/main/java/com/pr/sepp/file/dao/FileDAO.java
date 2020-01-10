@@ -1,9 +1,9 @@
 package com.pr.sepp.file.dao;
 
+import com.pr.sepp.file.model.SEPPFile;
+
 import java.util.List;
 import java.util.Map;
-
-import com.pr.sepp.file.model.SEPPFile;
 
 public interface FileDAO {
 

@@ -106,6 +106,7 @@ CREATE TABLE `sepp_build_instance` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `product_id` int(10) DEFAULT NULL,
   `instance` varchar(100) NOT NULL COMMENT '实例名称',
+  `project_name` varchar(100) DEFAULT NULL COMMENT '代码库项目名称',
   `params` varchar(400) DEFAULT NULL,
   `type` varchar(50) DEFAULT NULL,
   `description` varchar(200) DEFAULT NULL COMMENT '描述',
@@ -1188,6 +1189,42 @@ CREATE TABLE `sepp_settings` (
   UNIQUE KEY `INX_TYPE` (`setting_type`),
   CONSTRAINT `JSON_CHECK` CHECK (json_valid(`setting_value`))
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+
+/*Table structure for table `sepp_sonar_result` */
+CREATE TABLE `sepp_sonar_result` (
+  `id` INT(10) NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `project_key` VARCHAR(50) NOT NULL COMMENT '项目key',
+  `project_version` VARCHAR(50) DEFAULT NULL COMMENT '项目sonar扫描版本',
+  `scan_date` VARCHAR(50) DEFAULT NULL COMMENT '时间',
+  `analysis_id` VARCHAR(50) DEFAULT NULL COMMENT 'analysisId',
+  `analysis_status` VARCHAR(10) DEFAULT NULL COMMENT '分析结论',
+  `ncloc` INT(10) DEFAULT NULL COMMENT '代码行数',
+  `coverage` FLOAT DEFAULT NULL COMMENT '覆盖率',
+  `duplicated_lines_density` FLOAT DEFAULT NULL COMMENT '重复率',
+  `code_smells` INT(10) DEFAULT NULL COMMENT '代码异味',
+  `bugs` INT(10) DEFAULT NULL COMMENT '缺陷',
+  `vulnerabilities` INT(10) DEFAULT NULL COMMENT '漏洞',
+  `sqale_index` INT(10) DEFAULT NULL COMMENT '技术债',
+  `created_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `updated_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+
+/*Table structure for table `sepp_sonar_scan` */
+CREATE TABLE `sepp_sonar_scan` (
+  `id` INT(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `note_id` INT(10) DEFAULT NULL COMMENT '构建id',
+  `product_id` INT(10) DEFAULT NULL COMMENT '产品编号',
+  `submitter` INT(10) DEFAULT NULL COMMENT '提交人',
+  `project_key` VARCHAR(40) DEFAULT NULL COMMENT '项目Key',
+  `git_branch` VARCHAR(50) DEFAULT NULL COMMENT 'git分支',
+  `project_version` VARCHAR(40) DEFAULT NULL COMMENT '版本',
+  `start_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '开始时间',
+  `result_id` INT(10) DEFAULT NULL COMMENT '结果集id',
+  `created_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建日期',
+  `updated_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新日期',
+  PRIMARY KEY (`id`)
+) ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_test_means` */
 DROP TABLE IF EXISTS `sepp_test_means`;

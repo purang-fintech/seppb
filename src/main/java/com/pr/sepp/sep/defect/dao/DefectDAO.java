@@ -6,9 +6,9 @@ import java.util.List;
 import java.util.Map;
 
 public interface DefectDAO {
-	
+
 	List<Defect> defectQuery(Map<String, Object> dataMap);
-	
+
 	int defectInfoCreate(Defect defect);
 
 	int defectInfoUpdate(Defect defect);

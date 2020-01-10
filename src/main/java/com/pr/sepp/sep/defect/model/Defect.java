@@ -5,7 +5,7 @@ import lombok.ToString;
 
 @Data
 @ToString(exclude = {"statusName", "priorityName", "influenceName", "submitterName", "responserName", "productorName", "relCode",
-					"defectTypeName", "foundPeriodName", "foundMeansName", "defectPeriodName", "prodModuleName", "conciliatorName"})
+		"defectTypeName", "foundPeriodName", "foundMeansName", "defectPeriodName", "prodModuleName", "conciliatorName"})
 public class Defect {
 	private Integer id;
 	private Integer status;

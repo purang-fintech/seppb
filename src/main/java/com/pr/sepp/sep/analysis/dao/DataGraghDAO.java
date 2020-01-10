@@ -3,7 +3,7 @@ package com.pr.sepp.sep.analysis.dao;
 import java.util.List;
 import java.util.Map;
 
-public interface DataGraghDAO{
+public interface DataGraghDAO {
 
 	public Map<String, Object> relInfoQuery(int relId);
 

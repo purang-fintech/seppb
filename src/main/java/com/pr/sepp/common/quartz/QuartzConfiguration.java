@@ -1,6 +1,5 @@
 package com.pr.sepp.common.quartz;
 
-import com.pr.sepp.common.exception.SeppServerException;
 import org.apache.commons.lang.StringUtils;
 import org.quartz.Scheduler;
 import org.quartz.spi.JobFactory;

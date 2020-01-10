@@ -2,7 +2,6 @@ package com.pr.sepp.mgr.user.service;
 
 import com.pr.sepp.mgr.user.model.User;
 
-import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 import java.util.Map;

@@ -7,17 +7,17 @@ import java.util.Map;
 
 public interface RequestDAO {
 
-    List<ProductRequirement> requestQuery(Map<String, Object> dataMap);
+	List<ProductRequirement> requestQuery(Map<String, Object> dataMap);
 
-    int requestCreate(ProductRequirement productRequirement);
+	int requestCreate(ProductRequirement productRequirement);
 
-    int requestUpdate(ProductRequirement productRequirement);
+	int requestUpdate(ProductRequirement productRequirement);
 
-    int requestStatusUpdate(Integer id, Integer status);
+	int requestStatusUpdate(Integer id, Integer status);
 
-    int requestClose(Integer id);
+	int requestClose(Integer id);
 
-    int requestSendAudit(Integer id);
+	int requestSendAudit(Integer id);
 
-    int addAuditRefuseTimes(Integer id);
+	int addAuditRefuseTimes(Integer id);
 }

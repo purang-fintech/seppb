@@ -1,5 +1,6 @@
 package com.pr.sepp.sep.build.controller;
 
+import com.github.pagehelper.PageInfo;
 import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.history.model.SEPPHistory;
@@ -9,11 +10,15 @@ import com.pr.sepp.sep.build.model.constants.InstanceType;
 import com.pr.sepp.sep.build.model.req.BuildHistoryReq;
 import com.pr.sepp.sep.build.model.req.DeploymentBuildReq;
 import com.pr.sepp.sep.build.model.resp.BuildHistoryResp;
+import com.pr.sepp.sep.build.model.sonar.SonarProjectNames;
+import com.pr.sepp.sep.build.model.sonar.SonarScanHistory;
+import com.pr.sepp.sep.build.model.sonar.SonarScanHistoryGrouper;
+import com.pr.sepp.sep.build.model.sonar.SonarScanReq;
 import com.pr.sepp.sep.build.service.BuildService;
 import com.pr.sepp.sep.build.service.JenkinsBuildService;
+import com.pr.sepp.sep.build.service.SonarScanService;
 import com.pr.sepp.sep.build.service.impl.BuildHistoryService;
 import com.pr.sepp.utils.jenkins.model.ParameterDefinition;
-import com.github.pagehelper.PageInfo;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -41,6 +46,9 @@ public class BuildController {
 
 	@Autowired
 	private BuildHistoryService buildHistoryService;
+
+	@Autowired
+	private SonarScanService sonarScanService;
 
 	/**
 	 * 通过实例获取对应参数列表
@@ -75,6 +83,7 @@ public class BuildController {
 	public void startBuild(@RequestBody BuildHistoryReq buildHistoryReq) {
 		jenkinsBuildService.build(buildHistoryReq);
 	}
+
 
 	/**
 	 * 重试
@@ -122,6 +131,29 @@ public class BuildController {
 	@GetMapping(value = "/build/build-instances/{noteId}")
 	public Map<String, List<BuildFile>> listBuildFiles(@PathVariable("noteId") Integer noteId) {
 		return buildHistoryService.listBuildFiles(noteId, null);
+	}
+
+
+	@PostMapping(value = "/build/start-sonarScan")
+	public void startSonarScan(@RequestBody SonarScanReq sonarScanReq) {
+		sonarScanService.saveSonarData(sonarScanReq);
+	}
+
+	@GetMapping(value = "/build/sonarProjectNames/{noteId}")
+	public List<SonarProjectNames> listSonarProjectNames(@PathVariable("noteId") Integer noteId) {
+		return sonarScanService.listSonarProjectNames(noteId);
+	}
+
+	@GetMapping(value = "/build/sonarScanHistory")
+	public List<SonarScanHistoryGrouper> sonarScanHistory(@RequestParam("noteId") Integer noteId,
+														  @RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
+														  @RequestParam(value = "pageSize", required = false, defaultValue = "5") Integer pageSize) {
+		return sonarScanService.sonarScanHistory(noteId, pageNum, pageSize);
+	}
+
+	@GetMapping(value = "/build/sonarAllScanHistory")
+	public List<SonarScanHistory> sonarAllScanHistory(@RequestParam("productId") Integer productId, @RequestParam("projectKey") String projectKey) {
+		return sonarScanService.sonarAllScanHistory(productId, projectKey);
 	}
 
 	@RequestMapping(value = "/build/releasenote_query", method = RequestMethod.POST)

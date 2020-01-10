@@ -5,6 +5,6 @@ package com.pr.sepp.sep.build.service.trigger;
  */
 public interface StatusTimer {
 
-    void schedule();
+	void schedule();
 
 }

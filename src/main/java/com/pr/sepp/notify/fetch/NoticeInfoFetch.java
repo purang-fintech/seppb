@@ -1,15 +1,16 @@
 package com.pr.sepp.notify.fetch;
 
+import com.github.pagehelper.PageInfo;
 import com.pr.sepp.notify.model.resp.MessageResp;
 import com.pr.sepp.notify.service.MessageService;
-import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.web.socket.WebSocketSession;
 
 import java.util.Optional;
 
-import static com.pr.sepp.common.constants.CommonParameter.*;
+import static com.pr.sepp.common.constants.CommonParameter.PRODUCT_ID;
+import static com.pr.sepp.common.constants.CommonParameter.USER_ID;
 import static com.pr.sepp.common.websocket.GlobalSession.attributesFetch;
 
 @Component("noticeFetch")

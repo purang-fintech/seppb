@@ -1,16 +1,15 @@
 package com.pr.sepp.mgr.team.service.impl;
 
-import java.util.List;
-import java.util.Map;
-
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import com.pr.sepp.mgr.team.dao.OrganizationDAO;
 import com.pr.sepp.mgr.team.model.Organization;
 import com.pr.sepp.mgr.team.service.OrganizationService;
 import com.pr.sepp.mgr.user.model.User;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
 
 @Transactional
 @Service("organizationService")

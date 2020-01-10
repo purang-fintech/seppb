@@ -310,7 +310,7 @@ public class TestMissionServiceImpl implements TestMissionService {
 		Map<String, Object> dataMap = new HashMap<>();
 		dataMap.put("ids", tms);
 		dataMap.put("planId", planMissionReq.getPlanId());
-		
+
 		return testMissionDAO.testMissionPlanUpdate(dataMap);
 	}
 

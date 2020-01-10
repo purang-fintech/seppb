@@ -8,23 +8,25 @@ import java.util.List;
 
 public interface BuildInstanceDAO {
 
-    void save(BuildInstance buildInstance);
+	void save(BuildInstance buildInstance);
 
-    List<BuildInstance> listBuildInstances(Integer productId);
+	List<BuildInstance> listBuildInstances(Integer productId);
 
-    BuildInstance findInstance(String instance,Integer productId);
+	BuildInstance findInstance(String instance, Integer productId);
 
-    void deleteInstance(String instance);
+	void deleteInstance(String instance);
 
-    void update(BuildInstance buildInstance);
+	void update(BuildInstance buildInstance);
 
-    void saveEnv(InstanceEnvReq instanceEnvReq);
+	void saveEnv(InstanceEnvReq instanceEnvReq);
 
-    List<InstanceEnv> listInstanceEnvs(String instance, Integer productId);
+	List<InstanceEnv> listInstanceEnvs(String instance, Integer productId);
 
-    void updateEnv(InstanceEnvReq instanceEnvReq);
+	void updateEnv(InstanceEnvReq instanceEnvReq);
 
-    InstanceEnv findEnv(Integer branchId, Integer envType, Integer productId, String instance);
+	InstanceEnv findEnv(Integer branchId, Integer envType, Integer productId, String instance);
 
-    void deleteEnv(Integer id);
+	void deleteEnv(Integer id);
+
+
 }

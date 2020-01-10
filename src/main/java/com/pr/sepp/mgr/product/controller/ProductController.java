@@ -1,5 +1,7 @@
 package com.pr.sepp.mgr.product.controller;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.mgr.product.model.Product;
@@ -7,8 +9,6 @@ import com.pr.sepp.mgr.product.model.ProductBranch;
 import com.pr.sepp.mgr.product.model.ProductConfig;
 import com.pr.sepp.mgr.product.model.ProductDoc;
 import com.pr.sepp.mgr.product.service.ProductService;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

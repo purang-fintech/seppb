@@ -2,7 +2,6 @@ package com.pr.sepp.sep.requirement.service;
 
 import com.pr.sepp.sep.requirement.model.ReqStatusUpdate;
 import com.pr.sepp.sep.requirement.model.Requirement;
-import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 import java.util.Map;

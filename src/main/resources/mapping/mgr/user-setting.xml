@@ -21,16 +21,11 @@
         where user_id = #{userId}
     </select>
 
-    <insert id="userSettingCreate" useGeneratedKeys="true" parameterType="com.pr.sepp.mgr.user.model.UserSetting">
-        <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Integer">
-            select last_insert_id()
-        </selectKey>
+    <insert id="userSettingCreate">
         insert into
-            sepp_user_setting(user_id, message_on, dialog_auto_close, auto_login, auto_refresh, table_show_border,
-            table_page_size, message_subscribe, email_subscribe, portal_config)
+            sepp_user_setting(user_id)
         values
-            (#{userId}, #{messageOn}, #{dialogAutoClose}, #{autoLogin}, #{autoRefresh}, #{tableShowBorder},
-            #{tablePageSize}, #{messageSubscribe}, #{emailSubscribe}, #{portalConfig})
+            (#{userId})
     </insert>
 
     <update id="userSettingUpdate" parameterType="com.pr.sepp.mgr.user.model.UserSetting">

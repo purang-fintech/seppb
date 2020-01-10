@@ -1,7 +1,5 @@
 package com.pr.sepp.base.model;
 
-import lombok.Builder;
-
 import java.util.List;
 
 public class Page<T> {

@@ -1,5 +1,8 @@
 package com.pr.sepp.sep.requirement.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.pr.sepp.base.dao.BaseQueryDAO;
 import com.pr.sepp.base.model.RequirementStatus;
 import com.pr.sepp.common.constants.CommonParameter;
@@ -27,9 +30,6 @@ import com.pr.sepp.sep.requirement.model.ReqRelease;
 import com.pr.sepp.sep.requirement.model.ReqStatusUpdate;
 import com.pr.sepp.sep.requirement.model.Requirement;
 import com.pr.sepp.sep.requirement.service.RequirementService;
-import com.github.pagehelper.PageHelper;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

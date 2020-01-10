@@ -14,18 +14,18 @@ import java.util.Optional;
 @NoArgsConstructor
 @AllArgsConstructor
 public class DeploymentBuild {
-    private List<BuildHistory> buildHistories;
-    private List<DeploymentHistory> deploymentHistories;
-    private String deploymentPipelines;
+	private List<BuildHistory> buildHistories;
+	private List<DeploymentHistory> deploymentHistories;
+	private String deploymentPipelines;
 
-    private Integer currentRunningVersion;
-    private Integer currentDeploymentVersion;
+	private Integer currentRunningVersion;
+	private Integer currentDeploymentVersion;
 
 
-    public static String applyDeploymentPipeline(List<DeploymentHistory> deploymentHistories) {
-        Optional<DeploymentHistory> deploymentHistoryOptional = deploymentHistories.stream().max(Comparator.comparing(DeploymentHistory::getId));
-        DeploymentHistory deploymentHistory = deploymentHistoryOptional.orElseGet(DeploymentHistory::new);
-        return deploymentHistory.getPipelineStep();
-    }
+	public static String applyDeploymentPipeline(List<DeploymentHistory> deploymentHistories) {
+		Optional<DeploymentHistory> deploymentHistoryOptional = deploymentHistories.stream().max(Comparator.comparing(DeploymentHistory::getId));
+		DeploymentHistory deploymentHistory = deploymentHistoryOptional.orElseGet(DeploymentHistory::new);
+		return deploymentHistory.getPipelineStep();
+	}
 
 }

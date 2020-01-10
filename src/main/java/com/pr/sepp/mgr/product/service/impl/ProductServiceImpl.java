@@ -1,5 +1,7 @@
 package com.pr.sepp.mgr.product.service.impl;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.history.model.SEPPHistory;
@@ -12,8 +14,6 @@ import com.pr.sepp.mgr.product.model.ProductBranch;
 import com.pr.sepp.mgr.product.model.ProductConfig;
 import com.pr.sepp.mgr.product.model.ProductDoc;
 import com.pr.sepp.mgr.product.service.ProductService;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.pr.sepp.mgr.role.dao.RoleDAO;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

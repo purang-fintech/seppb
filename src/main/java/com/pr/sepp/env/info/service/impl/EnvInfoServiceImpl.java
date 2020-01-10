@@ -1,24 +1,22 @@
 package com.pr.sepp.env.info.service.impl;
 
-import java.lang.reflect.Field;
-import java.util.*;
-import java.util.stream.Collectors;
-
 import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
+import com.pr.sepp.env.info.dao.EnvInfoDAO;
+import com.pr.sepp.env.info.model.EnvInfo;
+import com.pr.sepp.env.info.service.EnvInfoService;
 import com.pr.sepp.history.model.SEPPHistory;
 import com.pr.sepp.history.service.HistoryService;
 import com.pr.sepp.mgr.product.dao.ProductDAO;
 import com.pr.sepp.mgr.product.model.Product;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pr.sepp.env.info.dao.EnvInfoDAO;
-import com.pr.sepp.env.info.model.EnvInfo;
-import com.pr.sepp.env.info.service.EnvInfoService;
+import java.lang.reflect.Field;
+import java.util.*;
+import java.util.stream.Collectors;
 
 @Transactional
 @Service("envInfoService")

@@ -1,17 +1,16 @@
 package com.pr.sepp.base.service.impl;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import com.pr.sepp.base.dao.BaseQueryDAO;
 import com.pr.sepp.base.model.*;
+import com.pr.sepp.base.service.BaseQueryService;
 import com.pr.sepp.mgr.product.model.ProductBranch;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pr.sepp.base.dao.BaseQueryDAO;
-import com.pr.sepp.base.service.BaseQueryService;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional

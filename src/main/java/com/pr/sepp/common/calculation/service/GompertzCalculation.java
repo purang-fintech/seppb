@@ -1,17 +1,18 @@
 package com.pr.sepp.common.calculation.service;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.mgr.product.dao.ProductDAO;
 import com.pr.sepp.mgr.product.model.ProductConfig;
 import com.pr.sepp.sep.release.dao.ReleaseDAO;
 import com.pr.sepp.sep.release.model.Release;
 import com.pr.sepp.sqa.dao.AnalysisDAO;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -182,7 +183,7 @@ public class GompertzCalculation {
 			dataMap.put(CommonParameter.REL_ID, rel.getId());
 			List<Map<String, Object>> defectFound = analysisDAO.defectFoundDate(dataMap);
 
-			int divided = (int) Math.floor(defectFound.size() / 3);
+			int divided = (int) (defectFound.size() / 3);
 			for (int i = 0; i < divided * 3; i++) {
 				Object totalFound = defectFound.get(i).get("totalFound");
 				if (i < divided) {
@@ -289,12 +290,13 @@ public class GompertzCalculation {
 		dataMap.put(CommonParameter.REL_ID, release.getId());
 		List<Map<String, Object>> defectFound = analysisDAO.defectFoundDate(dataMap);
 
-		Double dataCount = Math.floor(defectFound.size() / 3);
-		int divided = (int) Math.floor(defectFound.size() / 3);
-		Double S1 = 0.0;
-		Double S2 = 0.0;
-		Double S3 = 0.0;
-		final Double con = 1.0;
+		BigDecimal bd = new BigDecimal(String.valueOf(defectFound.size() / 3));
+		double dataCount = bd.doubleValue();
+		int divided = (int) dataCount;
+		double S1 = 0.0;
+		double S2 = 0.0;
+		double S3 = 0.0;
+		final double con = 1.0;
 		for (int i = 0; i < divided * 3; i++) {
 			Object totalFound = defectFound.get(i).get("totalFound");
 			if (i < divided) {

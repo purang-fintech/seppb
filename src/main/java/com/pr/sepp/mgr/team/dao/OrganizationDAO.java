@@ -1,10 +1,10 @@
 package com.pr.sepp.mgr.team.dao;
 
-import java.util.List;
-import java.util.Map;
-
 import com.pr.sepp.mgr.team.model.Organization;
 import com.pr.sepp.mgr.user.model.User;
+
+import java.util.List;
+import java.util.Map;
 
 public interface OrganizationDAO {
 

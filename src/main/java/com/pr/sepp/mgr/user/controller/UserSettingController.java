@@ -1,6 +1,5 @@
 package com.pr.sepp.mgr.user.controller;
 
-import com.alibaba.fastjson.JSON;
 import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.mgr.user.model.UserSetting;
 import com.pr.sepp.mgr.user.service.UserSettingService;

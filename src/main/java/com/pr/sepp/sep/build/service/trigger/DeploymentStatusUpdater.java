@@ -19,51 +19,51 @@ import java.util.function.Consumer;
 @Slf4j
 public class DeploymentStatusUpdater implements Updater<DeploymentStatusUpdater> {
 
-    public static final String DEPLOYMENT_JOB_NAME = "%s_Deploy";
+	public static final String DEPLOYMENT_JOB_NAME = "%s_Deploy";
 
-    private Map<String, InstanceType> deploymentJobMap = Maps.newConcurrentMap();
-    private final JenkinsClientProvider jenkinsClientProvider;
-    private final DeploymentDAO deploymentDAO;
+	private Map<String, InstanceType> deploymentJobMap = Maps.newConcurrentMap();
+	private final JenkinsClientProvider jenkinsClientProvider;
+	private final DeploymentDAO deploymentDAO;
 
-    public DeploymentStatusUpdater(JenkinsClientProvider jenkinsClientProvider, DeploymentDAO deploymentDAO) {
-        this.jenkinsClientProvider = jenkinsClientProvider;
-        this.deploymentDAO = deploymentDAO;
-    }
+	public DeploymentStatusUpdater(JenkinsClientProvider jenkinsClientProvider, DeploymentDAO deploymentDAO) {
+		this.jenkinsClientProvider = jenkinsClientProvider;
+		this.deploymentDAO = deploymentDAO;
+	}
 
-    @Override
-    public void update(Consumer<DeploymentStatusUpdater> consumer) {
-        consumer.accept(this);
-    }
+	@Override
+	public void update(Consumer<DeploymentStatusUpdater> consumer) {
+		consumer.accept(this);
+	}
 
-    public void updateResult() {
-        deploymentJobMap.forEach(this::updateDeploymentResult);
-    }
+	public void updateResult() {
+		deploymentJobMap.forEach(this::updateDeploymentResult);
+	}
 
-    public void updateDeploymentResult(DeploymentHistory deploymentHistory) {
-        deploymentDAO.updateDeploymentRsult(deploymentHistory);
-    }
+	public void updateDeploymentResult(DeploymentHistory deploymentHistory) {
+		deploymentDAO.updateDeploymentRsult(deploymentHistory);
+	}
 
-    private void updateDeploymentResult(String jobName, InstanceType instanceType) {
-        try (JenkinsClient jenkinsClient = jenkinsClientProvider.getJenkinsClient(instanceType)) {
-            List<Build> builds = jenkinsClient.buildsLimit(jobName, 5);
-            for (Build build : builds) {
-                PipelineStep pipelineStep = jenkinsClient.pipelineStep(jobName, build.getNumber());
-                DeploymentHistory deploymentHistory = DeploymentHistory.buildToDeploymentHistory(build, jobName);
-                ObjectMapper mapper = new ObjectMapper();
-                deploymentHistory.setPipelineStep(mapper.writeValueAsString(pipelineStep));
-                deploymentDAO.createOrUpdate(deploymentHistory);
-            }
-        } catch (Exception e) {
-            log.error("更新{}部署结果失败:{}", jobName, e);
-        }
-    }
+	private void updateDeploymentResult(String jobName, InstanceType instanceType) {
+		try (JenkinsClient jenkinsClient = jenkinsClientProvider.getJenkinsClient(instanceType)) {
+			List<Build> builds = jenkinsClient.buildsLimit(jobName, 5);
+			for (Build build : builds) {
+				PipelineStep pipelineStep = jenkinsClient.pipelineStep(jobName, build.getNumber());
+				DeploymentHistory deploymentHistory = DeploymentHistory.buildToDeploymentHistory(build, jobName);
+				ObjectMapper mapper = new ObjectMapper();
+				deploymentHistory.setPipelineStep(mapper.writeValueAsString(pipelineStep));
+				deploymentDAO.createOrUpdate(deploymentHistory);
+			}
+		} catch (Exception e) {
+			log.error("更新{}部署结果失败:{}", jobName, e);
+		}
+	}
 
-    public void putDeploymentJob(String jobName, InstanceType instanceType) {
-        deploymentJobMap.put(String.format(DEPLOYMENT_JOB_NAME, jobName), instanceType);
-    }
+	public void putDeploymentJob(String jobName, InstanceType instanceType) {
+		deploymentJobMap.put(String.format(DEPLOYMENT_JOB_NAME, jobName), instanceType);
+	}
 
-    @PreDestroy
-    private void clear() {
-        deploymentJobMap.clear();
-    }
+	@PreDestroy
+	private void clear() {
+		deploymentJobMap.clear();
+	}
 }

@@ -1,9 +1,9 @@
 package com.pr.sepp.sep.build.service;
 
+import com.github.pagehelper.PageInfo;
 import com.pr.sepp.sep.build.model.Build;
 import com.pr.sepp.sep.build.model.JenkinsParam;
 import com.pr.sepp.sep.build.model.ReleaseNote;
-import com.github.pagehelper.PageInfo;
 
 import java.util.List;
 import java.util.Map;

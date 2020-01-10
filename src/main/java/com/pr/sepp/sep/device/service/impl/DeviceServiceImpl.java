@@ -1,15 +1,14 @@
 package com.pr.sepp.sep.device.service.impl;
 
-import java.util.List;
-import java.util.Map;
-
+import com.pr.sepp.sep.device.dao.DeviceDAO;
+import com.pr.sepp.sep.device.model.Device;
+import com.pr.sepp.sep.device.service.DeviceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pr.sepp.sep.device.model.Device;
-import com.pr.sepp.sep.device.service.DeviceService;
-import com.pr.sepp.sep.device.dao.DeviceDAO;
+import java.util.List;
+import java.util.Map;
 
 @Service
 @Transactional

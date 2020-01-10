@@ -1,5 +1,7 @@
 package com.pr.sepp.notify.service;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.common.websocket.push.MessageServer;
 import com.pr.sepp.mgr.user.dao.UserSettingDAO;
@@ -9,8 +11,6 @@ import com.pr.sepp.notify.model.Message;
 import com.pr.sepp.notify.model.MessageFlow;
 import com.pr.sepp.notify.model.req.HaveReadMessageReq;
 import com.pr.sepp.notify.model.resp.MessageResp;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;

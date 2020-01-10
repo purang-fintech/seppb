@@ -1,5 +1,6 @@
 package com.pr.sepp.auth.controller;
 
+import com.google.common.collect.Lists;
 import com.pr.sepp.auth.core.permission.annotation.ApiPermission;
 import com.pr.sepp.auth.model.ResourceConfig;
 import com.pr.sepp.auth.model.req.ResourceConfigReq;
@@ -8,7 +9,6 @@ import com.pr.sepp.auth.model.resp.ComponentAuthResp;
 import com.pr.sepp.auth.model.resp.ResourceConfigResp;
 import com.pr.sepp.auth.service.ResourceConfigService;
 import com.pr.sepp.base.model.Page;
-import com.google.common.collect.Lists;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;

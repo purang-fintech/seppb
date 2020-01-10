@@ -1,15 +1,14 @@
 package com.pr.sepp.env.info.controller;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
+import com.google.common.collect.Maps;
 import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.env.info.model.EnvInfo;
 import com.pr.sepp.env.info.service.EnvInfoService;
 import com.pr.sepp.mgr.product.model.ProductBranch;
 import com.pr.sepp.mgr.product.service.ProductService;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
-import com.google.common.collect.Maps;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 

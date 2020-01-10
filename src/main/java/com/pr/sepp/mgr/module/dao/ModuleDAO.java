@@ -1,9 +1,9 @@
 package com.pr.sepp.mgr.module.dao;
 
+import com.pr.sepp.mgr.module.model.Module;
+
 import java.util.List;
 import java.util.Map;
-
-import com.pr.sepp.mgr.module.model.Module;
 
 public interface ModuleDAO {
 

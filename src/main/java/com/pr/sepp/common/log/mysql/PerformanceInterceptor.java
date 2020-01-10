@@ -1,7 +1,7 @@
 package com.pr.sepp.common.log.mysql;
 
-import com.pr.sepp.common.config.PerformanceProperties;
 import com.google.common.base.Stopwatch;
+import com.pr.sepp.common.config.PerformanceProperties;
 import org.apache.ibatis.executor.statement.StatementHandler;
 import org.apache.ibatis.mapping.BoundSql;
 import org.apache.ibatis.plugin.*;

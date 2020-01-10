@@ -21,9 +21,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import static com.google.common.base.Strings.nullToEmpty;
 import static com.pr.sepp.common.constants.AlertLevel.*;
 import static com.pr.sepp.notify.model.AlertNotice.buildTableHeader;
-import static com.google.common.base.Strings.nullToEmpty;
 import static java.util.stream.Collectors.toSet;
 
 @Slf4j

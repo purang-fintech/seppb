@@ -9,11 +9,12 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class InstanceEnvReq {
 
-    private Integer id;
-    private String instance;
-    private Integer envType;
-    private Integer productId;
-    private String jobName;
-    private Integer branchId;
+	private Integer id;
+	private String instance;
+	private Integer envType;
+	private String projectName;
+	private Integer productId;
+	private String jobName;
+	private Integer branchId;
 
 }

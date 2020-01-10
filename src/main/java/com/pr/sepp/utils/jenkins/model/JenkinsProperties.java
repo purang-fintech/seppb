@@ -47,7 +47,7 @@ public class JenkinsProperties {
     }
 
     public boolean iosJenkinsNonNull() {
-        return isNotBlank(iosUrl) && isNotBlank(iosUsername) && isNotBlank(iosUsername);
+        return isNotBlank(iosUrl) && isNotBlank(iosUsername) && isNotBlank(iosPassword);
     }
 
     public boolean androidJenkinsNonNull() {

@@ -1,5 +1,7 @@
 package com.pr.sepp.auth.service;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.pr.sepp.auth.dao.ResourceConfigDAO;
 import com.pr.sepp.auth.model.ResourceConfig;
 import com.pr.sepp.auth.model.Role;
@@ -9,8 +11,6 @@ import com.pr.sepp.base.model.Page;
 import com.pr.sepp.common.exception.SeppClientException;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.mgr.user.dao.UserDAO;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;

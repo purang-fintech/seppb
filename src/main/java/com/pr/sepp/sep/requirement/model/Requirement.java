@@ -1,6 +1,5 @@
 package com.pr.sepp.sep.requirement.model;
 
-import com.pr.sepp.common.constants.CommonParameter;
 import lombok.Data;
 import lombok.ToString;
 

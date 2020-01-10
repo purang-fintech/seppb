@@ -4,6 +4,6 @@ import lombok.Data;
 
 @Data
 public class BuildParam {
-    private String paramKey;
-    private String paramValue;
+	private String paramKey;
+	private String paramValue;
 }

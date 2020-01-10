@@ -10,12 +10,13 @@
             product_id,
             instance,
             type,
+            project_name,
             description,
             user,
             params
         )
         VALUES
-            (#{productId},#{instance},#{type},#{description},#{user},#{params})
+            (#{productId},#{instance},#{type},#{projectName},#{description},#{user},#{params})
     </insert>
 
     <select id="listBuildInstances" resultType="com.pr.sepp.sep.build.model.BuildInstance">
@@ -24,6 +25,7 @@
                instance,
                type,
                description,
+               project_name projectName,
                user,
                created_date createdDate,
                updated_date updatedDate,
@@ -40,6 +42,7 @@
                type,
                description,
                user,
+               project_name,
                created_date createdDate,
                updated_date updatedDate,
                params
@@ -57,6 +60,7 @@
             sepp_build_instance
         SET
             TYPE = #{type},
+            project_name = #{projectName},
             user=#{user},
             description=#{description},
             params=#{params}

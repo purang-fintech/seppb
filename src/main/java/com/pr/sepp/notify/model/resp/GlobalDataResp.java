@@ -1,9 +1,9 @@
 package com.pr.sepp.notify.model.resp;
 
+import com.github.pagehelper.PageInfo;
 import com.pr.sepp.common.websocket.model.MessageType;
 import com.pr.sepp.notify.model.Alert;
 import com.pr.sepp.notify.model.Message;
-import com.github.pagehelper.PageInfo;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

@@ -1,5 +1,7 @@
 package com.pr.sepp.sep.build.service.impl;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.mgr.user.dao.UserDAO;
@@ -10,8 +12,6 @@ import com.pr.sepp.sep.build.model.BuildFile;
 import com.pr.sepp.sep.build.model.JenkinsParam;
 import com.pr.sepp.sep.build.model.ReleaseNote;
 import com.pr.sepp.sep.build.service.BuildService;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -64,7 +64,7 @@ public class BuildServiceImpl implements BuildService {
 	public int releasenoteCreate(ReleaseNote releaseNote) {
 		int count = buildDAO.releasenoteCreate(releaseNote);
 		List<BuildFile> buildFiles = releaseNote.getBuildFiles();
-		if(isNotEmpty(releaseNote.getBuildFiles())) {
+		if (isNotEmpty(releaseNote.getBuildFiles())) {
 			buildFiles.forEach(buildFile -> buildFile.setNoteId(releaseNote.getId()));
 			buildDAO.saveBuildFiles(buildFiles);
 		}
@@ -74,12 +74,12 @@ public class BuildServiceImpl implements BuildService {
 	@Override
 	public int releasenoteUpdate(ReleaseNote dataMap) {
 		buildDAO.deleteBuildFiles(dataMap.getId());
-		if(isNotEmpty(dataMap.getBuildFiles())) {
-            List<BuildFile> buildFiles = dataMap.getBuildFiles().stream().map(buildFile -> {
-                buildFile.setNoteId(dataMap.getId());
-                return buildFile;
-            }).collect(Collectors.toList());
-            buildDAO.saveBuildFiles(buildFiles);
+		if (isNotEmpty(dataMap.getBuildFiles())) {
+			List<BuildFile> buildFiles = dataMap.getBuildFiles().stream().map(buildFile -> {
+				buildFile.setNoteId(dataMap.getId());
+				return buildFile;
+			}).collect(Collectors.toList());
+			buildDAO.saveBuildFiles(buildFiles);
 		}
 		return buildDAO.releasenoteUpdate(dataMap);
 	}

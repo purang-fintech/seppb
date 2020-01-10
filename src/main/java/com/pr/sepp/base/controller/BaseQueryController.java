@@ -1,12 +1,11 @@
 package com.pr.sepp.base.controller;
 
-import java.util.Map;
-
+import com.pr.sepp.base.service.BaseQueryService;
 import com.pr.sepp.common.constants.CommonParameter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
-import com.pr.sepp.base.service.BaseQueryService;
+import java.util.Map;
 
 @RestController
 @ResponseBody

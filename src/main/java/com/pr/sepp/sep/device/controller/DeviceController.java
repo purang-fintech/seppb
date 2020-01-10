@@ -1,12 +1,11 @@
 package com.pr.sepp.sep.device.controller;
 
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.sep.device.model.Device;
 import com.pr.sepp.sep.device.service.DeviceService;
-import com.github.pagehelper.PageHelper;
-import com.github.pagehelper.PageInfo;
-import org.apache.commons.lang.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -24,7 +23,7 @@ public class DeviceController {
 	@Autowired
 	public DeviceService deviceService;
 
-	@RequestMapping(value = "/device/query", method =  RequestMethod.POST)
+	@RequestMapping(value = "/device/query", method = RequestMethod.POST)
 	public PageInfo<Device> deviceQuery(HttpServletRequest request) {
 		Map<String, String> dataMap = new HashMap<>();
 		dataMap.put("assetId", request.getParameter("assetId"));
@@ -44,7 +43,7 @@ public class DeviceController {
 
 	}
 
-	@RequestMapping(value = "/device/rent", method =  RequestMethod.POST)
+	@RequestMapping(value = "/device/rent", method = RequestMethod.POST)
 	public int changeUser(HttpServletRequest request) {
 		Map<String, Object> dataMap = new HashMap<>();
 		String id = request.getParameter(CommonParameter.ID);
@@ -59,7 +58,7 @@ public class DeviceController {
 
 	}
 
-	@RequestMapping(value = "/device/return", method =  RequestMethod.POST)
+	@RequestMapping(value = "/device/return", method = RequestMethod.POST)
 	public int intoWarehouse(HttpServletRequest request) {
 		Map<String, Object> dataMap = new HashMap<>();
 		String id = request.getParameter(CommonParameter.ID);
@@ -71,7 +70,7 @@ public class DeviceController {
 		return deviceService.intoWarehouse(dataMap);
 	}
 
-	@RequestMapping(value = "/device/create", method =  RequestMethod.POST)
+	@RequestMapping(value = "/device/create", method = RequestMethod.POST)
 	public int deviceCreate(HttpServletRequest request) {
 		Device device = new Device();
 		device.setUserName(request.getParameter("userName"));
@@ -87,7 +86,7 @@ public class DeviceController {
 		return deviceService.deviceCreate(device);
 	}
 
-	@RequestMapping(value = "/device/update", method =  RequestMethod.POST)
+	@RequestMapping(value = "/device/update", method = RequestMethod.POST)
 	public int deviceUpdate(HttpServletRequest request) {
 		Device device = new Device();
 		device.setVersions(request.getParameter("versions"));

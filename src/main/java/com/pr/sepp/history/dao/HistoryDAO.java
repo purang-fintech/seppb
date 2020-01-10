@@ -1,9 +1,9 @@
 package com.pr.sepp.history.dao;
 
+import com.pr.sepp.history.model.SEPPHistory;
+
 import java.util.List;
 import java.util.Map;
-
-import com.pr.sepp.history.model.SEPPHistory;
 
 public interface HistoryDAO {
 	int historyInsert(SEPPHistory history);

@@ -4,6 +4,6 @@ import com.pr.sepp.sep.build.model.req.DeploymentBuildReq;
 
 public interface DeploymentStrategy {
 
-    void autoDeploy(DeploymentBuildReq deploymentBuildReq);
+	void autoDeploy(DeploymentBuildReq deploymentBuildReq);
 
 }

@@ -1,9 +1,9 @@
 package com.pr.sepp.sep.testing.service;
 
+import com.pr.sepp.sep.testing.model.TestPlan;
+
 import java.util.List;
 import java.util.Map;
-
-import com.pr.sepp.sep.testing.model.TestPlan;
 
 public interface TestPlanService {
 

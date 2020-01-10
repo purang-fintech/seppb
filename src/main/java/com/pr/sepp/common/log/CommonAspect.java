@@ -1,7 +1,7 @@
 package com.pr.sepp.common.log;
 
-import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.google.common.base.Stopwatch;
+import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

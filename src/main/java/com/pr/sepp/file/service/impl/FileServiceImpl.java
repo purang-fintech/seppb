@@ -1,12 +1,12 @@
 package com.pr.sepp.file.service.impl;
 
-import java.util.List;
-import java.util.Map;
-
 import com.pr.sepp.common.constants.MailDTO;
 import com.pr.sepp.common.exception.SeppServerException;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
+import com.pr.sepp.file.dao.FileDAO;
+import com.pr.sepp.file.model.SEPPFile;
 import com.pr.sepp.file.model.TestMail;
+import com.pr.sepp.file.service.FileService;
 import com.pr.sepp.mgr.user.dao.UserDAO;
 import com.pr.sepp.mgr.user.model.User;
 import com.pr.sepp.utils.JavaMailUtils;
@@ -15,13 +15,12 @@ import lombok.extern.slf4j.Slf4j;
 import net.sf.json.JSONObject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.mail.MailSendException;
 import org.springframework.stereotype.Service;
 
-import com.pr.sepp.file.dao.FileDAO;
-import com.pr.sepp.file.model.SEPPFile;
-import com.pr.sepp.file.service.FileService;
+import java.util.List;
+import java.util.Map;
 
-import org.springframework.mail.MailSendException;
 import static org.apache.commons.lang3.ArrayUtils.isEmpty;
 
 @Service
@@ -67,8 +66,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public void sendAttachMail(TestMail testMail) {
-        Integer userId = Integer.valueOf(ParameterThreadLocal.getUserId());
-        User user = userDAO.findUserByUserId(userId);
+        User user = userDAO.findUserByUserId(ParameterThreadLocal.getUserId());
         String body = testMail.getBody().concat(String.format(EMAIL_FOOTER, user.getUserName(), user.getUserEmail()));
         MailDTO mailDTO;
         if (!isEmpty(testMail.getCc())) {

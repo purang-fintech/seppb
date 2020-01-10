@@ -1,24 +1,18 @@
 package com.pr.sepp.sep.analysis.service.impl;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import com.pr.sepp.common.constants.CommonParameter;
+import com.pr.sepp.sep.analysis.dao.DataGraghDAO;
+import com.pr.sepp.sep.analysis.service.DataGraghService;
+import com.pr.sepp.sep.testing.dao.TestPlanDAO;
+import com.pr.sepp.sep.testing.model.TestPlan;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pr.sepp.sep.analysis.dao.DataGraghDAO;
-import com.pr.sepp.sep.analysis.service.DataGraghService;
-import com.pr.sepp.sep.testing.dao.TestPlanDAO;
-import com.pr.sepp.sep.testing.model.TestPlan;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.*;
 
 @Slf4j
 @Transactional
@@ -27,7 +21,7 @@ public class DataGraghServiceImpl implements DataGraghService {
 
 	@Autowired
 	private DataGraghDAO dataGraghDAO;
-	
+
 	@Autowired
 	private TestPlanDAO testPlanDAO;
 	private static final String dateFormat = "yyyy-MM-dd";
@@ -37,13 +31,13 @@ public class DataGraghServiceImpl implements DataGraghService {
 		Calendar cal = Calendar.getInstance();
 		SimpleDateFormat format = new SimpleDateFormat(dateFormat);
 		String planBegin, planEnd;
-		
+
 		if (planType == 0) {
 			Map<String, Object> rel = dataGraghDAO.relInfoQuery(relId);
 			planBegin = rel.get("sitBeginDate").toString();
 			planEnd = rel.get("relDate").toString();
 		} else {
-			Map<String, Object> dataMap = new HashMap<> ();
+			Map<String, Object> dataMap = new HashMap<>();
 			dataMap.put(CommonParameter.REL_ID, relId);
 			dataMap.put("planType", planType);
 
@@ -51,7 +45,7 @@ public class DataGraghServiceImpl implements DataGraghService {
 			planBegin = testPlan.getPlanBegin();
 			planEnd = testPlan.getPlanEnd();
 		}
-		
+
 		Date beginDate, endDate = null;
 		try {
 			beginDate = format.parse(planBegin);
@@ -83,8 +77,8 @@ public class DataGraghServiceImpl implements DataGraghService {
 		List<Map<String, Object>> defectDeploy = dataGraghDAO.defectDeploy(dataMap);
 		List<Map<String, Object>> defectVerify = dataGraghDAO.defectVerify(dataMap);
 		List<Map<String, Object>> chartsData = new ArrayList<Map<String, Object>>();
-		
-		for (int i = 0; i < dates.size(); i ++) {
+
+		for (int i = 0; i < dates.size(); i++) {
 			Map<String, Object> chartsMap = new HashMap<>();
 			String current = dates.get(i);
 			chartsMap.put("date", current);
@@ -98,8 +92,8 @@ public class DataGraghServiceImpl implements DataGraghService {
 			chartsMap.put("totalDeployed", 0);
 			chartsMap.put("dailyClosed", 0);
 			chartsMap.put("totalClosed", 0);
-			
-			for (int j = 0; j < defectFound.size(); j ++) {
+
+			for (int j = 0; j < defectFound.size(); j++) {
 				Map<String, Object> found = defectFound.get(j);
 				String foundTime = found.get("foundTime").toString();
 				if (foundTime.equalsIgnoreCase(current)) {
@@ -108,7 +102,7 @@ public class DataGraghServiceImpl implements DataGraghService {
 					break;
 				}
 			}
-			for (int k = 0; k < defectResponse.size(); k ++) {
+			for (int k = 0; k < defectResponse.size(); k++) {
 				Map<String, Object> response = defectResponse.get(k);
 				String responseTime = response.get("responseTime").toString();
 				if (responseTime.equalsIgnoreCase(current)) {
@@ -117,7 +111,7 @@ public class DataGraghServiceImpl implements DataGraghService {
 					break;
 				}
 			}
-			for (int l = 0; l < defectFix.size(); l ++) {
+			for (int l = 0; l < defectFix.size(); l++) {
 				Map<String, Object> fix = defectFix.get(l);
 				String fixedTime = fix.get("fixedTime").toString();
 				if (fixedTime.equalsIgnoreCase(current)) {
@@ -126,7 +120,7 @@ public class DataGraghServiceImpl implements DataGraghService {
 					break;
 				}
 			}
-			for (int m = 0; m < defectDeploy.size(); m ++) {
+			for (int m = 0; m < defectDeploy.size(); m++) {
 				Map<String, Object> deploy = defectDeploy.get(m);
 				String deployedTime = deploy.get("deployedTime").toString();
 				if (deployedTime.equalsIgnoreCase(current)) {
@@ -135,7 +129,7 @@ public class DataGraghServiceImpl implements DataGraghService {
 					break;
 				}
 			}
-			for (int m = 0; m < defectVerify.size(); m ++) {
+			for (int m = 0; m < defectVerify.size(); m++) {
 				Map<String, Object> close = defectVerify.get(m);
 				String closedTime = close.get("closedTime").toString();
 				if (closedTime.equalsIgnoreCase(current)) {
@@ -146,21 +140,21 @@ public class DataGraghServiceImpl implements DataGraghService {
 			}
 			chartsData.add(chartsMap);
 		}
-		
-		for (int i = 1; i < chartsData.size(); i ++) {
+
+		for (int i = 1; i < chartsData.size(); i++) {
 			Map<String, Object> chartsMap = chartsData.get(i);
 			int totalFound = (int) chartsMap.get("totalFound");
 			int totalResponse = (int) chartsMap.get("totalFound");
 			int totalFixed = (int) chartsMap.get("totalFixed");
 			int totalDeployed = (int) chartsMap.get("totalDeployed");
 			int totalClosed = (int) chartsMap.get("totalClosed");
-			
+
 			totalFound += (totalFound == 0) ? (int) chartsData.get(i - 1).get("totalFound") : 0;
 			totalResponse += (totalResponse == 0) ? (int) chartsData.get(i - 1).get("totalResponse") : 0;
 			totalFixed += (totalFixed == 0) ? (int) chartsData.get(i - 1).get("totalFixed") : 0;
 			totalDeployed += (totalDeployed == 0) ? (int) chartsData.get(i - 1).get("totalDeployed") : 0;
 			totalClosed += (totalClosed == 0) ? (int) chartsData.get(i - 1).get("totalClosed") : 0;
-			
+
 			chartsMap.put("totalFound", totalFound);
 			chartsMap.put("totalResponse", totalResponse);
 			chartsMap.put("totalFixed", totalFixed);
@@ -186,7 +180,7 @@ public class DataGraghServiceImpl implements DataGraghService {
 		List<Map<String, Object>> defectFixTimes = dataGraghDAO.defectFixTimes(dataMap);
 		List<Map<String, Object>> defectFixCost = dataGraghDAO.defectFixCost(dataMap);
 		List<Map<String, Object>> defectVerifyCost = dataGraghDAO.defectVerifyCost(dataMap);
-		
+
 		Map<String, List<Map<String, Object>>> chartsData = new HashMap<String, List<Map<String, Object>>>();
 		chartsData.put("defectModule", defectModule);
 		chartsData.put("defectReqirements", defectReqirements);
@@ -196,7 +190,7 @@ public class DataGraghServiceImpl implements DataGraghService {
 		chartsData.put("defectFixTimes", defectFixTimes);
 		chartsData.put("defectFixCost", defectFixCost);
 		chartsData.put("defectVerifyCost", defectVerifyCost);
-		
+
 		return chartsData;
 	}
 }

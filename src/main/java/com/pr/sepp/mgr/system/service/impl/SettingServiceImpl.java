@@ -1,19 +1,18 @@
 package com.pr.sepp.mgr.system.service.impl;
 
-import java.util.List;
-import java.util.Map;
-
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+import com.pr.sepp.mgr.system.dao.SettingDAO;
+import com.pr.sepp.mgr.system.model.SettingConfig;
+import com.pr.sepp.mgr.system.model.SystemSetting;
+import com.pr.sepp.mgr.system.service.SettingService;
 import com.pr.sepp.utils.jenkins.JenkinsClientProvider;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.pr.sepp.mgr.system.dao.SettingDAO;
-import com.pr.sepp.mgr.system.model.SettingConfig;
-import com.pr.sepp.mgr.system.model.SystemSetting;
-import com.pr.sepp.mgr.system.service.SettingService;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
+import java.util.List;
+import java.util.Map;
 
 @Transactional
 @Service("settingService")
