@@ -56,8 +56,10 @@ public class ProductServiceImpl implements ProductService {
 		productDAO.productCreate(product);
 		int created = product.getProductId();
 
-		// 创建产品之后默认为创建人授予项目管理员权限
-		roleDAO.privUpdate(created, userId, Arrays.asList(new String[]{"0"}));
+		// 创建产品之后默认为创建人授予所有权限
+		roleDAO.grantDefaultAllPrivs(userId, created);
+
+		//TODO 默认授权
 
 		// 创建产品之后为产品创建默认的模块
 		Module module = new Module();
@@ -177,7 +179,7 @@ public class ProductServiceImpl implements ProductService {
 	@Override
 	public Map<String, Object> productConfigQuery(Integer productId) {
 		List<ProductConfig> productConfigs = productDAO.productConfigQuery(productId);
-		if (null == productConfigs || productConfigs.size() == 0) {
+		if (null == productConfigs || productConfigs.isEmpty()) {
 			return null;
 		}
 		ProductConfig productConfig = productConfigs.get(0);
@@ -185,6 +187,7 @@ public class ProductServiceImpl implements ProductService {
 		config.put("changeAuditor", productConfig.getChangeAuditor());
 		config.put("dreTarget", productConfig.getDreTarget());
 		config.put("qaWarning", productConfig.getQaWarning());
+		config.put("codeRepository", productConfig.getCodeRepository());
 
 		if (StringUtils.isNotEmpty(productConfig.getMemberConfig())) {
 			config.put("memberConfig", new Gson().fromJson(productConfig.getMemberConfig(), new TypeToken<Map<String, Object>>() {

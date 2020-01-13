@@ -69,6 +69,16 @@
         on duplicate key update updated_date = now()
     </update>
 
+    <update id="grantDefaultAllPrivs">
+        INSERT INTO
+            sepp_privileges(user_id, role_id, product_id)
+        SELECT
+            #{userId}, role_id, #{productId}
+        FROM
+            sepp_user_role
+        on duplicate key update updated_date = now()
+    </update>
+
     <delete id="privDelete">
         delete from
             sepp_privileges

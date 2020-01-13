@@ -9,6 +9,8 @@ public interface RoleDAO {
 
 	int privUpdate(Integer productId, Integer userId, List<String> roles);
 
+	int grantDefaultAllPrivs(Integer userId, Integer productId);
+
 	int privDelete(Integer userId, List<String> privIds);
 
 	List<Map<String, Object>> productRoleQueryUser(Integer userId);

@@ -8,6 +8,7 @@ public class ProductConfig {
 	private String memberConfig;
 	private String changeAuditor;
 	private Integer qaWarning;
+	private String codeRepository;
 	private String gompertzDefine;
 	private String gompertzParams;
 	private String dreTarget;
