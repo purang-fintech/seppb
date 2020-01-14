@@ -11,7 +11,9 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/`sepp` /*!40100 DEFAULT CHARACTER SET ut
 USE `sepp`;
 
 /*Table structure for table `sepp_attachment` */
+
 DROP TABLE IF EXISTS `sepp_attachment`;
+
 CREATE TABLE `sepp_attachment` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `file_name` varchar(100) NOT NULL COMMENT '文件名',
@@ -20,10 +22,12 @@ CREATE TABLE `sepp_attachment` (
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=10061 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_auto_results` */
+
 DROP TABLE IF EXISTS `sepp_auto_results`;
+
 CREATE TABLE `sepp_auto_results` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `system_name` varchar(32) NOT NULL COMMENT '系统名称',
@@ -40,24 +44,28 @@ CREATE TABLE `sepp_auto_results` (
   `fail_no` int(11) DEFAULT NULL COMMENT '运行失败案例数',
   `success_rate` decimal(5,2) DEFAULT NULL COMMENT '运行成功率',
   `complete_date` datetime NOT NULL COMMENT '运行结束时间',
-  `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '入库时间',
-  `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '运行结束时间',
+  `fcd` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '入库时间',
+  `lcd` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '运行结束时间',
   UNIQUE KEY `INDEX_RUN` (`system_name`,`job_name`,`job_type`,`system_version`,`run_env`),
   KEY `id` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_auto_type` */
+
 DROP TABLE IF EXISTS `sepp_auto_type`;
+
 CREATE TABLE `sepp_auto_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `type_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_build_files` */
+
 DROP TABLE IF EXISTS `sepp_build_files`;
+
 CREATE TABLE `sepp_build_files` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `note_id` int(10) NOT NULL COMMENT 'releaseNotes编号',
@@ -68,10 +76,12 @@ CREATE TABLE `sepp_build_files` (
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建时间',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=2077 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_build_history` */
+
 DROP TABLE IF EXISTS `sepp_build_history`;
+
 CREATE TABLE `sepp_build_history` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '开发任务ID',
   `job_name` varchar(100) DEFAULT NULL COMMENT 'jenkins项目名称',
@@ -98,15 +108,17 @@ CREATE TABLE `sepp_build_history` (
   PRIMARY KEY (`id`),
   KEY `day` (`created_date`),
   KEY `PRODUCT_ID_INDEX` (`product_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=8271 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_build_instance` */
+
 DROP TABLE IF EXISTS `sepp_build_instance`;
+
 CREATE TABLE `sepp_build_instance` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `product_id` int(10) DEFAULT NULL,
   `instance` varchar(100) NOT NULL COMMENT '实例名称',
-  `project_name` varchar(100) DEFAULT NULL COMMENT '代码库项目名称',
+  `project_name` varchar(100) DEFAULT NULL,
   `params` varchar(400) DEFAULT NULL,
   `type` varchar(50) DEFAULT NULL,
   `description` varchar(200) DEFAULT NULL COMMENT '描述',
@@ -115,20 +127,24 @@ CREATE TABLE `sepp_build_instance` (
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建时间',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=716 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_build_status` */
+
 DROP TABLE IF EXISTS `sepp_build_status`;
+
 CREATE TABLE `sepp_build_status` (
   `status_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `status_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`status_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=3 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_case_info` */
+
 DROP TABLE IF EXISTS `sepp_case_info`;
+
 CREATE TABLE `sepp_case_info` (
   `case_id` int(10) NOT NULL COMMENT 'CASE ID',
   `status` int(10) DEFAULT NULL COMMENT '用例状态',
@@ -137,29 +153,33 @@ CREATE TABLE `sepp_case_info` (
   `test_type` int(10) DEFAULT NULL COMMENT '测试类型，如功能、性能、安全性等',
   `test_period` int(10) DEFAULT NULL COMMENT '测试阶段，如系统测试',
   `prod_module` int(10) DEFAULT NULL COMMENT '测试手段，如自动化、手动',
-  `regress_mark` varchar(1) DEFAULT 'N' COMMENT '回归标识',
-  `auto_path` varchar(200) DEFAULT NULL COMMENT '自动化脚本路径',
+  `regress_mark` varchar(1) COLLATE utf8_bin DEFAULT 'N' COMMENT '回归标识',
+  `auto_path` varchar(200) COLLATE utf8_bin DEFAULT NULL COMMENT '自动化脚本路径',
   `auto_type` int(10) DEFAULT NULL COMMENT '自动化测试类型，如webui、接口等',
-  `pre_condition` text DEFAULT NULL COMMENT '测试前置条件',
-  `summary` text DEFAULT NULL COMMENT '测试用例描述',
+  `pre_condition` text COLLATE utf8_bin DEFAULT NULL COMMENT '测试前置条件',
+  `summary` text COLLATE utf8_bin DEFAULT NULL COMMENT '测试用例描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   UNIQUE KEY `case_id` (`case_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8_bin;
 
 /*Table structure for table `sepp_case_mind` */
+
 DROP TABLE IF EXISTS `sepp_case_mind`;
+
 CREATE TABLE `sepp_case_mind` (
   `case_id` int(10) NOT NULL COMMENT 'CASE ID',
-  `mind_text` text DEFAULT NULL COMMENT '脑图测试用例文本内容',
+  `mind_text` text COLLATE utf8_bin DEFAULT NULL COMMENT '脑图测试用例文本内容',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   UNIQUE KEY `case_id` (`case_id`),
   CONSTRAINT `CHK_TEXT` CHECK (json_valid(`mind_text`))
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8_bin;
 
 /*Table structure for table `sepp_case_related` */
+
 DROP TABLE IF EXISTS `sepp_case_related`;
+
 CREATE TABLE `sepp_case_related` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `case_id` int(10) NOT NULL COMMENT 'CASE ID',
@@ -169,48 +189,56 @@ CREATE TABLE `sepp_case_related` (
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`id`),
   UNIQUE KEY `INDEX_RELATED` (`case_id`,`relate_id`,`relate_type`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=14828 DEFAULT CHARSET=utf8mb4 COLLATE=utf8_bin;
 
 /*Table structure for table `sepp_case_step` */
+
 DROP TABLE IF EXISTS `sepp_case_step`;
+
 CREATE TABLE `sepp_case_step` (
   `case_id` int(10) NOT NULL COMMENT 'CASE ID',
   `step_id` int(10) NOT NULL COMMENT 'STEP ID',
-  `operation` varchar(200) NOT NULL COMMENT '操作描述',
-  `input_data` varchar(200) NOT NULL COMMENT '输入数据',
-  `expect_result` varchar(200) NOT NULL COMMENT '预期结果',
+  `operation` varchar(200) COLLATE utf8_bin NOT NULL COMMENT '操作描述',
+  `input_data` varchar(200) COLLATE utf8_bin NOT NULL COMMENT '输入数据',
+  `expect_result` varchar(200) COLLATE utf8_bin NOT NULL COMMENT '预期结果',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   UNIQUE KEY `INDEX_STEP` (`case_id`,`step_id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8_bin;
 
 /*Table structure for table `sepp_case_tree` */
+
 DROP TABLE IF EXISTS `sepp_case_tree`;
+
 CREATE TABLE `sepp_case_tree` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `parent_id` int(10) NOT NULL COMMENT '父文件夹ID',
   `product_id` int(10) NOT NULL COMMENT '所属产品ID',
-  `type` varchar(10) NOT NULL COMMENT '节点类型：文件夹、用例',
-  `name` varchar(50) NOT NULL COMMENT '节点名称',
+  `type` varchar(10) COLLATE utf8_bin NOT NULL COMMENT '节点类型：文件夹、用例',
+  `name` varchar(50) COLLATE utf8_bin NOT NULL COMMENT '节点名称',
   `creator` int(10) NOT NULL COMMENT '创建人',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`id`),
   KEY `INDEX_PARENT` (`id`,`parent_id`,`name`,`type`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=20856 DEFAULT CHARSET=utf8mb4 COLLATE=utf8_bin;
 
 /*Table structure for table `sepp_cm_status` */
+
 DROP TABLE IF EXISTS `sepp_cm_status`;
+
 CREATE TABLE `sepp_cm_status` (
   `status_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `status_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`status_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_code_mission` */
+
 DROP TABLE IF EXISTS `sepp_code_mission`;
+
 CREATE TABLE `sepp_code_mission` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '开发任务ID',
   `req_id` int(10) NOT NULL COMMENT '产品需求ID',
@@ -232,10 +260,12 @@ CREATE TABLE `sepp_code_mission` (
   KEY `INX_MODULE` (`module_id`),
   KEY `INX_PLAN` (`plan_begin`,`plan_to`),
   KEY `INX_REQ` (`req_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=5436 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_data_unit` */
+
 DROP TABLE IF EXISTS `sepp_data_unit`;
+
 CREATE TABLE `sepp_data_unit` (
   `unit_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `unit_value` varchar(10) NOT NULL COMMENT '单位值',
@@ -243,50 +273,60 @@ CREATE TABLE `sepp_data_unit` (
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`unit_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=12 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_defect_influence` */
+
 DROP TABLE IF EXISTS `sepp_defect_influence`;
+
 CREATE TABLE `sepp_defect_influence` (
   `influence_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `influence_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`influence_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_defect_period` */
+
 DROP TABLE IF EXISTS `sepp_defect_period`;
+
 CREATE TABLE `sepp_defect_period` (
   `period_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `period_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`period_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_defect_priority` */
+
 DROP TABLE IF EXISTS `sepp_defect_priority`;
+
 CREATE TABLE `sepp_defect_priority` (
   `priority_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `priority_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`priority_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_defect_refuse_reason` */
+
 DROP TABLE IF EXISTS `sepp_defect_refuse_reason`;
+
 CREATE TABLE `sepp_defect_refuse_reason` (
   `reason_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `reason_name` varchar(40) NOT NULL COMMENT '原因描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`reason_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_defect_status` */
+
 DROP TABLE IF EXISTS `sepp_defect_status`;
+
 CREATE TABLE `sepp_defect_status` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `status_id` int(10) NOT NULL COMMENT '状态ID',
@@ -296,20 +336,24 @@ CREATE TABLE `sepp_defect_status` (
   `status_tips` varchar(100) NOT NULL COMMENT '状态变迁说明',
   PRIMARY KEY (`id`),
   UNIQUE KEY `INDEX_UNIQUE` (`status_id`,`new_status_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_defect_type` */
+
 DROP TABLE IF EXISTS `sepp_defect_type`;
+
 CREATE TABLE `sepp_defect_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `type_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_defects` */
+
 DROP TABLE IF EXISTS `sepp_defects`;
+
 CREATE TABLE `sepp_defects` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '缺陷ID',
   `rel_id` int(10) DEFAULT NULL COMMENT '所属版本ID',
@@ -327,8 +371,8 @@ CREATE TABLE `sepp_defects` (
   `product_id` int(10) NOT NULL COMMENT '所属产品',
   `prod_module` int(10) DEFAULT NULL COMMENT '应用模块',
   `fix_times` int(10) DEFAULT 0 COMMENT '修复次数',
-  `summary` varchar(50) NOT NULL COMMENT '缺陷摘要',
-  `detail` text DEFAULT NULL COMMENT '详细信息',
+  `summary` varchar(50) COLLATE utf8_bin NOT NULL COMMENT '缺陷摘要',
+  `detail` text COLLATE utf8_bin DEFAULT NULL COMMENT '详细信息',
   `found_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT '发现时间',
   `response_time` datetime DEFAULT NULL COMMENT '响应时间',
   `fixed_time` datetime DEFAULT NULL COMMENT '解决时间',
@@ -339,7 +383,7 @@ CREATE TABLE `sepp_defects` (
   `deploy_cost` float DEFAULT NULL COMMENT '部署时长',
   `verify_cost` float DEFAULT NULL COMMENT '验证时长',
   `refuse_reason` tinyint(2) DEFAULT NULL COMMENT '拒绝原因',
-  `refuse_detail` varchar(500) DEFAULT NULL COMMENT '拒绝描述',
+  `refuse_detail` varchar(500) COLLATE utf8_bin DEFAULT NULL COMMENT '拒绝描述',
   `same_code_defect` int(11) DEFAULT NULL COMMENT '同源/重复缺陷号',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
@@ -352,10 +396,12 @@ CREATE TABLE `sepp_defects` (
   KEY `index_req` (`req_id`),
   KEY `index_module` (`prod_module`),
   KEY `index_users` (`submitter`,`conciliator`,`responser`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=4821 DEFAULT CHARSET=utf8mb4 COLLATE=utf8_bin;
 
 /*Table structure for table `sepp_deployment_history` */
+
 DROP TABLE IF EXISTS `sepp_deployment_history`;
+
 CREATE TABLE `sepp_deployment_history` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `instance` varchar(100) NOT NULL COMMENT '实例名称',
@@ -373,10 +419,12 @@ CREATE TABLE `sepp_deployment_history` (
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建时间',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=47 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_device` */
+
 DROP TABLE IF EXISTS `sepp_device`;
+
 CREATE TABLE `sepp_device` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'id',
   `asset_id` varchar(20) DEFAULT NULL COMMENT '资产编码',
@@ -396,20 +444,24 @@ CREATE TABLE `sepp_device` (
   `create_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建时间',
   `update_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '更新时间',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=53 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_env_type` */
+
 DROP TABLE IF EXISTS `sepp_env_type`;
+
 CREATE TABLE `sepp_env_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `type_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_environment` */
+
 DROP TABLE IF EXISTS `sepp_environment`;
+
 CREATE TABLE `sepp_environment` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `product_id` int(10) NOT NULL COMMENT '产品代码',
@@ -424,20 +476,24 @@ CREATE TABLE `sepp_environment` (
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `INDEX_REPORT` (`product_id`,`branch_id`,`env_type`,`instance`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=177 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_found_means` */
+
 DROP TABLE IF EXISTS `sepp_found_means`;
+
 CREATE TABLE `sepp_found_means` (
   `means_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `means_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`means_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_found_period` */
+
 DROP TABLE IF EXISTS `sepp_found_period`;
+
 CREATE TABLE `sepp_found_period` (
   `period_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `period_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -445,23 +501,25 @@ CREATE TABLE `sepp_found_period` (
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`period_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_history` */
+
 DROP TABLE IF EXISTS `sepp_history`;
+
 CREATE TABLE `sepp_history` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `obj_type` int(10) NOT NULL COMMENT '对象类型',
   `obj_id` int(10) NOT NULL COMMENT '对象类型ID',
-  `obj_key` varchar(20) DEFAULT NULL COMMENT '对象属性',
+  `obj_key` varchar(20) COLLATE utf8_bin DEFAULT NULL COMMENT '对象属性',
   `product_id` int(10) NOT NULL COMMENT '产品ID',
   `oper_user` int(10) NOT NULL COMMENT '操作用户ID',
   `oper_time` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '操作时间',
   `oper_type` int(10) NOT NULL COMMENT '操作类型，如新增、修改、删除',
   `refer_user` int(10) DEFAULT NULL COMMENT '涉及用户',
-  `org_value` text DEFAULT NULL COMMENT '对象旧值',
-  `new_value` text DEFAULT NULL COMMENT '对象新值',
-  `oper_comment` text DEFAULT NULL COMMENT '操作说明',
+  `org_value` text COLLATE utf8_bin DEFAULT NULL COMMENT '对象旧值',
+  `new_value` text COLLATE utf8_bin DEFAULT NULL COMMENT '对象新值',
+  `oper_comment` text COLLATE utf8_bin DEFAULT NULL COMMENT '操作说明',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`id`),
@@ -469,10 +527,12 @@ CREATE TABLE `sepp_history` (
   KEY `INDEX_OBJ` (`obj_type`,`obj_id`,`obj_key`),
   KEY `INDEX_OPER` (`oper_user`),
   KEY `INDEX_REFER` (`refer_user`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=117848 DEFAULT CHARSET=utf8mb4 COLLATE=utf8_bin;
 
 /*Table structure for table `sepp_menu` */
+
 DROP TABLE IF EXISTS `sepp_menu`;
+
 CREATE TABLE `sepp_menu` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `menu_icon` varchar(100) DEFAULT NULL COMMENT '菜单图标',
@@ -483,10 +543,12 @@ CREATE TABLE `sepp_menu` (
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=201 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_message` */
+
 DROP TABLE IF EXISTS `sepp_message`;
+
 CREATE TABLE `sepp_message` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `product_id` int(10) NOT NULL,
@@ -497,10 +559,12 @@ CREATE TABLE `sepp_message` (
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=24397 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_message_flow` */
+
 DROP TABLE IF EXISTS `sepp_message_flow`;
+
 CREATE TABLE `sepp_message_flow` (
   `id` bigint(11) NOT NULL AUTO_INCREMENT COMMENT '主键',
   `message_id` bigint(11) NOT NULL COMMENT '消息ID',
@@ -515,20 +579,24 @@ CREATE TABLE `sepp_message_flow` (
   UNIQUE KEY `INDEX_MESSAGE` (`message_id`,`creator`,`type`,`user_id`),
   KEY `INDEX_SEND` (`user_id`,`is_read`,`creator`,`type`),
   KEY `INDEX_CREATED` (`created_date`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=111951 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_message_gateway` */
+
 DROP TABLE IF EXISTS `sepp_message_gateway`;
+
 CREATE TABLE `sepp_message_gateway` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `name` varchar(20) NOT NULL COMMENT '消息类型名称',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_object_type` */
+
 DROP TABLE IF EXISTS `sepp_object_type`;
+
 CREATE TABLE `sepp_object_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `type_name` varchar(40) NOT NULL COMMENT '状态描述',
@@ -537,10 +605,12 @@ CREATE TABLE `sepp_object_type` (
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=22 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_organization` */
+
 DROP TABLE IF EXISTS `sepp_organization`;
+
 CREATE TABLE `sepp_organization` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '团队ID',
   `parent_id` int(10) NOT NULL COMMENT '上级团队ID',
@@ -550,10 +620,12 @@ CREATE TABLE `sepp_organization` (
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_pr_audit` */
+
 DROP TABLE IF EXISTS `sepp_pr_audit`;
+
 CREATE TABLE `sepp_pr_audit` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `pr_id` int(10) NOT NULL COMMENT '产品需求ID',
@@ -581,20 +653,24 @@ CREATE TABLE `sepp_pr_audit` (
   CONSTRAINT `BASE_CHECK` CHECK (json_valid(`base_audit_result`)),
   CONSTRAINT `LEADER_CHECK` CHECK (json_valid(`leader_audit_result`)),
   CONSTRAINT `CHIEF_CHECK` CHECK (json_valid(`chief_audit_result`))
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=235 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_pr_status` */
+
 DROP TABLE IF EXISTS `sepp_pr_status`;
+
 CREATE TABLE `sepp_pr_status` (
   `status_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `status_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`status_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_privileges` */
+
 DROP TABLE IF EXISTS `sepp_privileges`;
+
 CREATE TABLE `sepp_privileges` (
   `priv_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `user_id` int(10) NOT NULL COMMENT 'USER ID',
@@ -604,10 +680,12 @@ CREATE TABLE `sepp_privileges` (
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`priv_id`),
   UNIQUE KEY `INDEX_PRODUCT` (`product_id`,`role_id`,`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=2592 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_problem` */
+
 DROP TABLE IF EXISTS `sepp_problem`;
+
 CREATE TABLE `sepp_problem` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '问题ID',
   `status` int(10) NOT NULL COMMENT '问题状态',
@@ -621,9 +699,9 @@ CREATE TABLE `sepp_problem` (
   `trans_id` int(10) DEFAULT NULL COMMENT '问题转报对象ID',
   `product_id` int(10) NOT NULL COMMENT '问题所属产品',
   `module_id` int(10) DEFAULT NULL COMMENT '问题应用模块',
-  `summary` varchar(50) NOT NULL COMMENT '问题摘要',
-  `detail` text DEFAULT NULL COMMENT '问题详细信息',
-  `attachment` varchar(200) DEFAULT NULL COMMENT '问题附件',
+  `summary` varchar(50) COLLATE utf8_bin NOT NULL COMMENT '问题摘要',
+  `detail` text COLLATE utf8_bin DEFAULT NULL COMMENT '问题详细信息',
+  `attachment` varchar(200) COLLATE utf8_bin DEFAULT NULL COMMENT '问题附件',
   `submit_time` datetime NOT NULL DEFAULT current_timestamp() COMMENT '问题发现时间',
   `expect_resolve_time` datetime NOT NULL COMMENT '期望解决时间',
   `resolve_time` datetime DEFAULT NULL COMMENT '问题解决时间',
@@ -632,18 +710,20 @@ CREATE TABLE `sepp_problem` (
   `improve_one` int(10) DEFAULT NULL COMMENT '改进措施一级分类',
   `improve_two` int(10) DEFAULT NULL COMMENT '改进措施二级分类',
   `improve_plan_to` date DEFAULT NULL COMMENT '改进措施计划完成日期',
-  `improve_detail` text DEFAULT NULL COMMENT '改进措施详细说明',
-  `refuse_reason` text DEFAULT NULL COMMENT '拒绝原因描述',
+  `improve_detail` text COLLATE utf8_bin DEFAULT NULL COMMENT '改进措施详细说明',
+  `refuse_reason` text COLLATE utf8_bin DEFAULT NULL COMMENT '拒绝原因描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`id`),
   KEY `inx_submit_time` (`submit_time`),
   KEY `inx_resolve_time` (`resolve_time`),
   KEY `inx_close_time` (`close_time`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=82 DEFAULT CHARSET=utf8mb4 COLLATE=utf8_bin;
 
 /*Table structure for table `sepp_problem_improve` */
+
 DROP TABLE IF EXISTS `sepp_problem_improve`;
+
 CREATE TABLE `sepp_problem_improve` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `type` int(10) NOT NULL COMMENT '问题类型ID',
@@ -654,30 +734,36 @@ CREATE TABLE `sepp_problem_improve` (
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`id`),
   UNIQUE KEY `INDEX_UNIQUE` (`type`,`sub_type`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=43 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_problem_resolve` */
+
 DROP TABLE IF EXISTS `sepp_problem_resolve`;
+
 CREATE TABLE `sepp_problem_resolve` (
   `method_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `method_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`method_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_problem_status` */
+
 DROP TABLE IF EXISTS `sepp_problem_status`;
+
 CREATE TABLE `sepp_problem_status` (
   `status_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `status_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`status_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_problem_type` */
+
 DROP TABLE IF EXISTS `sepp_problem_type`;
+
 CREATE TABLE `sepp_problem_type` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `type` int(10) NOT NULL COMMENT '问题类型ID',
@@ -688,10 +774,12 @@ CREATE TABLE `sepp_problem_type` (
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`id`),
   UNIQUE KEY `INDEX_UNIQUE` (`type`,`sub_type`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=26 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_prod_module` */
+
 DROP TABLE IF EXISTS `sepp_prod_module`;
+
 CREATE TABLE `sepp_prod_module` (
   `module_id` int(10) NOT NULL AUTO_INCREMENT COMMENT '模块ID',
   `product_id` int(10) NOT NULL COMMENT '产品ID',
@@ -705,10 +793,12 @@ CREATE TABLE `sepp_prod_module` (
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`module_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=199 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_product` */
+
 DROP TABLE IF EXISTS `sepp_product`;
+
 CREATE TABLE `sepp_product` (
   `product_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `product_code` varchar(20) DEFAULT NULL COMMENT '产品代号',
@@ -721,10 +811,12 @@ CREATE TABLE `sepp_product` (
   PRIMARY KEY (`product_id`),
   UNIQUE KEY `INDEX_NAME` (`product_name`),
   UNIQUE KEY `INDEX_CODE` (`product_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=36 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_product_branch` */
+
 DROP TABLE IF EXISTS `sepp_product_branch`;
+
 CREATE TABLE `sepp_product_branch` (
   `branch_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `branch_name` varchar(40) NOT NULL COMMENT '标记名称',
@@ -734,17 +826,21 @@ CREATE TABLE `sepp_product_branch` (
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`branch_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=25 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_product_config` */
+
 DROP TABLE IF EXISTS `sepp_product_config`;
+
 CREATE TABLE `sepp_product_config` (
   `product_id` int(10) NOT NULL COMMENT '产品ID',
-  `member_config` varchar(2048) NOT NULL COMMENT '产品各负责人',
-  `change_auditor` varchar(50) NOT NULL COMMENT '变更确认角色',
+  `member_config` varchar(1024) NOT NULL COMMENT '产品各负责人',
+  `change_auditor` varchar(50) NOT NULL DEFAULT '1,2,3' COMMENT '变更确认角色',
   `gompertz_define` varchar(256) NOT NULL DEFAULT '{"minTestPeriod":3,"minDefectCount":5,"latestOffsetMonth":24}' COMMENT 'Gompertz模型筛选定义的采样版本配置',
   `gompertz_params` varchar(256) NOT NULL DEFAULT '{"k":4.822428016262498,"a":-6.215482818878401,"b":0.6164230084786425,"m":20.0}' COMMENT 'Gompertz模型的参数',
   `dre_target` float NOT NULL DEFAULT 99.95 COMMENT 'DRE-缺陷消除率目标值',
+  `qa_warning` tinyint(1) NOT NULL DEFAULT 1 COMMENT '是否打开质量预警计算',
+  `code_repository` varchar(500) DEFAULT NULL COMMENT '代码仓库URL，默认继承自系统配置',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   UNIQUE KEY `INX_PRODUCT_ID` (`product_id`),
@@ -753,7 +849,9 @@ CREATE TABLE `sepp_product_config` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_product_docs` */
+
 DROP TABLE IF EXISTS `sepp_product_docs`;
+
 CREATE TABLE `sepp_product_docs` (
   `id` int(11) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `product_id` int(11) NOT NULL COMMENT '产品ID',
@@ -771,10 +869,12 @@ CREATE TABLE `sepp_product_docs` (
   PRIMARY KEY (`id`),
   KEY `INDEX_PROD_MOD` (`product_id`,`module_id`),
   KEY `INDEX_PARENT` (`parent_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=1348 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_product_requirement` */
+
 DROP TABLE IF EXISTS `sepp_product_requirement`;
+
 CREATE TABLE `sepp_product_requirement` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '产品需求ID',
   `submit_date` date NOT NULL DEFAULT '1970-01-01' COMMENT '提交日期',
@@ -798,10 +898,12 @@ CREATE TABLE `sepp_product_requirement` (
   KEY `INX_CREATED` (`created_date`),
   KEY `INX_UPDATED` (`updated_date`),
   KEY `INX_SUBMITTER` (`submitter`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=253 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_qrtz_blob_triggers` */
+
 DROP TABLE IF EXISTS `sepp_qrtz_blob_triggers`;
+
 CREATE TABLE `sepp_qrtz_blob_triggers` (
   `SCHED_NAME` varchar(120) NOT NULL,
   `TRIGGER_NAME` varchar(190) NOT NULL,
@@ -813,7 +915,9 @@ CREATE TABLE `sepp_qrtz_blob_triggers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_qrtz_calendars` */
+
 DROP TABLE IF EXISTS `sepp_qrtz_calendars`;
+
 CREATE TABLE `sepp_qrtz_calendars` (
   `SCHED_NAME` varchar(120) NOT NULL,
   `CALENDAR_NAME` varchar(190) NOT NULL,
@@ -822,7 +926,9 @@ CREATE TABLE `sepp_qrtz_calendars` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_qrtz_cron_triggers` */
+
 DROP TABLE IF EXISTS `sepp_qrtz_cron_triggers`;
+
 CREATE TABLE `sepp_qrtz_cron_triggers` (
   `SCHED_NAME` varchar(120) NOT NULL,
   `TRIGGER_NAME` varchar(190) NOT NULL,
@@ -834,7 +940,9 @@ CREATE TABLE `sepp_qrtz_cron_triggers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_qrtz_fired_triggers` */
+
 DROP TABLE IF EXISTS `sepp_qrtz_fired_triggers`;
+
 CREATE TABLE `sepp_qrtz_fired_triggers` (
   `SCHED_NAME` varchar(120) NOT NULL,
   `ENTRY_ID` varchar(95) NOT NULL,
@@ -859,7 +967,9 @@ CREATE TABLE `sepp_qrtz_fired_triggers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_qrtz_job_details` */
+
 DROP TABLE IF EXISTS `sepp_qrtz_job_details`;
+
 CREATE TABLE `sepp_qrtz_job_details` (
   `SCHED_NAME` varchar(120) NOT NULL,
   `JOB_NAME` varchar(190) NOT NULL,
@@ -877,7 +987,9 @@ CREATE TABLE `sepp_qrtz_job_details` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_qrtz_locks` */
+
 DROP TABLE IF EXISTS `sepp_qrtz_locks`;
+
 CREATE TABLE `sepp_qrtz_locks` (
   `SCHED_NAME` varchar(120) NOT NULL,
   `LOCK_NAME` varchar(40) NOT NULL,
@@ -885,7 +997,9 @@ CREATE TABLE `sepp_qrtz_locks` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_qrtz_paused_trigger_grps` */
+
 DROP TABLE IF EXISTS `sepp_qrtz_paused_trigger_grps`;
+
 CREATE TABLE `sepp_qrtz_paused_trigger_grps` (
   `SCHED_NAME` varchar(120) NOT NULL,
   `TRIGGER_GROUP` varchar(190) NOT NULL,
@@ -893,7 +1007,9 @@ CREATE TABLE `sepp_qrtz_paused_trigger_grps` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_qrtz_scheduler_state` */
+
 DROP TABLE IF EXISTS `sepp_qrtz_scheduler_state`;
+
 CREATE TABLE `sepp_qrtz_scheduler_state` (
   `SCHED_NAME` varchar(120) NOT NULL,
   `INSTANCE_NAME` varchar(190) NOT NULL,
@@ -903,7 +1019,9 @@ CREATE TABLE `sepp_qrtz_scheduler_state` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_qrtz_simple_triggers` */
+
 DROP TABLE IF EXISTS `sepp_qrtz_simple_triggers`;
+
 CREATE TABLE `sepp_qrtz_simple_triggers` (
   `SCHED_NAME` varchar(120) NOT NULL,
   `TRIGGER_NAME` varchar(190) NOT NULL,
@@ -916,7 +1034,9 @@ CREATE TABLE `sepp_qrtz_simple_triggers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_qrtz_simprop_triggers` */
+
 DROP TABLE IF EXISTS `sepp_qrtz_simprop_triggers`;
+
 CREATE TABLE `sepp_qrtz_simprop_triggers` (
   `SCHED_NAME` varchar(120) NOT NULL,
   `TRIGGER_NAME` varchar(190) NOT NULL,
@@ -937,7 +1057,9 @@ CREATE TABLE `sepp_qrtz_simprop_triggers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_qrtz_triggers` */
+
 DROP TABLE IF EXISTS `sepp_qrtz_triggers`;
+
 CREATE TABLE `sepp_qrtz_triggers` (
   `SCHED_NAME` varchar(120) NOT NULL,
   `TRIGGER_NAME` varchar(190) NOT NULL,
@@ -972,27 +1094,33 @@ CREATE TABLE `sepp_qrtz_triggers` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_rel_status` */
+
 DROP TABLE IF EXISTS `sepp_rel_status`;
+
 CREATE TABLE `sepp_rel_status` (
   `status_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `status_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`status_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_relate_type` */
+
 DROP TABLE IF EXISTS `sepp_relate_type`;
+
 CREATE TABLE `sepp_relate_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `type_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_release` */
+
 DROP TABLE IF EXISTS `sepp_release`;
+
 CREATE TABLE `sepp_release` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `rel_code` varchar(50) NOT NULL COMMENT '版本号',
@@ -1012,14 +1140,15 @@ CREATE TABLE `sepp_release` (
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `INX_REL_CODE` (`rel_code`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=261 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_release_note` */
+
 DROP TABLE IF EXISTS `sepp_release_note`;
+
 CREATE TABLE `sepp_release_note` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `req_id` int(10) NOT NULL COMMENT '产品需求号',
-  `rel_id` int(10) NOT NULL COMMENT '发布版本',
   `status` int(10) NOT NULL COMMENT '构建状态',
   `description` text DEFAULT NULL COMMENT '发布描述',
   `submitter` int(11) NOT NULL COMMENT '发布提交人',
@@ -1030,30 +1159,36 @@ CREATE TABLE `sepp_release_note` (
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新时间',
   PRIMARY KEY (`id`),
   KEY `INDEX_REQ` (`req_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=345 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_releasenote_status` */
+
 DROP TABLE IF EXISTS `sepp_releasenote_status`;
+
 CREATE TABLE `sepp_releasenote_status` (
   `status_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `status_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`status_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_report_type` */
+
 DROP TABLE IF EXISTS `sepp_report_type`;
+
 CREATE TABLE `sepp_report_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `type_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_req_change` */
+
 DROP TABLE IF EXISTS `sepp_req_change`;
+
 CREATE TABLE `sepp_req_change` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `req_id` int(10) NOT NULL COMMENT '产品需求ID',
@@ -1069,10 +1204,12 @@ CREATE TABLE `sepp_req_change` (
   PRIMARY KEY (`id`),
   KEY `INX_REQ_ID` (`req_id`),
   KEY `INX_CHANGE_DATE` (`change_time`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=989 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_req_close_style` */
+
 DROP TABLE IF EXISTS `sepp_req_close_style`;
+
 CREATE TABLE `sepp_req_close_style` (
   `style_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `style_name` varchar(40) NOT NULL COMMENT '方式名',
@@ -1080,40 +1217,48 @@ CREATE TABLE `sepp_req_close_style` (
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`style_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_req_priority` */
+
 DROP TABLE IF EXISTS `sepp_req_priority`;
+
 CREATE TABLE `sepp_req_priority` (
   `priority_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `priority_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`priority_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_req_status` */
+
 DROP TABLE IF EXISTS `sepp_req_status`;
+
 CREATE TABLE `sepp_req_status` (
   `status_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `status_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`status_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_req_type` */
+
 DROP TABLE IF EXISTS `sepp_req_type`;
+
 CREATE TABLE `sepp_req_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `type_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_requirement` */
+
 DROP TABLE IF EXISTS `sepp_requirement`;
+
 CREATE TABLE `sepp_requirement` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '产品需求ID',
   `source_id` int(10) NOT NULL DEFAULT 0 COMMENT '需求源ID',
@@ -1142,10 +1287,12 @@ CREATE TABLE `sepp_requirement` (
   KEY `INX_UPDATED` (`created_date`),
   KEY `INX_SUBMITTER` (`submitter`),
   KEY `INX_SOURCE` (`source_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=1066 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_resource_config` */
+
 DROP TABLE IF EXISTS `sepp_resource_config`;
+
 CREATE TABLE `sepp_resource_config` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `resource_desc` varchar(100) NOT NULL COMMENT '资源描述',
@@ -1165,79 +1312,94 @@ CREATE TABLE `sepp_resource_config` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_setting_config` */
+
 DROP TABLE IF EXISTS `sepp_setting_config`;
+
 CREATE TABLE `sepp_setting_config` (
   `id` int(2) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `setting_name` varchar(20) NOT NULL COMMENT '配置类型展示名称',
+  `setting_name` varchar(20) COLLATE utf8_bin NOT NULL COMMENT '配置类型展示名称',
   `setting_limit` int(2) NOT NULL COMMENT '配置项个数限制',
-  `setting_keys` varchar(1024) NOT NULL COMMENT '配置项参数KEY',
+  `setting_keys` varchar(1024) COLLATE utf8_bin NOT NULL COMMENT '配置项参数KEY',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4 COLLATE=utf8_bin;
 
 /*Table structure for table `sepp_settings` */
+
 DROP TABLE IF EXISTS `sepp_settings`;
+
 CREATE TABLE `sepp_settings` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `setting_type` int(2) NOT NULL COMMENT '配置类型',
-  `setting_value` varchar(4096) NOT NULL COMMENT '配置内容，JSON格式',
+  `setting_value` varchar(4096) COLLATE utf8_bin NOT NULL COMMENT '配置内容，JSON格式',
   `create_user` int(10) NOT NULL COMMENT '操作用户',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`id`),
   UNIQUE KEY `INX_TYPE` (`setting_type`),
   CONSTRAINT `JSON_CHECK` CHECK (json_valid(`setting_value`))
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4 COLLATE=utf8_bin;
 
 /*Table structure for table `sepp_sonar_result` */
+
+DROP TABLE IF EXISTS `sepp_sonar_result`;
+
 CREATE TABLE `sepp_sonar_result` (
-  `id` INT(10) NOT NULL AUTO_INCREMENT COMMENT 'id',
-  `project_key` VARCHAR(50) NOT NULL COMMENT '项目key',
-  `project_version` VARCHAR(50) DEFAULT NULL COMMENT '项目sonar扫描版本',
-  `scan_date` VARCHAR(50) DEFAULT NULL COMMENT '时间',
-  `analysis_id` VARCHAR(50) DEFAULT NULL COMMENT 'analysisId',
-  `analysis_status` VARCHAR(10) DEFAULT NULL COMMENT '分析结论',
-  `ncloc` INT(10) DEFAULT NULL COMMENT '代码行数',
-  `coverage` FLOAT DEFAULT NULL COMMENT '覆盖率',
-  `duplicated_lines_density` FLOAT DEFAULT NULL COMMENT '重复率',
-  `code_smells` INT(10) DEFAULT NULL COMMENT '代码异味',
-  `bugs` INT(10) DEFAULT NULL COMMENT '缺陷',
-  `vulnerabilities` INT(10) DEFAULT NULL COMMENT '漏洞',
-  `sqale_index` INT(10) DEFAULT NULL COMMENT '技术债',
-  `created_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
-  `updated_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+  `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'id',
+  `project_key` varchar(50) COLLATE utf8_bin NOT NULL COMMENT '项目key',
+  `project_version` varchar(50) COLLATE utf8_bin DEFAULT NULL COMMENT '项目sonar扫描版本',
+  `scan_date` varchar(50) COLLATE utf8_bin DEFAULT NULL COMMENT '时间',
+  `analysis_id` varchar(50) COLLATE utf8_bin DEFAULT NULL COMMENT 'analysisId',
+  `analysis_status` varchar(10) COLLATE utf8_bin DEFAULT NULL COMMENT '分析结论',
+  `ncloc` int(10) DEFAULT NULL COMMENT '代码行数',
+  `coverage` float DEFAULT NULL COMMENT '覆盖率',
+  `hotspots` int(11) DEFAULT NULL COMMENT '命中热点',
+  `duplicated_lines_density` float DEFAULT NULL COMMENT '重复率',
+  `code_smells` int(10) DEFAULT NULL COMMENT '代码异味',
+  `bugs` int(10) DEFAULT NULL COMMENT '缺陷',
+  `vulnerabilities` int(10) DEFAULT NULL COMMENT '漏洞',
+  `sqale_index` int(10) DEFAULT NULL COMMENT '技术债',
+  `created_date` timestamp NOT NULL DEFAULT current_timestamp(),
+  `updated_date` timestamp NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id`)
-) ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=1210 DEFAULT CHARSET=utf8mb4 COLLATE=utf8_bin;
 
 /*Table structure for table `sepp_sonar_scan` */
+
+DROP TABLE IF EXISTS `sepp_sonar_scan`;
+
 CREATE TABLE `sepp_sonar_scan` (
-  `id` INT(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
-  `note_id` INT(10) DEFAULT NULL COMMENT '构建id',
-  `product_id` INT(10) DEFAULT NULL COMMENT '产品编号',
-  `submitter` INT(10) DEFAULT NULL COMMENT '提交人',
-  `project_key` VARCHAR(40) DEFAULT NULL COMMENT '项目Key',
-  `git_branch` VARCHAR(50) DEFAULT NULL COMMENT 'git分支',
-  `project_version` VARCHAR(40) DEFAULT NULL COMMENT '版本',
-  `start_time` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '开始时间',
-  `result_id` INT(10) DEFAULT NULL COMMENT '结果集id',
-  `created_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建日期',
-  `updated_date` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP COMMENT '更新日期',
+  `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
+  `note_id` int(10) DEFAULT NULL COMMENT '构建id',
+  `product_id` int(10) DEFAULT NULL COMMENT '产品编号',
+  `submitter` int(10) DEFAULT NULL COMMENT '提交人',
+  `project_key` varchar(40) DEFAULT NULL COMMENT '项目Key',
+  `git_branch` varchar(50) DEFAULT NULL COMMENT 'git分支',
+  `project_version` varchar(40) DEFAULT NULL COMMENT '版本',
+  `start_time` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '开始时间',
+  `result_id` int(10) DEFAULT NULL COMMENT '结果集id',
+  `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
+  `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`id`)
-) ENGINE=INNODB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=185 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_test_means` */
+
 DROP TABLE IF EXISTS `sepp_test_means`;
+
 CREATE TABLE `sepp_test_means` (
   `means_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `means_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`means_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_test_mission` */
+
 DROP TABLE IF EXISTS `sepp_test_mission`;
+
 CREATE TABLE `sepp_test_mission` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '测试任务ID',
   `req_id` int(10) NOT NULL COMMENT '所属需求ID',
@@ -1258,10 +1420,12 @@ CREATE TABLE `sepp_test_mission` (
   KEY `INX_REQ_ID` (`req_id`),
   KEY `INX_PLANDATE` (`plan_begin`,`plan_to`),
   KEY `INX_PLAN` (`plan_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=588 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_test_period` */
+
 DROP TABLE IF EXISTS `sepp_test_period`;
+
 CREATE TABLE `sepp_test_period` (
   `period_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `period_name` varchar(40) NOT NULL COMMENT '产品名称',
@@ -1269,10 +1433,12 @@ CREATE TABLE `sepp_test_period` (
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`period_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=7 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_test_plan` */
+
 DROP TABLE IF EXISTS `sepp_test_plan`;
+
 CREATE TABLE `sepp_test_plan` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '测试计划 ID',
   `rel_id` int(10) NOT NULL COMMENT '版本号',
@@ -1289,20 +1455,24 @@ CREATE TABLE `sepp_test_plan` (
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`id`),
   UNIQUE KEY `INDEX_REL_ID` (`rel_id`,`plan_type`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=372 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_test_priority` */
+
 DROP TABLE IF EXISTS `sepp_test_priority`;
+
 CREATE TABLE `sepp_test_priority` (
   `priority_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `priority_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`priority_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_test_report` */
+
 DROP TABLE IF EXISTS `sepp_test_report`;
+
 CREATE TABLE `sepp_test_report` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `rel_id` int(10) NOT NULL COMMENT '版本号ID',
@@ -1317,17 +1487,19 @@ CREATE TABLE `sepp_test_report` (
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新时间',
   PRIMARY KEY (`id`),
   UNIQUE KEY `INDEX_REPORT` (`rel_id`,`report_type`,`report_date`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=280 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_test_result` */
+
 DROP TABLE IF EXISTS `sepp_test_result`;
+
 CREATE TABLE `sepp_test_result` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `scenario_id` int(10) NOT NULL COMMENT '测试场景/集合ID',
   `run_id` int(10) NOT NULL COMMENT '测试运行ID',
   `case_id` int(10) NOT NULL COMMENT '测试用例ID',
   `step_id` int(10) DEFAULT NULL COMMENT '测试用例ID',
-  `step_actual` varchar(200) CHARACTER SET utf8mb4 DEFAULT NULL COMMENT '步骤运行的实际结果',
+  `step_actual` varchar(200) CHARACTER SET utf8mb4 COLLATE utf8_bin DEFAULT NULL COMMENT '步骤运行的实际结果',
   `run_date` datetime NOT NULL DEFAULT current_timestamp() COMMENT '运行时间',
   `result` int(10) DEFAULT NULL COMMENT '运行结论',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
@@ -1336,20 +1508,24 @@ CREATE TABLE `sepp_test_result` (
   KEY `INDEX_RUN` (`run_id`),
   KEY `INDEX_SCEN` (`scenario_id`),
   KEY `INDEX_CASE` (`case_id`,`step_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=15520 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_test_result_status` */
+
 DROP TABLE IF EXISTS `sepp_test_result_status`;
+
 CREATE TABLE `sepp_test_result_status` (
   `status_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `status_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`status_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_test_run` */
+
 DROP TABLE IF EXISTS `sepp_test_run`;
+
 CREATE TABLE `sepp_test_run` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `scenario_id` int(10) NOT NULL COMMENT '测试集/场景ID',
@@ -1359,10 +1535,12 @@ CREATE TABLE `sepp_test_run` (
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`id`),
   KEY `INDEX_SCENARIO` (`scenario_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=913 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_test_scenario` */
+
 DROP TABLE IF EXISTS `sepp_test_scenario`;
+
 CREATE TABLE `sepp_test_scenario` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT '场景ID',
   `name` varchar(50) NOT NULL COMMENT '场景名称',
@@ -1374,50 +1552,58 @@ CREATE TABLE `sepp_test_scenario` (
   PRIMARY KEY (`id`),
   KEY `INDEX_CASE_INDEX` (`plan_id`),
   KEY `INDEX_CREATE` (`created_date`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=461 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_test_status` */
+
 DROP TABLE IF EXISTS `sepp_test_status`;
+
 CREATE TABLE `sepp_test_status` (
   `status_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `status_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`status_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_test_type` */
+
 DROP TABLE IF EXISTS `sepp_test_type`;
+
 CREATE TABLE `sepp_test_type` (
   `type_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `type_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`type_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_tm_status` */
+
 DROP TABLE IF EXISTS `sepp_tm_status`;
+
 CREATE TABLE `sepp_tm_status` (
   `status_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `status_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`status_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_user` */
+
 DROP TABLE IF EXISTS `sepp_user`;
+
 CREATE TABLE `sepp_user` (
   `user_id` int(10) NOT NULL AUTO_INCREMENT COMMENT '用户ID',
-  `user_account` varchar(50) NOT NULL COMMENT '用户账号',
-  `password` varchar(200) DEFAULT NULL COMMENT '用户密码',
-  `user_name` varchar(50) NOT NULL COMMENT '用户姓名',
-  `user_email` varchar(100) NOT NULL COMMENT '用户电子邮件地址',
+  `user_account` varchar(50) COLLATE utf8_bin NOT NULL COMMENT '用户账号',
+  `password` varchar(200) COLLATE utf8_bin DEFAULT NULL COMMENT '用户密码',
+  `user_name` varchar(50) COLLATE utf8_bin NOT NULL COMMENT '用户姓名',
+  `user_email` varchar(100) COLLATE utf8_bin NOT NULL COMMENT '用户电子邮件地址',
   `favicon_id` int(10) DEFAULT 543 COMMENT '头像文件ID',
   `team_id` int(10) DEFAULT NULL COMMENT '所属团队ID',
-  `is_valid` varchar(1) NOT NULL DEFAULT 'Y' COMMENT '是否有效',
-  `is_vendor` varchar(1) NOT NULL DEFAULT 'N' COMMENT '是否外包',
+  `is_valid` varchar(1) COLLATE utf8_bin NOT NULL DEFAULT 'Y' COMMENT '是否有效',
+  `is_vendor` varchar(1) COLLATE utf8_bin NOT NULL DEFAULT 'N' COMMENT '是否外包',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`user_id`),
@@ -1425,10 +1611,12 @@ CREATE TABLE `sepp_user` (
   UNIQUE KEY `INDEX_EMAIL` (`user_email`),
   UNIQUE KEY `INDEX_NAME` (`user_name`),
   KEY `INDEX_TEAM` (`team_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=8533 DEFAULT CHARSET=utf8mb4 COLLATE=utf8_bin;
 
 /*Table structure for table `sepp_user_role` */
+
 DROP TABLE IF EXISTS `sepp_user_role`;
+
 CREATE TABLE `sepp_user_role` (
   `role_id` int(10) NOT NULL AUTO_INCREMENT COMMENT '角色ID',
   `role_code` varchar(10) NOT NULL COMMENT '角色代码',
@@ -1440,17 +1628,19 @@ CREATE TABLE `sepp_user_role` (
   PRIMARY KEY (`role_id`),
   UNIQUE KEY `INDEX_ROLE` (`role_code`),
   UNIQUE KEY `INDEX_ROLE_NAME` (`role_name`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=31 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_user_setting` */
+
 DROP TABLE IF EXISTS `sepp_user_setting`;
+
 CREATE TABLE `sepp_user_setting` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `user_id` int(10) NOT NULL COMMENT '用户ID',
   `message_on` tinyint(1) NOT NULL DEFAULT 1 COMMENT '打开消息提示',
-  `message_subscribe` varchar(200) NOT NULL DEFAULT '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21' COMMENT '用户消息订阅',
-  `email_subscribe` varchar(200) NOT NULL DEFAULT '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21' COMMENT '用户邮件订阅',
-  `portal_config` varchar(50) NOT NULL DEFAULT '1,3,4,5,6,7' COMMENT '工作台选项卡展示',
+  `message_subscribe` varchar(200) COLLATE utf8_bin NOT NULL DEFAULT '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21' COMMENT '用户消息订阅',
+  `email_subscribe` varchar(200) COLLATE utf8_bin NOT NULL DEFAULT '1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21' COMMENT '用户邮件订阅',
+  `portal_config` varchar(50) COLLATE utf8_bin NOT NULL DEFAULT '1,3,4,5,6,7' COMMENT '工作台选项卡展示',
   `dialog_auto_close` tinyint(1) NOT NULL DEFAULT 1 COMMENT '点击空白处自动关闭对话框',
   `auto_login` tinyint(1) NOT NULL DEFAULT 0 COMMENT '自动登录上次的项目',
   `auto_refresh` tinyint(1) NOT NULL DEFAULT 1 COMMENT '侧边栏折叠和展开时echarts页面布局',
@@ -1460,10 +1650,12 @@ CREATE TABLE `sepp_user_setting` (
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`id`),
   UNIQUE KEY `INDEX_USER` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=207 DEFAULT CHARSET=utf8mb4 COLLATE=utf8_bin;
 
 /*Table structure for table `sepp_warning` */
+
 DROP TABLE IF EXISTS `sepp_warning`;
+
 CREATE TABLE `sepp_warning` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `product_id` int(10) NOT NULL,
@@ -1478,20 +1670,24 @@ CREATE TABLE `sepp_warning` (
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=61 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_warning_level` */
+
 DROP TABLE IF EXISTS `sepp_warning_level`;
+
 CREATE TABLE `sepp_warning_level` (
   `level_id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `level_name` varchar(40) NOT NULL COMMENT '状态描述',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`level_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=5 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_warning_notify` */
+
 DROP TABLE IF EXISTS `sepp_warning_notify`;
+
 CREATE TABLE `sepp_warning_notify` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `warning_id` bigint(20) NOT NULL COMMENT '告警ID',
@@ -1511,25 +1707,26 @@ CREATE TABLE `sepp_warning_notify` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_warning_rules` */
+
 DROP TABLE IF EXISTS `sepp_warning_rules`;
+
 CREATE TABLE `sepp_warning_rules` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `type` int(10) NOT NULL COMMENT '告警类型',
   `sub_type` int(10) NOT NULL COMMENT '告警子类型',
   `level` int(10) NOT NULL COMMENT '告警级别',
   `target_type` int(10) DEFAULT NULL COMMENT '告警目标对象类型',
-  `target_id` int(10) DEFAULT NULL COMMENT '告警目标对象ID',
-  `offset` varchar(10) DEFAULT NULL COMMENT '偏移量定义',
-  `offset_unit` varchar(10) DEFAULT NULL COMMENT '偏移量单位',
   `title` varchar(500) DEFAULT NULL COMMENT '告警说明',
   `expression` text DEFAULT NULL COMMENT '告警规则表达式',
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '更新日期',
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   PRIMARY KEY (`id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=49 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_warning_type` */
+
 DROP TABLE IF EXISTS `sepp_warning_type`;
+
 CREATE TABLE `sepp_warning_type` (
   `id` int(10) NOT NULL AUTO_INCREMENT COMMENT 'ID',
   `type` int(10) NOT NULL COMMENT '告警类型ID',
@@ -1540,7 +1737,7 @@ CREATE TABLE `sepp_warning_type` (
   `updated_date` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp() COMMENT '更新日期',
   PRIMARY KEY (`id`),
   UNIQUE KEY `INDEX_UNIQUE` (`type`,`sub_type`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=19 DEFAULT CHARSET=utf8mb4;
 
 /*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
 /*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
