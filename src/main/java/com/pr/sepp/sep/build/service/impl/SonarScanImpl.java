@@ -1,17 +1,27 @@
 package com.pr.sepp.sep.build.service.impl;
 
-
+import com.pr.sepp.mgr.system.constants.SettingType;
+import com.pr.sepp.mgr.system.dao.SettingDAO;
+import com.pr.sepp.mgr.system.model.SystemSetting;
+import com.pr.sepp.sep.build.dao.BuildInstanceDAO;
 import com.pr.sepp.sep.build.dao.SonarDAO;
+import com.pr.sepp.sep.build.model.BuildInstance;
+import com.pr.sepp.sep.build.model.GitProperties;
 import com.pr.sepp.sep.build.model.sonar.*;
 import com.pr.sepp.sep.build.service.SonarScanService;
 import com.pr.sepp.utils.jenkins.JenkinsClient;
 import com.pr.sepp.utils.jenkins.JenkinsClientProvider;
 import lombok.extern.slf4j.Slf4j;
+import org.gitlab.api.GitlabAPI;
+import org.gitlab.api.models.GitlabBranch;
+import org.gitlab.api.models.GitlabProject;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.*;
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.List;
 
 import static com.pr.sepp.sep.build.model.constants.InstanceType.ORDINARY;
 
@@ -23,8 +33,13 @@ public class SonarScanImpl implements SonarScanService {
 	private SonarDAO sonarDAO;
 
 	@Autowired
-	private JenkinsClientProvider jenkinsClientProvider;
+	private SettingDAO settingDAO;
 
+	@Autowired
+	private BuildInstanceDAO buildInstanceDAO;
+
+	@Autowired
+	private JenkinsClientProvider jenkinsClientProvider;
 
 	@Override
 	public void saveSonarData(SonarScanReq sonarScanReq) {
@@ -40,17 +55,16 @@ public class SonarScanImpl implements SonarScanService {
 			sonarDAO.insertSonarScan(project);
 		}
 
-
 		HashMap<String, String> paramMap = new HashMap<>();
 		paramMap.put("projectName", String.join(",", sonarScanReq.getProjectKeys()));
 		paramMap.put("gitBranch", sonarScanReq.getGitBranch());
+		paramMap.put("language", sonarScanReq.getLanguage());
 		paramMap.put("startTime", sonarScanReq.getStartTime().toString());
 		try (JenkinsClient jenkinsClient = jenkinsClientProvider.getJenkinsClient(ORDINARY)) {
 			jenkinsClient.startBuild("sonarscanGit", paramMap);
 		} catch (Exception e) {
 			log.error("", e);
 		}
-
 	}
 
 	@Override
@@ -70,11 +84,9 @@ public class SonarScanImpl implements SonarScanService {
 		return sonarDAO.listUnSyncProject();
 	}
 
-
 	public List<SonarProjectNames> listSonarProjectNames(Integer noteId) {
 		return sonarDAO.listSonarProjectNames(noteId);
 	}
-
 
 	@Override
 	public List<SonarScanHistory> sonarAllScanHistory(Integer productId, String projectKey) {
@@ -82,29 +94,26 @@ public class SonarScanImpl implements SonarScanService {
 	}
 
 	@Override
-	public List<SonarScanHistoryGrouper> sonarScanHistory(Integer noteId, Integer pageNum, Integer pageSize) {
-		List<SonarScanHistory> sonarScanHistorys = sonarDAO.ListSonarScanHistory(noteId, pageNum, pageSize);
-		List<SonarScanHistoryGrouper> listSonarScanHistoryGrouper = new ArrayList<>();
+	public List<GitlabBranch> listBranch(BuildInstance buildInstance) throws IOException {
+		SystemSetting gitConfig = settingDAO.findSetting(SettingType.GIT.getValue());
+		List<GitProperties.GitConfig> gitConfigs = GitProperties.settingToGitConfig(gitConfig);
+		String apiToken = null;
+		String repoUrl = null;
 
-		Set<String> projectVersions = new HashSet<>();
-		sonarScanHistorys.forEach(sonarScanHistory -> {
-			projectVersions.add(sonarScanHistory.getProjectVersion());
-		});
-
-		for (String projectVersion : projectVersions) {
-			SonarScanHistoryGrouper sonarScanHistoryGrouper = new SonarScanHistoryGrouper();
-			sonarScanHistoryGrouper.setProjectVersion(projectVersion);
-			List<SonarScanHistory> tempItem = new ArrayList<>();
-
-			for (int i = 0; i < sonarScanHistorys.size(); i++) {
-				if (projectVersion.hashCode() == sonarScanHistorys.get(i).getProjectVersion().hashCode()) {
-					tempItem.add(sonarScanHistorys.get(i));
-				}
+		for (GitProperties.GitConfig git : gitConfigs) {
+			if (git.getRepoUrl().equals(buildInstance.getRepoUrl())) {
+				apiToken = git.getApiToken();
+				repoUrl = buildInstance.getRepoUrl();
+				break;
 			}
-			sonarScanHistoryGrouper.setSonarScanHistorys(tempItem);
-			listSonarScanHistoryGrouper.add(sonarScanHistoryGrouper);
 		}
-		;
-		return listSonarScanHistoryGrouper;
+		GitlabProject project = GitlabAPI.connect(repoUrl, apiToken).getProject(buildInstance.getNamespace(), buildInstance.getProjectName());
+		List<GitlabBranch> ListBraches = GitlabAPI.connect(repoUrl, apiToken).getBranches(project);
+		return ListBraches;
+	}
+
+	@Override
+	public List<SonarReqInstance> listInstance(Integer productId) {
+		return sonarDAO.listInstance(productId);
 	}
 }

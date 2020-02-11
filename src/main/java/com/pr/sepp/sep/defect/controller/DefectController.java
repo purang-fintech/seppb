@@ -43,7 +43,7 @@ public class DefectController {
 			dataMap.put("sts", Arrays.asList(status.split(",")));
 		}
 		dataMap.put(REQ_ID, request.getParameter(REQ_ID));
-		dataMap.put(PRODUCT_ID, request.getParameter(PRODUCT_ID));
+		dataMap.put(PRODUCT_ID, ParameterThreadLocal.getProductId());
 		dataMap.put(REL_ID, request.getParameter(REL_ID));
 		dataMap.put(ID, request.getParameter(ID));
 		dataMap.put(SUBMITTER, request.getParameter(SUBMITTER));
@@ -83,6 +83,7 @@ public class DefectController {
 	public List<Defect> defectQuery(@RequestParam(value = "defectId") String defectId) {
 		Map<String, Object> dataMap = new HashMap<>();
 		dataMap.put(ID, defectId);
+		dataMap.put(PRODUCT_ID, ParameterThreadLocal.getProductId());
 		return defectService.defectQuery(dataMap);
 	}
 

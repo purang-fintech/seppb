@@ -1,6 +1,7 @@
 package com.pr.sepp.utils.sonar;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.pr.sepp.mgr.system.constants.SettingType;
 import com.pr.sepp.mgr.system.dao.SettingDAO;
 import com.pr.sepp.mgr.system.model.SystemSetting;
 import com.pr.sepp.sep.build.model.sonar.Result;
@@ -34,7 +35,7 @@ public class SonarData {
 
     //1. 根据projectKey,projectVersion可以找到analysisId，date
     public SonarResult getProjectAnalyses(String projectKey, String projectVersion, SettingDAO settingDAO) throws IOException {
-        SystemSetting sonarconfig = settingDAO.findSetting(5);
+        SystemSetting sonarconfig = settingDAO.findSetting(SettingType.SONAR.getValue());
         List<SonarProperties.SonarConfig> sonarConfigs = SonarProperties.settingToSonarConfig(sonarconfig);
         String url = sonarConfigs.get(0).getBaseHost() + projectAnalyses;
         CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -74,6 +75,8 @@ public class SonarData {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+            httpClient.close();
         }
 
         return getMeasures(keyDate, settingDAO);
@@ -82,7 +85,7 @@ public class SonarData {
     //获取项目分析结果状态
     //2.根据analysisId 找到状态
     public String getProjectStatus(HashMap<String, String> keyDate, SettingDAO settingDAO) throws IOException {
-        SystemSetting sonarconfig = settingDAO.findSetting(5);
+        SystemSetting sonarconfig = settingDAO.findSetting(SettingType.SONAR.getValue());
         List<SonarProperties.SonarConfig> sonarConfigs = SonarProperties.settingToSonarConfig(sonarconfig);
         String url = sonarConfigs.get(0).getBaseHost() + projectStatusUrl;
         CloseableHttpClient httpClient = HttpClients.createDefault();
@@ -113,6 +116,8 @@ public class SonarData {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+            httpClient.close();
         }
         return status;
     }
@@ -120,11 +125,11 @@ public class SonarData {
 
     //3. 根据projectKey，date可以找到指标参数
     public SonarResult getMeasures(HashMap<String, String> keyDate, SettingDAO settingDAO) throws IOException {
-        SystemSetting sonarconfig = settingDAO.findSetting(5);
+        SystemSetting sonarconfig = settingDAO.findSetting(SettingType.SONAR.getValue());
         List<SonarProperties.SonarConfig> sonarConfigs = SonarProperties.settingToSonarConfig(sonarconfig);
         String url = sonarConfigs.get(0).getBaseHost() + measures;
         CloseableHttpClient httpClient = HttpClients.createDefault();
-        String metrics = "bugs,vulnerabilities,sqale_index,duplicated_lines_density,ncloc,coverage,code_smells";
+        String metrics = "bugs,vulnerabilities,security_hotspots,sqale_index,duplicated_lines_density,ncloc,coverage,code_smells";
         List<NameValuePair> params = new ArrayList<NameValuePair>();
         params.add(new BasicNameValuePair("component", keyDate.get("projectKey")));
         params.add(new BasicNameValuePair("from", keyDate.get("date")));
@@ -161,6 +166,7 @@ public class SonarData {
                 sonarResult.setBugs(data.get("bugs"));
                 sonarResult.setCodeSmells(data.get("code_smells"));
                 sonarResult.setVulnerabilities(data.get("vulnerabilities"));
+                sonarResult.setHotspots(data.get("security_hotspots"));
                 sonarResult.setSqaleIndex(data.get("sqale_index"));
             } else if (response.getStatusLine().getStatusCode() == HttpStatus.SC_BAD_REQUEST) {
                 log.info("尚未查询到SONAR对应项目：{}", keyDate.get("projectKey"));
@@ -173,6 +179,8 @@ public class SonarData {
             e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
+        }finally {
+            httpClient.close();
         }
 
         return sonarResult;

@@ -34,7 +34,7 @@ public class ProblemController {
 		Map<String, Object> dataMap = new HashMap<>();
 		dataMap.put(CommonParameter.ID, request.getParameter(CommonParameter.ID));
 		dataMap.put("transId", request.getParameter("transId"));
-		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
+		dataMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 		dataMap.put(CommonParameter.SUBMITTER, request.getParameter(CommonParameter.SUBMITTER));
 		dataMap.put(CommonParameter.RESPONSER, request.getParameter(CommonParameter.RESPONSER));
 		String status = request.getParameter(CommonParameter.STATUS);

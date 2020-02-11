@@ -16,6 +16,7 @@ public class SonarScanHistory {
 	private String analysisStatus;
 	private Double ncloc;
 	private Double coverage;
+	private Double hotspots;
 	private Double duplicatedLinesDensity;
 	private Double codeSmells;
 	private Double bugs;

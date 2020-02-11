@@ -17,8 +17,8 @@ import com.pr.sepp.mgr.product.model.ProductDoc;
 import com.pr.sepp.mgr.product.service.ProductService;
 import com.pr.sepp.mgr.user.dao.UserDAO;
 import com.pr.sepp.mgr.user.model.User;
-import com.pr.sepp.notify.model.Message;
-import com.pr.sepp.notify.service.MessageService;
+import com.pr.sepp.notify.message.model.Message;
+import com.pr.sepp.notify.message.service.MessageService;
 import com.pr.sepp.sep.change.model.Change;
 import com.pr.sepp.sep.change.service.ChangeService;
 import com.pr.sepp.sep.coding.service.CodeMissionService;
@@ -175,6 +175,7 @@ public class RequirementServiceImpl implements RequirementService {
 
 		Map<String, Object> queryMap = new HashMap<>();
 		queryMap.put(CommonParameter.ID, reqId);
+		queryMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 		Requirement oldReq = requirementDAO.reqQuery(queryMap).get(0);
 
 		change.setReqId(reqId);
@@ -398,10 +399,12 @@ public class RequirementServiceImpl implements RequirementService {
 		releasing.forEach(req -> {
 			Map<String, Object> reqMap = new HashMap<>();
 			reqMap.put(CommonParameter.ID, req.getId());
+			reqMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 			Requirement requirement = requirementDAO.reqQuery(reqMap).get(0);
 
 			Map<String, Object> relMap = new HashMap<>();
 			relMap.put(CommonParameter.ID, req.getRelId());
+			relMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 			Release release = releaseDAO.releaseQuery(relMap).get(0);
 			String msg = "产品需求：【#" + req.getId() + " - " + requirement.getSummary() + "】已纳入版本【" + release.getRelCode() + "】";
 
@@ -464,6 +467,7 @@ public class RequirementServiceImpl implements RequirementService {
 		reqs.forEach(reqId -> {
 			Map<String, Object> dataMap = new HashMap<>();
 			dataMap.put(CommonParameter.ID, reqId);
+			dataMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 			Requirement requirement = requirementDAO.reqQuery(dataMap).get(0);
 			String msg = "产品需求：【#" + reqId + " - " + requirement.getSummary() + "】已从版本【" + requirement.getRelCode() + "】中移除";
 
@@ -521,6 +525,7 @@ public class RequirementServiceImpl implements RequirementService {
 	public List<Requirement> reqQuery(Map<String, Object> dataMap) {
 		PageHelper.startPage(ParameterThreadLocal.getPageNum(), ParameterThreadLocal.getPageSize());
 
+		dataMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 		List<Requirement> list = requirementDAO.reqQuery(dataMap);
 		Map<String, Object> userMap = new HashMap<>();
 		userMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
@@ -592,6 +597,7 @@ public class RequirementServiceImpl implements RequirementService {
 
 		Map<String, Object> dataMap = new HashMap<>();
 		dataMap.put(CommonParameter.ID, oldReqId);
+		dataMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 		Requirement requirement = requirementDAO.reqQuery(dataMap).get(0);
 
 		ReqStatusUpdate reqStatusUpdate = new ReqStatusUpdate();

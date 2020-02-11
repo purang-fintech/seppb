@@ -7,8 +7,8 @@ import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.history.model.SEPPHistory;
 import com.pr.sepp.history.service.HistoryService;
 import com.pr.sepp.mgr.user.dao.UserDAO;
-import com.pr.sepp.notify.model.Message;
-import com.pr.sepp.notify.service.MessageService;
+import com.pr.sepp.notify.message.model.Message;
+import com.pr.sepp.notify.message.service.MessageService;
 import com.pr.sepp.sep.defect.dao.DefectDAO;
 import com.pr.sepp.sep.defect.model.Defect;
 import com.pr.sepp.sep.defect.service.DefectService;
@@ -108,6 +108,7 @@ public class DefectServiceImpl implements DefectService {
 
 		Map<String, Object> dataMap = new HashMap<>();
 		dataMap.put(CommonParameter.ID, id);
+		dataMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 		Defect oldDefect = defectDAO.defectQuery(dataMap).get(0);
 		List<DefectStatus> sts = baseQueryDAO.defectStatus();
 		String oldStatusName = sts.stream().filter(f -> Objects.equals(f.getStatusId(), oldDefect.getStatus())).findFirst().orElse(new DefectStatus()).getStatusName();
@@ -238,6 +239,7 @@ public class DefectServiceImpl implements DefectService {
 
 		Map<String, Object> dataMap = new HashMap<>();
 		dataMap.put(CommonParameter.ID, defectRequestParam.getId());
+		dataMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 		Defect oldDefect = defectDAO.defectQuery(dataMap).get(0);
 		List<DefectStatus> sts = baseQueryDAO.defectStatus();
 		String oldStatusName = sts.stream().filter(f -> Objects.equals(f.getStatusId(), oldDefect.getStatus())).findFirst().orElse(new DefectStatus()).getStatusName();

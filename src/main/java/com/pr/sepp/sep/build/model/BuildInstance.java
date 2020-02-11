@@ -9,6 +9,8 @@ public class BuildInstance {
 	private String instance;
 	private Integer productId;
 	private String projectName;
+	private String repoUrl;
+	private String namespace;
 	private String user;
 	private InstanceType type;
 	private String description;

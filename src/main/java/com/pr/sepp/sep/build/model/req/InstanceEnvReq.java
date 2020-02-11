@@ -12,7 +12,10 @@ public class InstanceEnvReq {
 	private Integer id;
 	private String instance;
 	private Integer envType;
+	private String repository;
 	private String projectName;
+	private String repoUrl;
+	private String namespace;
 	private Integer productId;
 	private String jobName;
 	private Integer branchId;

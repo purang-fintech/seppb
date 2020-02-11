@@ -12,6 +12,7 @@ public interface BuildInstanceDAO {
 
 	List<BuildInstance> listBuildInstances(Integer productId);
 
+
 	BuildInstance findInstance(String instance, Integer productId);
 
 	void deleteInstance(String instance);

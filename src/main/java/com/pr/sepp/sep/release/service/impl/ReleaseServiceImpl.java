@@ -6,8 +6,8 @@ import com.pr.sepp.history.model.SEPPHistory;
 import com.pr.sepp.history.service.HistoryService;
 import com.pr.sepp.mgr.user.dao.UserDAO;
 import com.pr.sepp.mgr.user.model.User;
-import com.pr.sepp.notify.model.Message;
-import com.pr.sepp.notify.service.MessageService;
+import com.pr.sepp.notify.message.model.Message;
+import com.pr.sepp.notify.message.service.MessageService;
 import com.pr.sepp.sep.release.dao.ReleaseDAO;
 import com.pr.sepp.sep.release.model.Release;
 import com.pr.sepp.sep.release.service.ReleaseService;
@@ -103,6 +103,7 @@ public class ReleaseServiceImpl implements ReleaseService {
 
 		Map<String, Object> queryMap = new HashMap<>();
 		queryMap.put(CommonParameter.ID, release.getId());
+		queryMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 		Release relOld = releaseDAO.releaseQuery(queryMap).get(0);
 
 		release.setRelCode(relOld.getRelCode());

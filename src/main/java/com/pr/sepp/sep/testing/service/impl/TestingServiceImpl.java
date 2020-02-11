@@ -549,6 +549,7 @@ public class TestingServiceImpl implements TestingService {
 		} else {
 			Map<String, Object> reqQryMap = new HashMap<>();
 			reqQryMap.put(CommonParameter.ID, reqId);
+			reqQryMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 			List<Requirement> reqs = requirementDAO.reqQuery(reqQryMap);
 			if (null == reqs || reqs.size() == 0) {
 				return 0;

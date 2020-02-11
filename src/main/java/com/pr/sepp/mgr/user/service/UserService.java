@@ -16,6 +16,10 @@ public interface UserService {
 
 	int userNameExists(String userName);
 
+	int idUserEmailExists(Integer userId, String userEmail);
+
+	int idUserNameExists(Integer userId, String userName);
+
 	int userCreate(User user);
 
 	int userUpdate(User user);

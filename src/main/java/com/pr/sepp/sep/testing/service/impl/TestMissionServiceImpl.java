@@ -9,8 +9,8 @@ import com.pr.sepp.history.model.SEPPHistory;
 import com.pr.sepp.history.service.HistoryService;
 import com.pr.sepp.mgr.user.dao.UserDAO;
 import com.pr.sepp.mgr.user.model.User;
-import com.pr.sepp.notify.model.Message;
-import com.pr.sepp.notify.service.MessageService;
+import com.pr.sepp.notify.message.model.Message;
+import com.pr.sepp.notify.message.service.MessageService;
 import com.pr.sepp.sep.requirement.dao.RequirementDAO;
 import com.pr.sepp.sep.requirement.model.Requirement;
 import com.pr.sepp.sep.testing.dao.TestMissionDAO;
@@ -62,6 +62,7 @@ public class TestMissionServiceImpl implements TestMissionService {
 
 		Map<String, Object> reqMap = new HashMap<>();
 		reqMap.put(CommonParameter.ID, testMission.getReqId());
+		reqMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 		Requirement req = requirementDAO.reqQuery(reqMap).get(0);
 		String reqSum = "【#" + req.getId() + " - " + req.getSummary() + "】";
 
@@ -215,6 +216,7 @@ public class TestMissionServiceImpl implements TestMissionService {
 
 		Map<String, Object> queryOld = new HashMap<>();
 		queryOld.put(CommonParameter.ID, id);
+		queryOld.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 		TestMission oldTestMission = testMissionDAO.testMissionQuery(queryOld).get(0);
 
 		String reqSum = "【#" + oldTestMission.getReqId() + " - " + oldTestMission.getReqSummary() + "】";
@@ -271,6 +273,7 @@ public class TestMissionServiceImpl implements TestMissionService {
 		tms.forEach(d -> {
 			Map<String, Object> queryOld = new HashMap<>();
 			queryOld.put(CommonParameter.ID, d);
+			queryOld.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 			TestMission oldTestMission = testMissionDAO.testMissionQuery(queryOld).get(0);
 
 			String suffix;
@@ -280,11 +283,13 @@ public class TestMissionServiceImpl implements TestMissionService {
 			if (null == planMissionReq.getPlanId()) {
 				Map<String, Object> planMap = new HashMap<>();
 				planMap.put(CommonParameter.ID, oldTestMission.getPlanId());
+				planMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 				TestPlan plan = testPlanDAO.testPlanQuery(planMap).get(0);
 				suffix = "从版本【" + plan.getRelCode() + "】的【" + oldTestMission.getTypeName() + "】计划中移除";
 			} else {
 				Map<String, Object> planMap = new HashMap<>();
 				planMap.put(CommonParameter.ID, planMissionReq.getPlanId());
+				planMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 				TestPlan plan = testPlanDAO.testPlanQuery(planMap).get(0);
 				suffix = "纳入版本【" + plan.getRelCode() + "】的【" + oldTestMission.getTypeName() + "】计划中";
 			}
@@ -321,6 +326,7 @@ public class TestMissionServiceImpl implements TestMissionService {
 
 		Map<String, Object> queryOld = new HashMap<>();
 		queryOld.put(CommonParameter.ID, id);
+		queryOld.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 		TestMission oldTestMission = testMissionDAO.testMissionQuery(queryOld).get(0);
 
 		String reqSum = "【#" + oldTestMission.getReqId() + " - " + oldTestMission.getReqSummary() + "】";

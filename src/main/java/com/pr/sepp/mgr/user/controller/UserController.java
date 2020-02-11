@@ -266,4 +266,14 @@ public class UserController {
 	public int userNameExists(@PathVariable("userName") String userName) {
 		return userService.userNameExists(userName);
 	}
+
+	@GetMapping(value = "/user/exists/email/{userId}/{userEmail}")
+	public int idUserEmailExists(@PathVariable("userId") Integer userId, @PathVariable("userEmail") String userEmail) {
+		return userService.idUserEmailExists(userId, userEmail);
+	}
+
+	@GetMapping(value = "/user/exists/name/{userId}/{userName}")
+	public int idUserNameExists(@PathVariable("userId") Integer userId, @PathVariable("userName") String userName) {
+		return userService.idUserNameExists(userId, userName);
+	}
 }

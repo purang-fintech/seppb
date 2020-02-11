@@ -24,7 +24,7 @@ public class TestPlanController {
 	@RequestMapping(value = "/plan/query", method = RequestMethod.POST)
 	public PageInfo<TestPlan> testPlanQuery(HttpServletRequest request) {
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
+		dataMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 		dataMap.put(CommonParameter.REL_ID, request.getParameter(CommonParameter.REL_ID));
 		dataMap.put(CommonParameter.ID, request.getParameter("planId"));
 		dataMap.put("planType", request.getParameter("planType"));

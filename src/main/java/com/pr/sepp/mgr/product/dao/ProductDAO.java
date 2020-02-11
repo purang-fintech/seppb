@@ -20,7 +20,7 @@ public interface ProductDAO {
 
 	int updateReleaseAlias(Map<String, Object> product);
 
-	List<ProductConfig> productConfigQuery(int productId);
+	ProductConfig productConfigQuery(int productId);
 
 	int productConfigCreate(ProductConfig productConfig);
 

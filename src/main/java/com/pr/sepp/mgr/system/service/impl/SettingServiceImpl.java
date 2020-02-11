@@ -40,9 +40,16 @@ public class SettingServiceImpl implements SettingService {
 		return configs;
 	}
 
+	/**
+	 * 此处记得前端调用之后手动修改com.pr.sepp.mgr.system.constants.SettingType
+	 * 增加一条枚举类型，再对应增加配置解析的程序入口……所以说前端的动态配置其实就是个摆设
+	 * @param config
+	 * @return
+	 */
 	@Override
 	public int configCreate(SettingConfig config) {
-		return settingDAO.configCreate(config);
+		settingDAO.configCreate(config);
+		return config.getId();
 	}
 
 	@Override

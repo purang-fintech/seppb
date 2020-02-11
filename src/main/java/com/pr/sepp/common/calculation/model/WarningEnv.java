@@ -10,6 +10,6 @@ public class WarningEnv {
 	private Long stgConfigNull;
 	private Long prdConfigNull;
 
-	private Long stgMonAlertHandled;
-	private Long stgMonAlertCount;
+	private Long stgMonWarningHandled;
+	private Long stgMonWarningCount;
 }

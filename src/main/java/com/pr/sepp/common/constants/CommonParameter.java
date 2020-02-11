@@ -4,8 +4,8 @@ public class CommonParameter {
     private CommonParameter() {
     }
 
-    public static final String ALERT_PAGE_NUM = "alertPageNum";
-    public static final String ALERT_PAGE_SIZE = "alertPageSize";
+    public static final String WARNING_PAGE_NUM = "warningPageNum";
+    public static final String WARNING_PAGE_SIZE = "warningPageSize";
     public static final String MESSAGE_PAGE_NUM = "messagePageNum";
     public static final String MESSAGE_PAGE_SIZE = "messagePageSize";
     public static final String USER_ID = "userId";

@@ -15,6 +15,10 @@ public interface UserDAO {
 
 	int userEmailExists(String userEmail);
 
+	int idUserEmailExists(Integer userId, String userEmail);
+
+	int idUserNameExists(Integer userId, String userName);
+
 	int userNameExists(String userName);
 
     int userUpdate(User user);

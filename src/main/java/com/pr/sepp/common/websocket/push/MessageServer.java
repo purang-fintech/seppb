@@ -6,8 +6,9 @@ import com.pr.sepp.common.GlobalCache;
 import com.pr.sepp.common.websocket.GlobalSession;
 import com.pr.sepp.common.websocket.model.MessageType;
 import com.pr.sepp.notify.fetch.FetchClient;
-import com.pr.sepp.notify.model.resp.GlobalDataResp;
-import com.pr.sepp.notify.service.MessageService;
+import com.pr.sepp.notify.message.service.MessageService;
+import com.pr.sepp.notify.model.GlobalDataResp;
+import com.pr.sepp.notify.warning.service.WarningService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -19,9 +20,9 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 
-import static com.pr.sepp.common.GlobalCache.buildAlertsCountMap;
-import static com.pr.sepp.common.GlobalCache.getAlertCountLast;
-import static com.pr.sepp.common.constants.CommonParameter.PRODUCT_ID;
+import static com.pr.sepp.common.GlobalCache.buildWarningsCountMap;
+import static com.pr.sepp.common.GlobalCache.getWarningCountLast;
+import static com.pr.sepp.common.constants.CommonParameter.USER_ID;
 import static com.pr.sepp.common.websocket.GlobalSession.attributesFetch;
 import static com.pr.sepp.common.websocket.model.MessageType.MESSAGE_TYPE;
 
@@ -31,10 +32,15 @@ public class MessageServer implements WebSocketServer<String, String> {
 
 	@Autowired
 	private FetchClient fetchClient;
+
 	@Autowired
 	private ObjectMapper mapper;
+
 	@Autowired
 	private MessageService messageService;
+
+	@Autowired
+	private WarningService warningService;
 
 	/**
 	 * 每天零点清除缓存，以便于当天告警的计算
@@ -65,6 +71,9 @@ public class MessageServer implements WebSocketServer<String, String> {
 		Set<WebSocketSession> sessions = GlobalCache.getUserSessionMap().get(userId);
 		sessions.forEach(session -> pushBySession(session, userId));
 		messageService.updateSendStatusByUser(Integer.parseInt(userId), 1);
+
+		// 告警消息一直保持，不消除
+		// warningService.updateWarningMessageSendStatus(Integer.parseInt(userId), 1);
 	}
 
 	/**
@@ -79,7 +88,7 @@ public class MessageServer implements WebSocketServer<String, String> {
 			GlobalSession.sendMessage(session, message);
 		} catch (Exception e) {
 			log.error("websocket发送消息失败", e);
-            GlobalSession.removeSession(Integer.valueOf(userId),session);
+			GlobalSession.removeSession(Integer.valueOf(userId), session);
 		}
 	}
 
@@ -95,17 +104,17 @@ public class MessageServer implements WebSocketServer<String, String> {
 			PageInfo info = fetchClient.notifyMessage(session, messageType);
 			globalDataResp.apply(info, messageType);
 		}
-		long total = globalDataResp.getAlerts().getTotal();
-		Optional<Integer> optionalUserId = attributesFetch(session, PRODUCT_ID);
+		long total = globalDataResp.getWarnings().getTotal();
+		Optional<Integer> optionalUserId = attributesFetch(session, USER_ID);
 		optionalUserId.ifPresent(uid -> {
-			globalDataResp.setNewAlertCount(total - getAlertCountLast(uid));
-			buildAlertsCountMap(uid, total);
+			globalDataResp.setNewWarningCount(total - getWarningCountLast(uid));
+			buildWarningsCountMap(uid, total);
 		});
 		return globalDataResp;
 	}
 
 	@PreDestroy
 	public void destroy() {
-	    GlobalCache.clear();
-    }
+		GlobalCache.clear();
+	}
 }

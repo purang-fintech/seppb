@@ -13,8 +13,8 @@ import com.pr.sepp.mgr.user.dao.UserDAO;
 import com.pr.sepp.mgr.user.dao.UserSettingDAO;
 import com.pr.sepp.mgr.user.model.User;
 import com.pr.sepp.mgr.user.service.UserService;
-import com.pr.sepp.notify.model.Message;
-import com.pr.sepp.notify.service.MessageService;
+import com.pr.sepp.notify.message.model.Message;
+import com.pr.sepp.notify.message.service.MessageService;
 import com.pr.sepp.utils.SHAEncoder;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.collections.CollectionUtils;
@@ -80,6 +80,16 @@ public class UserServiceImpl implements UserService {
 	@Override
 	public int userNameExists(String userName) {
 		return userDAO.userNameExists(userName);
+	}
+
+	@Override
+	public int idUserEmailExists(Integer userId, String userEmail) {
+		return userDAO.idUserEmailExists(userId, userEmail);
+	}
+
+	@Override
+	public int idUserNameExists(Integer userId, String userName) {
+		return userDAO.idUserNameExists(userId, userName);
 	}
 
 	@Override

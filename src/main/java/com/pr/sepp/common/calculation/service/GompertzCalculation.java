@@ -324,7 +324,7 @@ public class GompertzCalculation {
 		Calendar calendar = Calendar.getInstance();
 
 		//产品配置数据
-		ProductConfig config = productDAO.productConfigQuery(productId).get(0);
+		ProductConfig config = productDAO.productConfigQuery(productId);
 		Map<String, Integer> gompertz = new Gson().fromJson(config.getGompertzDefine(), new TypeToken<Map<String, Integer>>() {
 		}.getType());
 

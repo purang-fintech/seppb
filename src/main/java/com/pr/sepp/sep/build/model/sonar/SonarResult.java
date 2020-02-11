@@ -16,6 +16,7 @@ public class SonarResult {
 	private Double duplicatedLinesDensity;
 	private Double codeSmells;
 	private Double bugs;
+	private Double hotspots;
 	private Double vulnerabilities;
 	private Double sqaleIndex;
 }

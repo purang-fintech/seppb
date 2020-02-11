@@ -18,12 +18,12 @@ public final class GlobalCache {
     public static final ConcurrentMap<String, Set<WebSocketSession>> userSessionMap;
     public static final Map<DeploymentWebSessionPayload, Set<WebSocketSession>> jobSessionMap;
     //记录每次session的告警值
-    private static Map<Integer, Long> alertsCountMap;
+    private static Map<Integer, Long> warningsCountMap;
 
     static {
         Cache<String, Set<WebSocketSession>> userCache = CacheBuilder.newBuilder().maximumSize(200).build();
         userSessionMap = userCache.asMap();
-        alertsCountMap = Maps.newConcurrentMap();
+        warningsCountMap = Maps.newConcurrentMap();
         jobSessionMap = Maps.newConcurrentMap();
     }
 
@@ -35,13 +35,13 @@ public final class GlobalCache {
         return jobSessionMap;
     }
 
-    public static Map<Integer, Long> buildAlertsCountMap(Integer userId, Long val) {
-        alertsCountMap.put(userId, val);
-        return alertsCountMap;
+    public static Map<Integer, Long> buildWarningsCountMap(Integer userId, Long val) {
+        warningsCountMap.put(userId, val);
+        return warningsCountMap;
     }
 
-    public static synchronized Long getAlertCountLast(Integer userId) {
-        Long lastValue = alertsCountMap.get(userId);
+    public static synchronized Long getWarningCountLast(Integer userId) {
+        Long lastValue = warningsCountMap.get(userId);
         if (Objects.isNull(lastValue)) {
             return 0L;
         }
@@ -50,7 +50,7 @@ public final class GlobalCache {
 
     public static void clear() {
         userSessionMap.clear();
-        alertsCountMap.clear();
+        warningsCountMap.clear();
         jobSessionMap.clear();
     }
 }

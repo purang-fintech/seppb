@@ -1,5 +1,6 @@
 package com.pr.sepp.utils.jenkins;
 
+import com.pr.sepp.mgr.system.constants.SettingType;
 import com.pr.sepp.mgr.system.dao.SettingDAO;
 import com.pr.sepp.mgr.system.model.SystemSetting;
 import com.pr.sepp.utils.jenkins.model.JenkinsProperties;
@@ -23,7 +24,7 @@ public class DynamicJenkinsClientProvider extends JenkinsClientProvider {
 
     @Override
     protected void retrieveJenkinsClient() {
-        SystemSetting setting = settingDAO.findSetting(3);
+        SystemSetting setting = settingDAO.findSetting(SettingType.JENKINS.getValue());
         try {
             List<SystemSetting.JenkinsConfig> jenkinsConfigs = SystemSetting.settingToJenkinsConfig(setting);
             for (SystemSetting.JenkinsConfig jenkinsConfig : jenkinsConfigs) {

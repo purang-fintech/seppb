@@ -6,8 +6,8 @@ import com.pr.sepp.common.constants.CommonParameter;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.history.model.SEPPHistory;
 import com.pr.sepp.history.service.HistoryService;
-import com.pr.sepp.notify.model.Message;
-import com.pr.sepp.notify.service.MessageService;
+import com.pr.sepp.notify.message.model.Message;
+import com.pr.sepp.notify.message.service.MessageService;
 import com.pr.sepp.sep.release.dao.ReleaseDAO;
 import com.pr.sepp.sep.release.model.Release;
 import com.pr.sepp.sep.testing.dao.TestMissionDAO;
@@ -110,6 +110,7 @@ public class TestPlanServiceImpl implements TestPlanService {
 
 		Map<String, Object> dataMap = new HashMap<>();
 		dataMap.put(CommonParameter.ID, testPlan.getId());
+		dataMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 		TestPlan oldPlan = testPlanDAO.testPlanQuery(dataMap).get(0);
 
 		testPlan.setSubmitter(oldPlan.getSubmitter());
@@ -228,6 +229,7 @@ public class TestPlanServiceImpl implements TestPlanService {
 
 		Map<String, Object> dataMap = new HashMap<>();
 		dataMap.put(CommonParameter.ID, id);
+		dataMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 		TestPlan oldPlan = testPlanDAO.testPlanQuery(dataMap).get(0);
 
 		String msg = "版本【" + oldPlan.getRelCode() + "】下的【" + oldPlan.getTypeName() + "】计划被删除";

@@ -3,9 +3,13 @@ package com.pr.sepp.sep.build.service;
 import com.pr.sepp.base.dao.BaseQueryDAO;
 import com.pr.sepp.base.model.EnvironmentType;
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
+import com.pr.sepp.mgr.system.constants.SettingType;
+import com.pr.sepp.mgr.system.dao.SettingDAO;
+import com.pr.sepp.mgr.system.model.SystemSetting;
 import com.pr.sepp.mgr.user.dao.UserDAO;
 import com.pr.sepp.sep.build.dao.BuildInstanceDAO;
 import com.pr.sepp.sep.build.model.BuildInstance;
+import com.pr.sepp.sep.build.model.GitProperties;
 import com.pr.sepp.sep.build.model.InstanceEnv;
 import com.pr.sepp.sep.build.model.req.InstanceEnvReq;
 import com.pr.sepp.sep.build.model.resp.InstanceEnvResp;
@@ -13,6 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -31,6 +36,9 @@ public class BuildInstanceService {
 	private UserDAO userDAO;
 
 	@Autowired
+	private SettingDAO settingDAO;
+
+	@Autowired
 	private BaseQueryDAO baseQueryDAODAO;
 
 
@@ -42,6 +50,11 @@ public class BuildInstanceService {
 
 	public List<BuildInstance> listBuildInstances(Integer productId) {
 		return buildInstanceDAO.listBuildInstances(productId);
+	}
+
+	public List<GitProperties.GitConfig> listGitInfo( ) throws IOException {
+		SystemSetting gitConfig = settingDAO.findSetting(SettingType.GIT.getValue());
+		return GitProperties.settingToGitConfig(gitConfig);
 	}
 
 	public boolean isInstanceRepeat(String instance) {

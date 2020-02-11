@@ -12,7 +12,6 @@ import com.pr.sepp.sep.build.model.req.DeploymentBuildReq;
 import com.pr.sepp.sep.build.model.resp.BuildHistoryResp;
 import com.pr.sepp.sep.build.model.sonar.SonarProjectNames;
 import com.pr.sepp.sep.build.model.sonar.SonarScanHistory;
-import com.pr.sepp.sep.build.model.sonar.SonarScanHistoryGrouper;
 import com.pr.sepp.sep.build.model.sonar.SonarScanReq;
 import com.pr.sepp.sep.build.service.BuildService;
 import com.pr.sepp.sep.build.service.JenkinsBuildService;
@@ -144,12 +143,7 @@ public class BuildController {
 		return sonarScanService.listSonarProjectNames(noteId);
 	}
 
-	@GetMapping(value = "/build/sonarScanHistory")
-	public List<SonarScanHistoryGrouper> sonarScanHistory(@RequestParam("noteId") Integer noteId,
-														  @RequestParam(value = "pageNum", required = false, defaultValue = "1") Integer pageNum,
-														  @RequestParam(value = "pageSize", required = false, defaultValue = "5") Integer pageSize) {
-		return sonarScanService.sonarScanHistory(noteId, pageNum, pageSize);
-	}
+
 
 	@GetMapping(value = "/build/sonarAllScanHistory")
 	public List<SonarScanHistory> sonarAllScanHistory(@RequestParam("productId") Integer productId, @RequestParam("projectKey") String projectKey) {

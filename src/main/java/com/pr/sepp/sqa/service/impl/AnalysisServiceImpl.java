@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.pr.sepp.common.calculation.service.GompertzCalculation;
 import com.pr.sepp.common.constants.CommonParameter;
+import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.mgr.product.dao.ProductDAO;
 import com.pr.sepp.mgr.product.model.ProductConfig;
 import com.pr.sepp.sep.release.dao.ReleaseDAO;
@@ -52,6 +53,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 		SimpleDateFormat format = new SimpleDateFormat(dateFormat);
 
 		if (null != dataMap.get(REL_ID) && !StringUtils.isEmpty(String.valueOf(dataMap.get(REL_ID)))) {
+			dataMap.put(PRODUCT_ID, ParameterThreadLocal.getProductId());
 			Release release = releaseDAO.releaseQuery(dataMap).get(0);
 			planBegin = release.getSitBeginDate();
 			planEnd = release.getRelDate();
@@ -85,7 +87,7 @@ public class AnalysisServiceImpl implements AnalysisService {
 			relMap.put(PRODUCT_ID, dataMap.get(PRODUCT_ID));
 			relMap.put(REL_ID, dataMap.get(REL_ID));
 			Release release = releaseDAO.releaseQuery(relMap).get(0);
-			ProductConfig config = productDAO.productConfigQuery(Integer.parseInt((String) dataMap.get(PRODUCT_ID))).get(0);
+			ProductConfig config = productDAO.productConfigQuery((int) dataMap.get(PRODUCT_ID));
 			Map<String, Double> gompertz = new Gson().fromJson(config.getGompertzParams(), new TypeToken<Map<String, Double>>() {
 			}.getType());
 			expectTrend = calService.releaseDefectTrend(release, new Double[]{gompertz.get("k"), gompertz.get("a"), gompertz.get("b"), gompertz.get("m")});

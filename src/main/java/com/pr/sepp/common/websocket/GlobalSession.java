@@ -78,8 +78,8 @@ public final class GlobalSession {
     public static WebSocketSession buildWebSocketSession(WebSocketSession webSocketSession, WebSessionPayload webSessionPayload) {
         acquireUserIdAndSetSession(webSocketSession, webSessionPayload);
         Map<String, Object> attributes = webSocketSession.getAttributes();
-        attributes.put(ALERT_PAGE_NUM, webSessionPayload.getAlertPage().getPageNum());
-        attributes.put(ALERT_PAGE_SIZE, webSessionPayload.getAlertPage().getPageSize());
+        attributes.put(WARNING_PAGE_NUM, webSessionPayload.getWarningPage().getPageNum());
+        attributes.put(WARNING_PAGE_SIZE, webSessionPayload.getWarningPage().getPageSize());
         attributes.put(MESSAGE_PAGE_NUM, webSessionPayload.getMessagePage().getPageNum());
         attributes.put(MESSAGE_PAGE_SIZE, webSessionPayload.getMessagePage().getPageSize());
         attributes.put(MESSAGE_TYPE, webSessionPayload.getMessageTypes());

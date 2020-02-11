@@ -1,8 +1,8 @@
 package com.pr.sepp.common.websocket.model;
 
 public enum MessageType {
-    ALARM("alertFetch"),
-    NOTICE("noticeFetch");
+    WARNING("warningFetch"),
+    MESSAGE("messageFetch");
     private String beanName;
 
     MessageType(String beanName) {

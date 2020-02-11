@@ -13,6 +13,7 @@ public class SonarScanReq {
 	private Integer productId;
 	private List<String> projectKeys;
 	private String gitBranch;
+	private String language;
 	private String projectVersion;
 	private Integer resultId;
 	private Integer submitter;

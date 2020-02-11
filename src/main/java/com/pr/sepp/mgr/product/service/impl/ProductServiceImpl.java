@@ -178,11 +178,10 @@ public class ProductServiceImpl implements ProductService {
 
 	@Override
 	public Map<String, Object> productConfigQuery(Integer productId) {
-		List<ProductConfig> productConfigs = productDAO.productConfigQuery(productId);
-		if (null == productConfigs || productConfigs.isEmpty()) {
+		ProductConfig productConfig = productDAO.productConfigQuery(productId);
+		if (null == productConfig) {
 			return null;
 		}
-		ProductConfig productConfig = productConfigs.get(0);
 		Map<String, Object> config = new HashMap<>();
 		config.put("changeAuditor", productConfig.getChangeAuditor());
 		config.put("dreTarget", productConfig.getDreTarget());

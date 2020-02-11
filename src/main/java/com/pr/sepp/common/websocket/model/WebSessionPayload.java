@@ -11,13 +11,13 @@ public class WebSessionPayload {
 
     private List<MessageType> messageTypes;
     private String message;
-    private AlertPage alertPage;
+    private WarningPage warningPage;
     private MessagePage messagePage;
     private Integer userId;
     private Integer productId;
 
     @Data
-    public static class AlertPage {
+    public static class WarningPage {
         private Integer pageNum;
         private Integer pageSize;
     }

@@ -1,13 +1,8 @@
 package com.pr.sepp.sep.build.dao;
 
-
-import com.pr.sepp.sep.build.model.sonar.SonarProjectNames;
-import com.pr.sepp.sep.build.model.sonar.SonarResult;
-import com.pr.sepp.sep.build.model.sonar.SonarScan;
-import com.pr.sepp.sep.build.model.sonar.SonarScanHistory;
+import com.pr.sepp.sep.build.model.sonar.*;
 
 import java.util.List;
-
 
 public interface SonarDAO {
 
@@ -23,10 +18,11 @@ public interface SonarDAO {
 	/* 需要同步的sonar结果的项目名 */
 	List<SonarScan> listUnSyncProject();
 
-	List<SonarScanHistory> ListSonarScanHistory(Integer noteId, Integer pageNum, Integer pageSize);
-
 	List<SonarScanHistory> ListAllSonarScanHistory(Integer productId, String projectKey);
 
 	/* ReleaseNote对应的项目名称 */
 	List<SonarProjectNames> listSonarProjectNames(Integer noteId);
+
+	List<SonarReqInstance> listInstance(Integer productId);
+
 }

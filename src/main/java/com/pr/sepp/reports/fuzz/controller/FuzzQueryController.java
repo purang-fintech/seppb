@@ -88,7 +88,7 @@ public class FuzzQueryController {
 	@RequestMapping(value = "/fuzz/problem_query", method =  RequestMethod.POST)
 	public PageInfo<Problem> problemQuery(HttpServletRequest request, @RequestParam(value = "searchText") String searchText) {
 		Map<String, String> dataMap = new HashMap<>();
-		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
+		dataMap.put(CommonParameter.PRODUCT_ID, String.valueOf(ParameterThreadLocal.getProductId()));
 		dataMap.put("searchText", searchText);
 
 		int pageNum = ParameterThreadLocal.getPageNum();

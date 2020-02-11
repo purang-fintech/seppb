@@ -11,7 +11,9 @@ public class InstanceReq {
 	private Integer id;
 	private String instance;
 	private String description;
+	private String repoUrl;
 	private String projectName;
+	private String namespace;
 	private InstanceType type;
 	private String params;
 
@@ -19,7 +21,9 @@ public class InstanceReq {
 		BuildInstance buildInstance = new BuildInstance();
 		buildInstance.setInstance(instance);
 		buildInstance.setDescription(description);
+		buildInstance.setRepoUrl(repoUrl);
 		buildInstance.setProjectName(projectName);
+		buildInstance.setNamespace(namespace);
 		buildInstance.setType(type);
 		buildInstance.setId(id);
 		buildInstance.setParams(params);

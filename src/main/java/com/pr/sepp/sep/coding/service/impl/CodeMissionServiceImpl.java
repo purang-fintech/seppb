@@ -7,8 +7,8 @@ import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.history.model.SEPPHistory;
 import com.pr.sepp.history.service.HistoryService;
 import com.pr.sepp.mgr.user.dao.UserDAO;
-import com.pr.sepp.notify.model.Message;
-import com.pr.sepp.notify.service.MessageService;
+import com.pr.sepp.notify.message.model.Message;
+import com.pr.sepp.notify.message.service.MessageService;
 import com.pr.sepp.sep.coding.dao.CodeMissionDAO;
 import com.pr.sepp.sep.coding.model.CodeMission;
 import com.pr.sepp.sep.coding.service.CodeMissionService;
@@ -52,6 +52,7 @@ public class CodeMissionServiceImpl implements CodeMissionService {
 
 		Map<String, Object> queryMap = new HashMap<>();
 		queryMap.put(CommonParameter.ID, reqId);
+		queryMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 		Requirement oldReq = requirementDAO.reqQuery(queryMap).get(0);
 		String reqSum = "【#" + reqId + " - " + oldReq.getSummary() + "】";
 
@@ -102,6 +103,7 @@ public class CodeMissionServiceImpl implements CodeMissionService {
 
 		Map<String, Object> queryMap = new HashMap<>();
 		queryMap.put(CommonParameter.ID, codeMission.getId());
+		queryMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 		CodeMission oldCms = codeMissionDAO.cmsQuery(queryMap).get(0);
 
 		Map<String, Object> operMap = new HashMap<>();
@@ -199,6 +201,7 @@ public class CodeMissionServiceImpl implements CodeMissionService {
 
 		Map<String, Object> dataMap = new HashMap<>();
 		dataMap.put(CommonParameter.ID, id);
+		dataMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 		CodeMission oldCms = codeMissionDAO.cmsQuery(dataMap).get(0);
 
 		Map<String, Object> operMap = new HashMap<>();
@@ -268,6 +271,7 @@ public class CodeMissionServiceImpl implements CodeMissionService {
 
 		Map<String, Object> dataMap = new HashMap<>();
 		dataMap.put("cmId", cmId);
+		dataMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 		Requirement requirement = requirementDAO.reqQuery(dataMap).get(0);
 
 		int reqId = requirement.getId();

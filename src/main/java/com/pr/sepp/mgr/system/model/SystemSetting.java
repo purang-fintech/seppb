@@ -11,7 +11,7 @@ import java.util.List;
 @Data
 public class SystemSetting {
     private Integer id;
-    private Integer settingType;
+    private Integer configId;
     private Integer createUser;
     private String settingValue;
 

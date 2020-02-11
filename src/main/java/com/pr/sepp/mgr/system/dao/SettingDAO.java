@@ -23,5 +23,5 @@ public interface SettingDAO {
 
 	int settingDelete(int setttingId);
 
-	SystemSetting findSetting(Integer settingType);
+	SystemSetting findSetting(Integer configId);
 }

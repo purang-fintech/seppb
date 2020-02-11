@@ -1,6 +1,7 @@
 package com.pr.sepp.sep.analysis.service.impl;
 
 import com.pr.sepp.common.constants.CommonParameter;
+import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
 import com.pr.sepp.sep.analysis.dao.DataGraghDAO;
 import com.pr.sepp.sep.analysis.service.DataGraghService;
 import com.pr.sepp.sep.testing.dao.TestPlanDAO;
@@ -40,6 +41,7 @@ public class DataGraghServiceImpl implements DataGraghService {
 			Map<String, Object> dataMap = new HashMap<>();
 			dataMap.put(CommonParameter.REL_ID, relId);
 			dataMap.put("planType", planType);
+			dataMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 
 			TestPlan testPlan = testPlanDAO.testPlanQuery(dataMap).get(0);
 			planBegin = testPlan.getPlanBegin();

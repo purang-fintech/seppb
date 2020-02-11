@@ -22,7 +22,7 @@ import static org.apache.commons.lang3.StringUtils.isNotBlank;
 
 @Slf4j
 public final class JavaMailUtils {
-    private static final String ALERT_RETRY_ERROR = "邮件发送给：%s失败,详情见错误日志";
+    private static final String WARNING_RETRY_ERROR = "邮件发送给：%s失败,详情见错误日志";
 
     private JavaMailUtils() {
     }
@@ -145,7 +145,7 @@ public final class JavaMailUtils {
                             helperRetry.setTo(mailDTO.getFailTo());
                             helperRetry.setSubject(mailDTO.getFailSubject());
                             String[] to = mailDTO.getTo();
-                            helperRetry.setText(String.format(ALERT_RETRY_ERROR, to), false);
+                            helperRetry.setText(String.format(WARNING_RETRY_ERROR, to), false);
                             sendMail(javaMailSender, mimeMessageNew);
                         }
                         times++;

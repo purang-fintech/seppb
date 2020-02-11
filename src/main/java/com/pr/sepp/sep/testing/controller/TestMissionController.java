@@ -29,7 +29,7 @@ public class TestMissionController {
 	public PageInfo<TestMission> testMissionQuery(HttpServletRequest request) {
 
 		Map<String, Object> dataMap = new HashMap<>();
-		dataMap.put(CommonParameter.PRODUCT_ID, request.getParameter(CommonParameter.PRODUCT_ID));
+		dataMap.put(CommonParameter.PRODUCT_ID, ParameterThreadLocal.getProductId());
 		dataMap.put(CommonParameter.ID, request.getParameter(CommonParameter.ID));
 		dataMap.put(CommonParameter.REQ_ID, request.getParameter(CommonParameter.REQ_ID));
 		dataMap.put(CommonParameter.REL_ID, request.getParameter(CommonParameter.REL_ID));

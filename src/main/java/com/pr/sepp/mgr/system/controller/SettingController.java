@@ -26,10 +26,17 @@ public class SettingController {
 		return settingService.listConfig();
 	}
 
+	/**
+	 * 此处记得前端调用之后手动修改com.pr.sepp.mgr.system.constants.SettingType
+	 * 增加一条枚举类型，再对应增加配置解析的程序入口……所以说前端的动态配置其实就是个摆设
+	 * @param request
+	 * @return
+	 */
 	@RequestMapping(value = "/config/create", method =  RequestMethod.POST)
 	public int configCreate(HttpServletRequest request) {
-		SettingConfig config = new SettingConfig(); 
-		
+		SettingConfig config = new SettingConfig();
+
+		config.setSettingType(request.getParameter("settingType"));
 		config.setSettingName(request.getParameter("settingName"));
 		config.setSettingLimit( Integer.parseInt(request.getParameter("settingLimit")));
 		config.setSettingKeys(request.getParameter("settingKeys"));
@@ -40,8 +47,9 @@ public class SettingController {
 
 	@RequestMapping(value = "/config/update", method =  RequestMethod.POST)
 	public int configUpdate(HttpServletRequest request) {
-		SettingConfig config = new SettingConfig(); 
-		
+		SettingConfig config = new SettingConfig();
+
+		config.setSettingType(request.getParameter("settingType"));
 		config.setSettingName(request.getParameter("settingName"));
 		config.setSettingLimit( Integer.parseInt(request.getParameter("settingLimit")));
 		config.setSettingKeys(request.getParameter("settingKeys"));
@@ -64,7 +72,7 @@ public class SettingController {
 	public int settingCreate(HttpServletRequest request) {
 		SystemSetting setting = new SystemSetting(); 
 		
-		setting.setSettingType(Integer.parseInt(request.getParameter("settingType")));
+		setting.setConfigId(Integer.parseInt(request.getParameter("configId")));
 		setting.setCreateUser(ParameterThreadLocal.getUserId());
 		setting.setSettingValue(request.getParameter("settingValue"));
 		settingService.settingCreate(setting);

@@ -2,12 +2,13 @@ package com.pr.sepp.common.calculation.model;
 
 import lombok.Data;
 
-import java.time.LocalDate;
-
 @Data
 public class ReleaseSepData {
 	private Integer relId;
-	private LocalDate warnDate;
+	private String warnDate;
+	private String sitBeginDate;
+	private String uatBeginDate;
+	private String relDate;
 
 	// defect data grouped
 	private Long expectDefect;
@@ -26,6 +27,8 @@ public class ReleaseSepData {
 	private Long fixTimes;
 
 	// SIT and UAT test plans
+	private Long sitPlanId;
+	private Long uatPlanId;
 	private Double sitPlaned;
 	private Double sitExecuted;
 	private Double uatPlaned;

@@ -1,6 +1,6 @@
 package com.pr.sepp.common.quartz.jobs;
 
-import com.pr.sepp.notify.service.MailService;
+import com.pr.sepp.notify.message.service.MessageMailService;
 import lombok.extern.slf4j.Slf4j;
 import org.quartz.DisallowConcurrentExecution;
 import org.quartz.JobExecutionContext;
@@ -16,7 +16,7 @@ import java.util.Date;
 public class BusinessEmailJob extends QuartzJobBean {
 
 	@Autowired
-	private MailService mailService;
+	private MessageMailService mailService;
 
 	@Override
 	protected void executeInternal(JobExecutionContext jobExecutionContext) {
