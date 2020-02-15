@@ -2,8 +2,9 @@ CREATE DATABASE /*!32312 IF NOT EXISTS*/`sepp` /*!40100 DEFAULT CHARACTER SET ut
 
 USE `sepp`;
 
-/*Table structure for table `sepp_attachment` */
+set @@global.foreign_key_checks = 0;
 
+/*Table structure for table `sepp_attachment` */
 DROP TABLE IF EXISTS `sepp_attachment`;
 
 CREATE TABLE `sepp_attachment` (
@@ -1369,6 +1370,7 @@ CREATE TABLE `sepp_sonar_scan` (
   `note_id` int(10) DEFAULT NULL COMMENT '构建id',
   `product_id` int(10) DEFAULT NULL COMMENT '产品编号',
   `submitter` int(10) DEFAULT NULL COMMENT '提交人',
+  `instance`` VARCHAR(40) DEFAULT NULL COMMENT '实例名称',
   `project_key` varchar(40) DEFAULT NULL COMMENT '项目Key',
   `git_branch` varchar(50) DEFAULT NULL COMMENT 'git分支',
   `project_version` varchar(40) DEFAULT NULL COMMENT '版本',
@@ -1746,3 +1748,5 @@ CREATE TABLE `sepp_warning_type` (
   PRIMARY KEY (`id`),
   UNIQUE KEY `INDEX_UNIQUE` (`type`,`sub_type`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
+
+set @@global.foreign_key_checks = 1;

@@ -8,6 +8,7 @@
     <select id="releaseQuery" resultType="com.pr.sepp.sep.release.model.Release">
         select r.id,
             r.rel_code                                  as relCode,
+            r.product_id                                as productId,
             r.branch_id                                 as branchId,
             rt.branch_name                              as branchName,
             r.status,
@@ -30,7 +31,8 @@
             sepp_rel_status rs,
             sepp_user u1,
             sepp_user u2
-        where rs.status_id = r.status
+        where r.product_id = #{productId}
+          and rs.status_id = r.status
           and r.creator = u1.user_id
           and r.branch_id = rt.branch_id
           and r.responser = u2.user_id
@@ -50,7 +52,7 @@
                 where req.id = #{reqId})
             </when>
             <otherwise>
-                and r.product_id = #{productId}
+
                 <if test="sts!=null">
                     and r.status in
                     <foreach collection="sts" index="index" item="status" open="(" separator="," close=")">

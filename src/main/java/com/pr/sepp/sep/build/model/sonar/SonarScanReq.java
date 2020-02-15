@@ -11,6 +11,7 @@ public class SonarScanReq {
 	private Integer id;
 	private Integer noteId;
 	private Integer productId;
+	private String instanceName;
 	private List<String> projectKeys;
 	private String gitBranch;
 	private String language;

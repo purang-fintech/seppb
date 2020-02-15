@@ -114,6 +114,7 @@
              sepp_user u,
              sepp_attachment a
         WHERE r.status = rs.status_id
+          AND r.product_id = #{productId}
           AND r.priority = rp.priority_id
           AND r.module_id = pm.module_id
           AND r.type = rt.type_id
@@ -362,7 +363,8 @@
              sepp_user u2,
              sepp_prod_module pm,
              sepp_attachment a
-        WHERE find_in_set(a.id, p.attachment) > 0
+        WHERE p.product_id = #{productId}
+          AND find_in_set(a.id, p.attachment) > 0
           AND upper(concat(p.summary, left(a.file_name, locate(' @ ', a.file_name)))) LIKE
               concat('%', upper(#{searchText}), '%')
           AND p.product_id = #{productId}

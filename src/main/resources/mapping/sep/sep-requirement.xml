@@ -42,7 +42,8 @@
                 sepp_req_status rs,
                 sepp_req_type rt,
                 sepp_prod_module pm
-            WHERE r.id > 0
+            WHERE r.product_id = #{productId}
+              AND r.id > 0
               AND r.status = rs.status_id
               AND r.priority = rp.priority_id
               AND r.module_id = pm.module_id
@@ -61,7 +62,6 @@
                 and r.id in (select req_id from sepp_defects where id= #{defectId})
             </when>
             <otherwise>
-                and r.product_id = #{productId}
                 <if test="types!=null">
                     and r.type in
                     <foreach collection="types" index="index" item="type" open="(" separator="," close=")">

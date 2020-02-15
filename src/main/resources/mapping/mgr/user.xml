@@ -44,15 +44,23 @@
     </select>
 
     <select id="userAccountExists" resultType="java.lang.Integer">
-        select  count(user_id) from sepp_user u where user_account = #{userAccount}
+        select count(user_id) from sepp_user u where user_account = #{userAccount}
     </select>
 
     <select id="userEmailExists" resultType="java.lang.Integer">
-        select  count(user_id) from sepp_user u where user_email = #{userEmail}
+        select count(user_id) from sepp_user u where user_email = #{userEmail}
     </select>
 
     <select id="userNameExists" resultType="java.lang.Integer">
-        select  count(user_id) from sepp_user u where user_name = #{userName}
+        select count(user_id) from sepp_user u where user_name = #{userName}
+    </select>
+
+    <select id="idUserEmailExists" resultType="java.lang.Integer">
+        select count(user_id) from sepp_user u where user_email = #{userEmail} and user_id != #{userId}
+    </select>
+
+    <select id="idUserNameExists" resultType="java.lang.Integer">
+        select count(user_id) from sepp_user u where user_name = #{userName} and user_id != #{userId}
     </select>
 
     <select id="userQueryByIds" resultType="com.pr.sepp.mgr.user.model.User" parameterType="java.util.HashMap">

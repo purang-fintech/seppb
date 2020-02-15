@@ -137,7 +137,10 @@ public class BuildController {
 	public void startSonarScan(@RequestBody SonarScanReq sonarScanReq) {
 		sonarScanService.saveSonarData(sonarScanReq);
 	}
-
+	@RequestMapping(value = "/build/handleSonarConfig", method =  RequestMethod.POST)
+	public boolean handleConfig() throws IOException {
+		return sonarScanService.handleConfig();
+	}
 	@GetMapping(value = "/build/sonarProjectNames/{noteId}")
 	public List<SonarProjectNames> listSonarProjectNames(@PathVariable("noteId") Integer noteId) {
 		return sonarScanService.listSonarProjectNames(noteId);

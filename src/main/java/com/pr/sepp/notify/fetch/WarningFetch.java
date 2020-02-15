@@ -2,7 +2,6 @@ package com.pr.sepp.notify.fetch;
 
 import com.github.pagehelper.PageInfo;
 import com.pr.sepp.notify.warning.model.WarningMessage;
-import com.pr.sepp.notify.warning.model.WarningQuery;
 import com.pr.sepp.notify.warning.service.WarningService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -28,11 +27,6 @@ public class WarningFetch implements BaseFetch<WarningMessage> {
 		Optional<Integer> optionalProductId = attributesFetch(session, PRODUCT_ID);
 		Optional<Integer> optionalUserId = attributesFetch(session, USER_ID);
 
-		WarningQuery warningQuery = new WarningQuery();
-		warningQuery.setProductId(optionalProductId.get());
-		warningQuery.setTo(optionalUserId.get());
-		warningQuery.setIsSent(0);
-
-		return warningService.warningListPaging(warningQuery, pageNum, pageSize);
+		return warningService.warningListPaging(optionalProductId.get(), optionalUserId.get(), pageNum, pageSize);
 	}
 }

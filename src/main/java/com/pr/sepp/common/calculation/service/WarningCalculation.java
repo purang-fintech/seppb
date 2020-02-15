@@ -129,7 +129,6 @@ public class WarningCalculation {
 				continue;
 			}
 		}
-		;
 	}
 
 	/**

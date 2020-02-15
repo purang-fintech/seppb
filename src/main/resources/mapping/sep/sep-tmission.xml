@@ -31,7 +31,8 @@
             sepp_user u2,
             sepp_test_period p,
             sepp_tm_status s
-        where t.req_id = r.id
+        where r.product_id = #{productId}
+          and t.req_id = r.id
           and t.spliter = u1.user_id
           and t.responser = u2.user_id
           and p.period_id = t.type
@@ -44,7 +45,6 @@
                 and t.req_id = #{reqId}
             </when>
             <otherwise>
-                and r.product_id = #{productId}
                 <if test="planId !=null and planId !=''">
                     and t.plan_id=#{planId}
                 </if>

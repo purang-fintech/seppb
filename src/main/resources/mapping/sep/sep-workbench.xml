@@ -227,4 +227,43 @@
             #{item.id}
         </foreach>
     </select>
+
+    <select id="productWarningQuery" resultType="com.pr.sepp.notify.warning.model.Warning">
+        SELECT
+            w.id,
+            w.batch_id      batchId,
+            w.type,
+            wt1.type_desc   typeName,
+            w.sub_type      subType,
+            wt2.sub_desc    subTypeName,
+            w.category,
+            w.responser,
+            u.user_name     responserName,
+            w.warning_date  warningDate,
+            w.level,
+            wl.level_name   levelName,
+            w.summary,
+            w.content
+        FROM
+            sepp_user u,
+            sepp_warning w,
+            (SELECT DISTINCT `type`, type_desc FROM sepp_warning_type) wt1,
+            (SELECT DISTINCT `type`, type_desc, sub_type, sub_desc FROM sepp_warning_type) wt2,
+            sepp_warning_level wl
+        WHERE w.product_id = #{productId}
+          AND u.user_id = w.responser
+          AND w.type = wt1.type
+          AND w.type = wt2.type
+          AND w.sub_type = wt2.sub_type
+          AND w.level = wl.level_id
+        <choose>
+            <when test="warningDate!=null and warningDate!=''">
+                AND w.warning_date = #{warningDate}
+            </when>
+            <otherwise>
+                AND TO_DAYS(NOW()) - TO_DAYS(w.warning_date) = 0
+            </otherwise>
+        </choose>
+        ORDER BY w.category DESC, w.type, w.sub_type ASC
+    </select>
 </mapper>

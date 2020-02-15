@@ -1,6 +1,7 @@
 package com.pr.sepp.work.dashboard.service.impl;
 
 import com.pr.sepp.common.threadlocal.ParameterThreadLocal;
+import com.pr.sepp.notify.warning.model.Warning;
 import com.pr.sepp.sep.coding.model.CodeMission;
 import com.pr.sepp.sep.defect.model.Defect;
 import com.pr.sepp.sep.release.model.Release;
@@ -132,7 +133,14 @@ public class UserWorkServiceImpl implements UserWorkService {
 
 	@Override
 	public Map<String, Object> productWarningQuery() {
-		return null;
+		Map<String, Object> result = new HashMap<>();
+		List<Warning> warnings = userWorkDAO.productWarningQuery(ParameterThreadLocal.getProductId(), null);
+		List<Warning> myWarnings = warnings.stream().filter(f -> Objects.equals(f.getResponser(), ParameterThreadLocal.getUserId())).collect(Collectors.toList());
+		result.put("count", warnings.size());
+		result.put("mine", myWarnings.size());
+		result.put("allData", warnings);
+		result.put("mineData", myWarnings);
+		return result;
 	}
 
 	@Override
