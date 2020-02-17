@@ -6,6 +6,9 @@ import org.rendersnake.HtmlCanvas;
 
 import java.io.IOException;
 
+import static junit.framework.TestCase.assertNotNull;
+import static junit.framework.TestCase.assertTrue;
+
 public class HtmlCreateTest {
 
 
@@ -46,6 +49,6 @@ public class HtmlCreateTest {
         HtmlCanvas htmlCanvas = html.table(attributes.add("class", "hovertable"))._table();
 
         htmlCanvas.style()._style();
-        System.out.println(htmlCanvas.toHtml());
+        assertNotNull(htmlCanvas.toHtml());
     }
 }

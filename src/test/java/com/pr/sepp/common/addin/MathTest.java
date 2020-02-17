@@ -2,10 +2,14 @@ package com.pr.sepp.common.addin;
 
 import org.junit.Test;
 
-public class MathTest {
-    @Test
+import static org.junit.Assert.assertTrue;
 
-    public void testMath() {
-        System.out.println(Math.pow(64, new Float((double) 1 / 3)));
-    }
+public class MathTest {
+	@Test
+	public void transfer(){
+		float a = 1.1f;
+		float b = 1.8f;
+
+		assertTrue((int) a == (int) b);
+	}
 }

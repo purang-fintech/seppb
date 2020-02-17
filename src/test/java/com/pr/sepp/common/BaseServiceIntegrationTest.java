@@ -1,7 +1,6 @@
 package com.pr.sepp.common;
 
 import com.pr.sepp.SeppApplication;
-import com.pr.sepp.notify.alert.AlertMonitorHelper;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.runner.RunWith;
@@ -18,8 +17,6 @@ public abstract class BaseServiceIntegrationTest {
 
     @MockBean
     private JavaMailSender javaMailSender;
-    @MockBean
-    private AlertMonitorHelper alertMonitorHelper;
 
     @BeforeClass
     public static void beforeClass() {

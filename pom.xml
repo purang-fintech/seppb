@@ -149,6 +149,11 @@
             <version>4.5.8</version><!--$NO-MVN-MAN-VER$-->
             <type>jar</type>
         </dependency>
+        <dependency>
+            <groupId>org.gitlab</groupId>
+            <artifactId>java-gitlab-api</artifactId>
+            <version>4.1.1</version>
+        </dependency>
 
         <dependency>
             <groupId>commons-beanutils</groupId>
@@ -180,7 +185,7 @@
         <dependency>
             <groupId>commons-fileupload</groupId>
             <artifactId>commons-fileupload</artifactId>
-            <version>1.3.3</version>
+            <version>1.3.2</version>
             <type>jar</type>
         </dependency>
 
@@ -290,6 +295,21 @@
             <artifactId>java-jwt</artifactId>
             <version>3.8.3</version>
         </dependency>
+
+
+
+        <dependency>
+            <groupId>org.sonarsource.sonarqube</groupId>
+            <artifactId>sonar-plugin-api-impl</artifactId>
+            <version>8.0</version>
+        </dependency>
+        <dependency>
+            <groupId>org.codehaus.sonar</groupId>
+            <artifactId>sonar-ws-client</artifactId>
+            <version>5.1</version>
+        </dependency>
+
+
     </dependencies>
 
     <build>

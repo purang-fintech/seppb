@@ -26,36 +26,36 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicReference;
 
+import static junit.framework.TestCase.assertTrue;
+
 @RunWith(SpringRunner.class)
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class WebsocketTest extends BaseIntegrationTest {
-    final CountDownLatch latch = new CountDownLatch(1);
-    @LocalServerPort
-    private int port;
-    private SockJsClient sockJsClient;
+	final CountDownLatch latch = new CountDownLatch(1);
+	@LocalServerPort
+	private int port;
+	private SockJsClient sockJsClient;
 
-    @Autowired
-    private MessageWebSocketHandler messageWebSocketHandler;
-
-
-    @Before
-    public void setup() {
-        List<Transport> transports = new ArrayList<>();
-        transports.add(new WebSocketTransport(new StandardWebSocketClient()));
-        transports.add(new RestTemplateXhrTransport());
-        this.sockJsClient = new SockJsClient(transports);
-    }
+	@Autowired
+	private MessageWebSocketHandler messageWebSocketHandler;
 
 
-    @Test
-    @Ignore
-    public void getGreeting() throws Exception {
-        this.sockJsClient.doHandshake(messageWebSocketHandler,
-                "ws://localhost:" + port + "/sepp/myHandler");
-        if (latch.await(60, TimeUnit.SECONDS)) {
-        } else {
-        }
+	@Before
+	public void setup() {
+		List<Transport> transports = new ArrayList<>();
+		transports.add(new WebSocketTransport(new StandardWebSocketClient()));
+		transports.add(new RestTemplateXhrTransport());
+		this.sockJsClient = new SockJsClient(transports);
+	}
 
-    }
-
+	@Test
+	@Ignore
+	public void getGreeting() throws Exception {
+		this.sockJsClient.doHandshake(messageWebSocketHandler,
+				"ws://localhost:" + port + "/sepp/myHandler");
+        assertTrue(true);
+		if (latch.await(60, TimeUnit.SECONDS)) {
+		} else {
+		}
+	}
 }
