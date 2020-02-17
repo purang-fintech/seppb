@@ -11,25 +11,29 @@
             instance,
             type,
             project_name,
+            repo_url,
+            namespace,
             description,
             user,
             params
         )
         VALUES
-            (#{productId},#{instance},#{type},#{projectName},#{description},#{user},#{params})
+            (#{productId},#{instance},#{type},#{projectName},#{repoUrl},#{namespace},#{description},#{user},#{params})
     </insert>
 
     <select id="listBuildInstances" resultType="com.pr.sepp.sep.build.model.BuildInstance">
         SELECT id,
-               product_id   productId,
-               instance,
-               type,
-               description,
-               project_name projectName,
-               user,
-               created_date createdDate,
-               updated_date updatedDate,
-               params
+            product_id   productId,
+            instance,
+            type,
+            description,
+            project_name projectName,
+            repo_url repoUrl,
+            namespace,
+            user,
+            created_date createdDate,
+            updated_date updatedDate,
+            params
         FROM sepp_build_instance
         WHERE product_id = #{productId}
         order by updatedDate desc
@@ -42,7 +46,7 @@
                type,
                description,
                user,
-               project_name,
+               project_name projectName,
                created_date createdDate,
                updated_date updatedDate,
                params
@@ -61,6 +65,8 @@
         SET
             TYPE = #{type},
             project_name = #{projectName},
+            repo_url = #{repoUrl},
+            namespace = #{namespace},
             user=#{user},
             description=#{description},
             params=#{params}

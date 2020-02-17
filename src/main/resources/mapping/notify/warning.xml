@@ -1,0 +1,452 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "mybatis-3-mapper.dtd">
+
+<mapper namespace="com.pr.sepp.notify.warning.dao.WarningDAO">
+    <select id="warningProducts" resultType="com.pr.sepp.mgr.product.model.Product">
+        select
+            p.product_id      as productId,
+            p.product_code    as productCode,
+            p.product_name    as productName,
+            p.product_desc    as productDesc,
+            p.is_valid        as isValid,
+            p.owner
+        from
+            sepp_product p,
+            sepp_product_config pc
+        where p.product_id = pc.product_id
+          and pc.qa_warning = 1
+    </select>
+
+    <select id="productOpenRelease" resultType="com.pr.sepp.sep.release.model.Release">
+        select r.id,
+            r.rel_code                                  as relCode,
+            r.branch_id                                 as branchId,
+            r.product_id                                as productId,
+            r.status,
+            r.creator,
+            r.responser,
+            date_format(r.rel_date, '%Y-%m-%d')         as relDate,
+            date_format(r.req_confirm_date, '%Y-%m-%d') as reqConfirmDate,
+            date_format(r.sit_begin_date, '%Y-%m-%d')   as sitBeginDate,
+            date_format(r.uat_begin_date, '%Y-%m-%d')   as uatBeginDate,
+            date_format(r.ready_date, '%Y-%m-%d')       as readyDate,
+            date_format(r.rel_date_act, '%Y-%m-%d')     as relDateAct,
+            date_format(r.created_date, '%Y-%m-%d')     as createDate,
+            r.environment
+        from sepp_release r
+        where r.product_id = #{productId}
+          and r.status > 0
+    </select>
+
+    <select id="warningRules" resultType="com.pr.sepp.common.calculation.model.WarningRules">
+        select id,
+            type,
+            sub_type        as subType,
+            level,
+            target_type     as targetType,
+            title,
+            expression
+        from sepp_warning_rules
+    </select>
+
+    <select id="groupReleaseData" resultType="com.pr.sepp.common.calculation.model.ReleaseSepData">
+        SELECT
+            SUM(CASE item WHEN 'foundDefect' THEN itemCount ELSE 0 END) AS 'foundDefect',
+            SUM(CASE item WHEN 'fixedDefect' THEN itemCount ELSE 0 END) AS 'fixedDefect',
+            SUM(CASE item WHEN 'closedDefect' THEN itemCount ELSE 0 END) AS 'closedDefect',
+            SUM(CASE item WHEN 'noneReqDefect' THEN itemCount ELSE 0 END) AS 'noneReqDefect',
+            SUM(CASE item WHEN 'noneModuleDefect' THEN itemCount ELSE 0 END) AS 'noneModuleDefect',
+            SUM(CASE item WHEN 'reqMaxDefect' THEN itemCount ELSE 0 END) AS 'reqMaxDefect',
+            SUM(CASE item WHEN 'moduleMaxDefect' THEN itemCount ELSE 0 END) AS 'moduleMaxDefect',
+            SUM(CASE item WHEN 'reqAvgDefect' THEN itemCount ELSE 0 END) AS 'reqAvgDefect',
+            SUM(CASE item WHEN 'moduleAvgDefect' THEN itemCount ELSE 0 END) AS 'moduleAvgDefect',
+            SUM(CASE item WHEN 'fixCost' THEN itemCount ELSE 0 END) AS 'fixCost',
+            SUM(CASE item WHEN 'fixTimes' THEN itemCount ELSE 0 END) AS 'fixTimes',
+            SUM(CASE item WHEN 'cmsTotal' THEN itemCount ELSE 0 END) AS 'cmsTotal',
+            SUM(CASE item WHEN 'cmsDelayed' THEN itemCount ELSE 0 END) AS 'cmsDelayed'
+        FROM
+            (SELECT
+                'foundDefect' AS item,
+                COUNT(id) AS itemCount
+            FROM
+                sepp_defects
+            WHERE rel_id = #{relId}
+              AND found_time <![CDATA[ < ]]> DATE_ADD(#{warnDate}, INTERVAL 1 DAY)
+            UNION ALL
+            SELECT
+                'fixedDefect' AS item,
+                COUNT(id) AS itemCount
+            FROM
+                sepp_defects
+            WHERE rel_id = #{relId}
+              AND fixed_time <![CDATA[ < ]]> DATE_ADD(#{warnDate}, INTERVAL 1 DAY)
+            UNION ALL
+            SELECT
+                'closedDefect' AS item,
+                COUNT(id) AS itemCount
+            FROM
+                sepp_defects
+            WHERE rel_id = #{relId}
+              AND closed_time <![CDATA[ < ]]> DATE_ADD(#{warnDate}, INTERVAL 1 DAY)
+            UNION ALL
+            SELECT
+                'noneReqDefect' AS item,
+                COUNT(id) AS itemCount
+            FROM
+                sepp_defects
+            WHERE rel_id = #{relId}
+              AND found_time <![CDATA[ < ]]> DATE_ADD(#{warnDate}, INTERVAL 1 DAY)
+              AND req_id = 0
+            UNION ALL
+            SELECT
+                'noneModuleDefect' AS item,
+                COUNT(id) AS itemCount
+            FROM
+                sepp_defects
+            WHERE rel_id = #{relId}
+              AND found_time <![CDATA[ < ]]> DATE_ADD(#{warnDate}, INTERVAL 1 DAY)
+              AND (prod_module = 0 OR prod_module IS NULL)
+            UNION ALL
+            SELECT
+                'reqMaxDefect' AS item,
+                MAX(a.reqDefect) AS itemCount
+            FROM
+                (SELECT
+                    COUNT(id) AS reqDefect
+                FROM
+                    sepp_defects
+                WHERE rel_id = #{relId}
+                  AND found_time <![CDATA[ < ]]> DATE_ADD(#{warnDate}, INTERVAL 1 DAY)
+                  AND req_id != 0
+                GROUP BY req_id) a
+            UNION ALL
+            SELECT
+                'moduleMaxDefect' AS item,
+                MAX(b.moduleDefect) AS itemCount
+            FROM
+                (SELECT
+                    COUNT(id) AS moduleDefect,
+                    prod_module
+                FROM
+                    sepp_defects
+                WHERE rel_id = #{relId}
+                  AND found_time <![CDATA[ < ]]> DATE_ADD(#{warnDate}, INTERVAL 1 DAY)
+                  AND prod_module != 0
+                GROUP BY prod_module) b
+            UNION ALL
+            SELECT
+                'reqAvgDefect' AS item,
+                ROUND(COUNT(id) / COUNT(DISTINCT req_id), 2) AS itemCount
+            FROM
+                sepp_defects
+            WHERE rel_id = #{relId}
+              AND found_time <![CDATA[ < ]]> DATE_ADD(#{warnDate}, INTERVAL 1 DAY)
+              AND req_id != 0
+            UNION ALL
+            SELECT
+                'moduleAvgDefect' AS item,
+                ROUND(COUNT(id) / COUNT(DISTINCT prod_module), 2) AS itemCount
+            FROM
+                sepp_defects
+            WHERE rel_id = #{relId}
+              AND found_time <![CDATA[ < ]]> DATE_ADD(#{warnDate}, INTERVAL 1 DAY)
+              AND prod_module != 0
+            UNION ALL
+            SELECT
+                'fixCost' AS item,
+                ROUND(MAX(fix_cost), 2) AS itemCount
+            FROM
+                sepp_defects
+            WHERE rel_id = #{relId}
+              AND found_time <![CDATA[ < ]]> DATE_ADD(#{warnDate}, INTERVAL 1 DAY)
+            UNION ALL
+            SELECT
+                'fixTimes' AS item,
+                MAX(fix_times) AS itemCount
+            FROM
+                sepp_defects
+            WHERE rel_id = #{relId}
+              AND found_time <![CDATA[ < ]]> DATE_ADD(#{warnDate}, INTERVAL 1 DAY)
+            UNION ALL
+            SELECT
+                'cmsTotal' AS item,
+                COUNT(cm.id) AS itemCount
+            FROM
+                sepp_code_mission cm,
+                sepp_requirement r
+            WHERE r.rel_id = #{relId}
+              AND r.id = cm.req_id
+            UNION ALL
+            SELECT
+                'cmsDelayed' AS item,
+                COUNT(b.id) AS itemCount
+            FROM
+                (SELECT
+                    cm.*
+                FROM
+                    sepp_code_mission cm,
+                    sepp_requirement r
+                WHERE r.rel_id = #{relId}
+                  AND r.id = cm.req_id
+                  AND cm.plan_to <![CDATA[ < ]]> DATE_ADD(#{warnDate}, INTERVAL 1 DAY)
+                  AND cm.status IN (1, 2)
+                UNION
+                SELECT
+                    cm.*
+                FROM
+                    sepp_code_mission cm,
+                    sepp_requirement r,
+                    sepp_history h
+                WHERE r.rel_id = #{relId}
+                  AND r.id = cm.req_id
+                  AND cm.status IN (0, 3, 4, 5, 6)
+                  AND h.obj_type = 6
+                  AND h.obj_id = cm.id
+                  AND h.obj_key = 'status'
+                  AND h.oper_time > DATE_ADD(cm.plan_to, INTERVAL 1 DAY)
+                  AND h.new_value IN ('0', '3', '4', '5', '6')
+                  AND NOT EXISTS
+                    (SELECT
+                        'X'
+                    FROM
+                        sepp_history hh
+                    WHERE hh.obj_id = h.obj_id
+                      AND hh.obj_type = 6
+                      AND hh.obj_key = 'status'
+                      AND hh.new_value IN ('0', '3', '4', '5', '6')
+                      AND h.id > hh.id)) b) a
+    </select>
+
+    <insert id="createBatch" useGeneratedKeys="true" keyProperty="id" parameterType="com.pr.sepp.notify.warning.model.WarningBatch">
+        insert into
+            sepp_warning_batch(batch_no, category, warning_date)
+        values
+            (#{batchNo}, #{category}, #{warningDate})
+    </insert>
+
+    <select id="queryBatch" resultType="com.pr.sepp.notify.warning.model.WarningBatch">
+        select id, batch_no, category, warning_date
+          from sepp_warning_batch
+         where batch_no = #{batchNo}
+    </select>
+
+    <insert id="createWarning" useGeneratedKeys="true" keyProperty="id" parameterType="com.pr.sepp.notify.warning.model.Warning">
+        insert into
+            sepp_warning(batch_id, product_id, type, sub_type, category, warning_date, level, responser, summary, content)
+        values
+            (#{batchId}, #{productId}, #{type}, #{subType}, #{category}, #{warningDate}, #{level}, #{responser}, #{summary}, #{content})
+    </insert>
+
+    <insert id="createWarningBatch" parameterType="java.util.List" useGeneratedKeys="false">
+        insert into sepp_warning
+            (batch_id, product_id, type, sub_type, category, warning_date, level, responser, summary, content)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (
+            #{item.batchId},
+            #{item.productId},
+            #{item.type},
+            #{item.subType},
+            #{item.category},
+            #{item.warningDate},
+            #{item.level},
+            #{item.responser},
+            #{item.summary},
+            #{item.content}
+            )
+        </foreach>
+    </insert>
+
+    <select id="warningQuery" resultType="com.pr.sepp.notify.warning.model.WarningMessage" parameterType="com.pr.sepp.notify.warning.model.WarningQuery">
+        SELECT
+            w.id            warningId,
+            w.batch_id      batchId,
+            wb.batch_no     batchNo,
+            w.type,
+            wt1.type_desc   typeName,
+            w.sub_type      subType,
+            wt2.sub_desc    subTypeName,
+            w.category,
+            n.is_sent       isSent,
+            n.to,
+            u.user_name     toName,
+            w.warning_date  warningDate,
+            w.level,
+            wl.level_name   levelName,
+            w.summary,
+            w.content
+        FROM
+            sepp_user u,
+            sepp_warning_notify n,
+            sepp_warning w,
+            sepp_warning_batch wb,
+            (SELECT DISTINCT `type`, type_desc FROM sepp_warning_type) wt1,
+            (SELECT DISTINCT `type`, type_desc, sub_type, sub_desc FROM sepp_warning_type) wt2,
+            sepp_warning_level wl
+        WHERE w.id = n.warning_id
+          AND n.to = u.user_id
+          And wb.id = w.batch_id
+          AND w.product_id = #{productId}
+          AND w.type = wt1.type
+          AND w.type = wt2.type
+          AND w.sub_type = wt2.sub_type
+          AND w.level = wl.level_id
+          AND n.send_gateway = #{sendGateway}
+          AND n.is_sent = #{isSent}
+        <if test="warningDate!=null and warningDate!=''">
+            AND w.warning_date = #{warningDate}
+        </if>
+        <if test="batchNo!=null and batchNo!=''">
+            AND wb.batch_no = #{batchNo}
+        </if>
+        <if test="to!=null and to!=''">
+            AND n.to = #{to}
+        </if>
+        <if test="type!=null and type!=''">
+            AND w.type = #{type}
+        </if>
+        <if test="subType!=null and subType!=''">
+            AND w.sub_type = #{subType}
+        </if>
+        <if test="level!=null and level!=''">
+            AND w.level = #{level}
+        </if>
+        <if test="category!=null and category!=''">
+            AND w.category = #{category}
+        </if>
+        ORDER BY w.category DESC, w.type, w.sub_type ASC
+    </select>
+
+    <select id="findWarningsByUser" resultType="com.pr.sepp.notify.warning.model.WarningMessage">
+        SELECT
+            w.id            warningId,
+            w.batch_id      batchId,
+            wb.batch_no     batchNo,
+            w.type,
+            wt1.type_desc   typeName,
+            w.sub_type      subType,
+            wt2.sub_desc    subTypeName,
+            w.category,
+            n.is_sent       isSent,
+            n.to,
+            u.user_name     toName,
+            w.warning_date  warningDate,
+            w.level,
+            wl.level_name   levelName,
+            w.summary,
+            w.content
+        FROM
+            sepp_user u,
+            sepp_warning_notify n,
+            sepp_warning w,
+            (SELECT DISTINCT `type`, type_desc FROM sepp_warning_type) wt1,
+            (SELECT DISTINCT `type`, type_desc, sub_type, sub_desc FROM sepp_warning_type) wt2,
+            sepp_warning_level wl,
+            (SELECT
+                MAX(batch_no) batch_no,
+                category,
+                id
+            FROM
+                sepp_warning_batch
+            WHERE TO_DAYS(NOW()) - TO_DAYS(warning_date) = 0
+            GROUP BY category) wb
+        WHERE w.id = n.warning_id
+          AND n.to = u.user_id
+          AND w.product_id = #{productId}
+          AND w.type = wt1.type
+          AND w.type = wt2.type
+          AND w.sub_type = wt2.sub_type
+          AND w.level = wl.level_id
+          AND n.send_gateway = 1
+          AND n.is_sent = 0
+          AND n.to = #{userId}
+          AND w.category = wb.category
+          And w.batch_id = wb.id
+        ORDER BY w.category DESC, w.type, w.sub_type ASC
+    </select>
+
+    <select id="warningMailSendQuery" resultType="com.pr.sepp.notify.warning.model.WarningMail">
+        SELECT
+            w.id            warningId,
+            w.batch_id      batchId,
+            wb.batch_no     batchNo,
+            u.user_id       `to`,
+            u.user_name     toName,
+            u.user_email    toEmail,
+            w.type,
+            wt1.type_desc   typeName,
+            w.sub_type      subType,
+            wt2.sub_desc    subTypeName,
+            n.is_sent       isSent,
+            n.send_gateway  sendGateway,
+            w.category,
+            w.warning_date  warningDate,
+            w.level,
+            wl.level_name   levelName,
+            w.summary,
+            w.content,
+            p.product_id    productId,
+            p.product_name  productName
+        FROM
+            sepp_user u,
+            sepp_warning w,
+            sepp_warning_batch wb,
+            sepp_warning_notify n,
+            (SELECT DISTINCT `type`, type_desc FROM sepp_warning_type) wt1,
+            (SELECT DISTINCT `type`, type_desc, sub_type, sub_desc FROM sepp_warning_type) wt2,
+            sepp_warning_level wl,
+            sepp_product p
+        WHERE TO_DAYS(NOW()) - TO_DAYS(w.warning_date) = 0
+          And wb.id = w.batch_id
+          AND wb.batch_no IN (
+            SELECT MAX(batch_no)
+              FROM sepp_warning_batch
+             WHERE TO_DAYS(NOW()) - TO_DAYS(warning_date) = 0
+             GROUP BY category)
+          AND n.to = u.user_id
+          AND n.is_sent = 0
+          AND n.send_gateway = 2
+          AND n.warning_id = w.id
+          AND w.type = wt1.type
+          AND w.type = wt2.type
+          AND w.sub_type = wt2.sub_type
+          AND w.level = wl.level_id
+          AND p.product_id = w.product_id
+          AND n.to = #{userId}
+        ORDER BY w.category DESC, w.type, w.sub_type ASC
+    </select>
+
+    <insert id="createWarningNotifyBatch" parameterType="java.util.List" useGeneratedKeys="false">
+        insert into sepp_warning_notify
+            (`warning_id`, `send_gateway`, `to`)
+        values
+        <foreach collection="list" item="item" index="index" separator=",">
+            (#{item.warningId}, #{item.sendGateway}, #{item.to})
+        </foreach>
+        on duplicate key update updated_date = now()
+    </insert>
+
+    <update id="updateWarningMailSendStatus">
+        update sepp_warning_notify wn
+          set wn.is_sent = #{status}
+        where wn.to = #{to}
+          and wn.is_sent = 0
+          and wn.send_gateway = 2
+    </update>
+
+    <update id="updateWarningMessageSendStatus">
+        update sepp_warning_notify wn
+          set wn.is_sent = 1
+        where wn.to = #{userId}
+          and wn.send_gateway = #{messageType}
+          and wn.is_sent = 0
+    </update>
+
+    <select id="distinctEmailRecivers" resultType="java.lang.Integer">
+        select distinct wn.to
+          from sepp_warning_notify wn
+         where wn.is_sent = 0
+    </select>
+
+</mapper>

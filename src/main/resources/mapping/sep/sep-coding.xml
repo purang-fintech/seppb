@@ -32,7 +32,8 @@
             sepp_user u2,
             sepp_cm_status cs,
             sepp_prod_module m
-        where c.req_id = r.id
+        where r.product_id = #{productId}
+            and c.req_id = r.id
             and c.spliter = u1.user_id
             and c.responser = u2.user_id
             and cs.status_id = c.status
@@ -42,7 +43,6 @@
                 and c.id = #{id}
             </when>
             <otherwise>
-                and r.product_id = #{productId}
                 <if test="relId!=null and relId != ''">
                     and r.rel_id = #{relId}
                 </if>

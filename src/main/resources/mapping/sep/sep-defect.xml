@@ -59,7 +59,8 @@
             sepp_found_means fm,
             sepp_found_period fp,
             sepp_prod_module m
-        where r.id = d.req_id
+        where d.product_id = #{productId}
+            and r.id = d.req_id
             and IFNULL(d.rel_id, 0) = rel.id
             and d.status = ds.status_id
             and d.priority = dp.priority_id
@@ -74,7 +75,6 @@
                     and d.id = #{id}
                 </when>
                 <otherwise>
-                    and d.product_id = #{productId}
                     <if test="relId!=null and relId!=''">
                         and d.rel_id = #{relId}
                     </if>

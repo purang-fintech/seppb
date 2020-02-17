@@ -6,9 +6,9 @@
 <mapper namespace="com.pr.sepp.sep.build.dao.SonarDAO">
     <insert id="insertSonarScan"   parameterType="com.pr.sepp.sep.build.model.sonar.SonarScanReq">
         insert into sepp_sonar_scan
-        (note_id, git_branch,product_id,project_key, submitter,project_version,start_time,result_id)
+            (note_id, git_branch,product_id,instance,project_key, submitter,project_version,start_time,result_id)
         values
-        (#{noteId},#{gitBranch},#{productId},#{projectKey}, #{submitter},#{projectVersion},#{startTime},'0')
+            (#{noteId},#{gitBranch},#{productId},#{instanceName},#{projectKey}, #{submitter},#{projectVersion},#{startTime},'0')
     </insert>
 
     <!-- 扫描开始时间距今大于一天，未同步成功的项目 不再同步-->
@@ -23,79 +23,63 @@
         FROM
             sepp_sonar_scan
         WHERE result_id = 0
-        and TIMESTAMPDIFF(HOUR,start_time,now())  <![CDATA[ <= ]]> 24
+          and TIMESTAMPDIFF(HOUR,start_time,now())  <![CDATA[ <= ]]> 24
     </select>
     <select id="listSonarProjectNames" resultType="com.pr.sepp.sep.build.model.sonar.SonarProjectNames">
         SELECT  DISTINCT
-        F.instance,
-        F.param_value AS paramValue,
-        I.`project_name`AS  projectName
+            F.instance,
+            F.param_value AS paramValue,
+            BI.`project_name`AS  projectName
         FROM
-        sepp_build_files F,
-        sepp_build_instance I
-        WHERE F.`instance` = I.`instance`
-        AND
-        F.note_id = #{noteID}
+            sepp_build_files F,
+            sepp_build_instance BI
+        WHERE F.`instance` = BI.`instance`
+          AND F.note_id = #{noteID}
     </select>
-    <select id="ListSonarScanHistory" resultType="com.pr.sepp.sep.build.model.sonar.SonarScanHistory">
+
+    <select id="listInstance" resultType="com.pr.sepp.sep.build.model.sonar.SonarReqInstance">
         SELECT
-        R.id,
-        U.`user_name` AS submitter,
-        S.note_id AS noteId,
-        S.start_time AS startTime,
-        S.project_key AS projectKey,
-        S.`project_version` AS projectVersion,
-        S.git_branch AS gitBranch,
-        R.analysis_status AS analysisStatus,
-        R.ncloc,
-        R.coverage,
-        R.duplicated_lines_density AS duplicatedLinesDensity,
-        R.code_smells  AS codeSmells,
-        R.bugs,
-        R.vulnerabilities,
-        ROUND(R.sqale_index/60) AS sqaleIndex
+            instance,
+            project_name projectName,
+            repo_url repoUrl,
+            namespace,
+            description
         FROM
-        sepp_user U,
-        sepp_sonar_scan S
-        LEFT JOIN
-        sepp_sonar_result R
-        ON R.id = S.`result_id`
-        WHERE
-        S.submitter =U.`user_id`
-        <if test="noteId!=null and noteId!=''">
-           AND S.note_id =  #{noteId}
-        </if>
-        ORDER BY startTime ASC
+            sepp_build_instance
+        WHERE product_id =  #{productId}
     </select>
+
+
 
     <select id="ListAllSonarScanHistory" parameterType="java.lang.Integer" resultType="com.pr.sepp.sep.build.model.sonar.SonarScanHistory">
         SELECT
-        R.id,
-        U.`user_name` AS submitter,
-        S.note_id AS noteId,
-        S.start_time AS startTime,
-        S.project_key AS projectKey,
-        S.`project_version` AS projectVersion,
-        S.git_branch AS gitBranch,
-        R.analysis_status AS analysisStatus,
-        R.ncloc,
-        R.coverage,
-        R.duplicated_lines_density AS duplicatedLinesDensity,
-        R.code_smells  AS codeSmells,
-        R.bugs,
-        R.vulnerabilities,
-        ROUND(R.sqale_index/60) AS sqaleIndex
+            R.id,
+            U.`user_name` AS submitter,
+            S.note_id AS noteId,
+            S.start_time AS startTime,
+            S.project_key AS projectKey,
+            S.instance AS instanceName,
+            S.`project_version` AS projectVersion,
+            S.git_branch AS gitBranch,
+            R.analysis_status AS analysisStatus,
+            R.ncloc,
+            R.coverage,
+            R.hotspots,
+            R.duplicated_lines_density AS duplicatedLinesDensity,
+            R.code_smells  AS codeSmells,
+            R.bugs,
+            R.vulnerabilities,
+            ROUND(R.sqale_index/60) AS sqaleIndex
         FROM
-        sepp_user U,
-        sepp_sonar_scan S
+            sepp_user U,
+            sepp_sonar_scan S
         LEFT JOIN
-        sepp_sonar_result R
-        ON R.id = S.`result_id`
+            sepp_sonar_result R
+            ON R.id = S.`result_id`
         WHERE
-        S.submitter =U.`user_id`
+            S.submitter =U.`user_id`
         AND S.product_id =  #{productId}
         <choose>
-
             <when test="projectKey!=null and projectKey!=''">
                 AND S.project_key =  #{projectKey}
             </when>
@@ -103,16 +87,16 @@
                 AND 1 =  1
             </when>
         </choose>
-        ORDER BY startTime ASC
+        ORDER BY startTime desc
     </select>
 
     <update id="syncProjectSuccess" >
         UPDATE
-        sepp_sonar_scan
+            sepp_sonar_scan
         SET
-        result_id = #{id}
+            result_id = #{id}
         WHERE
-        id =#{scanId}
+            id =#{scanId}
     </update>
 
     <insert id="insertSonarResult"    useGeneratedKeys="true"   parameterType="com.pr.sepp.sep.build.model.sonar.SonarResult">
@@ -120,9 +104,9 @@
             select last_insert_id()
         </selectKey>
         insert into sepp_sonar_result
-        (project_key,project_version,scan_date,analysis_id,analysis_status,ncloc,coverage,duplicated_lines_density,code_smells,bugs ,vulnerabilities ,sqale_index )
+            (project_key,project_version,scan_date,analysis_id,analysis_status,ncloc,coverage,hotspots,duplicated_lines_density,code_smells,bugs ,vulnerabilities ,sqale_index )
         values
-        (#{projectKey},#{projectVersion}, #{scanDate}, #{key},#{analysisStatus},#{ncloc},#{coverage},#{duplicatedLinesDensity},#{codeSmells},#{bugs},#{vulnerabilities},#{sqaleIndex})
+            (#{projectKey},#{projectVersion}, #{scanDate}, #{key},#{analysisStatus},#{ncloc},#{coverage},#{hotspots},#{duplicatedLinesDensity},#{codeSmells},#{bugs},#{vulnerabilities},#{sqaleIndex})
     </insert>
 
 </mapper>

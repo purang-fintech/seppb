@@ -2,9 +2,9 @@
 <!DOCTYPE mapper  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "mybatis-3-mapper.dtd">
 
-<mapper namespace="com.pr.sepp.notify.dao.MessageDAO">
+<mapper namespace="com.pr.sepp.notify.message.dao.MessageDAO">
 
-    <select id="mailNotSentQuery" resultType="com.pr.sepp.notify.model.Mail">
+    <select id="mailNotSentQuery" resultType="com.pr.sepp.notify.message.model.MessageMail">
         SELECT mf.id,
                m.title,
                m.content,
@@ -42,7 +42,7 @@
         ORDER BY mf.created_date DESC
     </select>
 
-    <select id="findMessagesByUser" resultType="com.pr.sepp.notify.model.resp.MessageResp">
+    <select id="findMessagesByUser" resultType="com.pr.sepp.notify.message.model.resp.MessageResp">
         SELECT
             mf.id,
             m.title,
@@ -90,7 +90,7 @@
         </foreach>
     </update>
 
-    <insert id="createMessage" useGeneratedKeys="true" parameterType="com.pr.sepp.notify.model.Message">
+    <insert id="createMessage" useGeneratedKeys="true" parameterType="com.pr.sepp.notify.message.model.Message">
         <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
             select last_insert_id()
         </selectKey>
@@ -100,7 +100,7 @@
             (#{productId}, #{objectType}, #{objectId}, #{title}, #{content})
     </insert>
 
-    <insert id="createMessageFlow" useGeneratedKeys="true" parameterType="com.pr.sepp.notify.model.MessageFlow">
+    <insert id="createMessageFlow" useGeneratedKeys="true" parameterType="com.pr.sepp.notify.message.model.MessageFlow">
         <selectKey keyProperty="id" order="AFTER" resultType="java.lang.Long">
             select last_insert_id()
         </selectKey>

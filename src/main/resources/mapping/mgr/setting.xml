@@ -7,13 +7,15 @@
 
     <select id="listConfig" resultMap="listConfigR">
         select id,
-               setting_name  as settingName,
-               setting_limit as settingLimit,
-               setting_keys  as settingKeys
+            setting_type  as settingType,
+            setting_name  as settingName,
+            setting_limit as settingLimit,
+            setting_keys  as settingKeys
         from sepp_setting_config
     </select>
     <resultMap type="java.util.HashMap" id="listConfigR">
         <id column="id" property="id" javaType="Integer"/>
+        <result column="settingType" property="settingType" javaType="String"/>
         <result column="settingName" property="settingName" javaType="String"/>
         <result column="settingLimit" property="settingLimit" javaType="Integer"/>
         <result column="settingKeys" property="settingKeys" javaType="String"/>
@@ -24,15 +26,16 @@
             select last_insert_id()
         </selectKey>
         insert into
-            sepp_setting_config(setting_name, setting_limit, setting_keys)
+            sepp_setting_config(setting_type, setting_name, setting_limit, setting_keys)
         values
-            (#{settingName}, #{settingLimit}, #{settingKeys})
+            (#{settingType}, #{settingName}, #{settingLimit}, #{settingKeys})
     </insert>
 
     <update id="configUpdate" parameterType="com.pr.sepp.mgr.system.model.SettingConfig">
         update
             sepp_setting_config
         set
+            setting_type = #{settingType},
             setting_name = #{settingName},
             setting_limit = #{settingLimit},
             setting_keys = #{settingKeys}
@@ -48,17 +51,17 @@
 
     <select id="listSetting" resultMap="listSettingR">
         select s.id,
-               s.setting_type  as settingType,
+               s.config_id     as configId,
                s.create_user   as createUser,
                s.setting_value as settingValue,
                c.setting_name  as settingName
         from sepp_settings s,
              sepp_setting_config c
-        where s.setting_type = c.id
+        where s.config_id = c.id
     </select>
     <resultMap type="java.util.HashMap" id="listSettingR">
         <id column="id" property="id" javaType="Integer"/>
-        <result column="settingType" property="settingType" javaType="Integer"/>
+        <result column="configId" property="configId" javaType="Integer"/>
         <result column="createUser" property="createUser" javaType="Integer"/>
         <result column="settingValue" property="settingValue" javaType="String"/>
         <result column="settingName" property="settingName" javaType="String"/>
@@ -69,9 +72,9 @@
             select last_insert_id()
         </selectKey>
         insert into
-            sepp_settings(setting_type, create_user, setting_value)
+            sepp_settings(config_id, create_user, setting_value)
         values
-            (#{settingType}, #{createUser}, #{settingValue})
+            (#{configId}, #{createUser}, #{settingValue})
     </insert>
 
     <update id="settingUpdate" parameterType="com.pr.sepp.mgr.system.model.SystemSetting">
@@ -92,10 +95,10 @@
 
     <select id="findSetting" resultType="com.pr.sepp.mgr.system.model.SystemSetting">
         SELECT id,
-               setting_type as settingType,
-               create_user as createUser,
-               setting_value as settingValue
-          FROM sepp_settings
-         WHERE setting_type = #{settingType}
+            config_id as configId,
+            create_user as createUser,
+            setting_value as settingValue
+         FROM sepp_settings
+        WHERE config_id = #{configId}
     </select>
 </mapper>

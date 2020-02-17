@@ -33,7 +33,8 @@
             sepp_req_type rt,
             sepp_prod_module pm,
             sepp_user u
-        where r.id > 0
+        where r.product_id = #{productId}
+            AND r.id > 0
             and r.status = rs.status_id
             and r.priority = rp.priority_id
             and r.module_id =pm.module_id
@@ -44,7 +45,6 @@
                     and r.id = #{id}
                 </when>
                 <otherwise>
-                    and r.product_id = #{productId}
                     <if test="types!=null">
                         and r.type in
                         <foreach collection="types" index="index" item="type" open="(" separator="," close=")">

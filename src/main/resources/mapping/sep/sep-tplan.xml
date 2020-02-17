@@ -34,7 +34,8 @@
 			sepp_test_period tp,
 			sepp_user u1,
 			sepp_user u2
-		where p.rel_id = r.id
+		where r.product_id = #{productId}
+			and p.rel_id = r.id
 			and u1.user_id = p.submitter
 			and u2.user_id = p.responser
 			and tp.period_id = p.plan_type
@@ -53,7 +54,6 @@
 				</if>
 			</when>
 			<otherwise>
-				and r.product_id = #{productId}
 				<if test="relId!=null and relId!=''">
 					and p.rel_id = #{relId}
 				</if>
