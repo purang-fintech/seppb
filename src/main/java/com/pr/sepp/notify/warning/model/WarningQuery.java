@@ -13,6 +13,9 @@ public class WarningQuery {
 	private Integer level;
 	private Integer isSent;
 	private Integer to;
+	private Integer sendGateway;
+	private Integer pageSize;
+	private Integer pageNum;
 
 	private String warningDate;
 	private String category;

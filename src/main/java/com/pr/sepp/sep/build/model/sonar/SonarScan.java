@@ -9,6 +9,7 @@ public class SonarScan {
 	private Integer id;
 	private Integer noteId;
 	private String projectKey;
+	private String instanceName;
 	private Integer productId;
 	private String gitBranch;
 	private String projectVersion;

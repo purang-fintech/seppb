@@ -12,6 +12,11 @@ public class Warning {
 	private Integer level;
 	private Integer responser;
 
+	private String typeName;
+	private String subTypeName;
+	private String levelName;
+	private String responserName;
+
 	private String warningDate;
 	private String category;
 	private String summary;

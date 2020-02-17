@@ -13,6 +13,8 @@ public interface SonarScanService {
 
 	void saveSonarData(SonarScanReq sonarScanreq);
 
+	boolean handleConfig() throws IOException;
+
 	int saveSonarResult(SonarResult sonarResult);
 
 	void syncProjectSuccess(Integer scanId, Integer id);

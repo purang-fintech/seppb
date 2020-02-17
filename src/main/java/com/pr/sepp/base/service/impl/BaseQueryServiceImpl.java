@@ -20,7 +20,7 @@ public class BaseQueryServiceImpl implements BaseQueryService {
     BaseQueryDAO baseQueryDAO;
 
     @Override
-    public Map<String, Object> baseQueryProduct(int productId) {
+    public Map<String, Object> baseQueryProduct(Integer productId) {
         Map<String, Object> dataMap = new HashMap<>();
         dataMap.put("product", baseQueryDAO.product());
         dataMap.put("autotestType", baseQueryDAO.autotestType());
@@ -221,7 +221,7 @@ public class BaseQueryServiceImpl implements BaseQueryService {
     }
 
     @Override
-    public List<ProductBranch> productBranch(int productId) {
+    public List<ProductBranch> productBranch(Integer productId) {
         return baseQueryDAO.productBranch(productId);
     }
 

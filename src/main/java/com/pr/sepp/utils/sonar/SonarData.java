@@ -36,6 +36,10 @@ public class SonarData {
     //1. 根据projectKey,projectVersion可以找到analysisId，date
     public SonarResult getProjectAnalyses(String projectKey, String projectVersion, SettingDAO settingDAO) throws IOException {
         SystemSetting sonarconfig = settingDAO.findSetting(SettingType.SONAR.getValue());
+        if(sonarconfig == null){
+            log.info("尚未查询到SONAR系统配置" );
+            return null;
+        }
         List<SonarProperties.SonarConfig> sonarConfigs = SonarProperties.settingToSonarConfig(sonarconfig);
         String url = sonarConfigs.get(0).getBaseHost() + projectAnalyses;
         CloseableHttpClient httpClient = HttpClients.createDefault();

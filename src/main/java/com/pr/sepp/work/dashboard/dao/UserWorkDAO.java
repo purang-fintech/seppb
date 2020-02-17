@@ -1,5 +1,6 @@
 package com.pr.sepp.work.dashboard.dao;
 
+import com.pr.sepp.notify.warning.model.Warning;
 import com.pr.sepp.sep.coding.model.CodeMission;
 import com.pr.sepp.sep.defect.model.Defect;
 import com.pr.sepp.sep.release.model.Release;
@@ -28,4 +29,6 @@ public interface UserWorkDAO {
 	Integer caseRequestRelateQuery(Map<String, Object> releteMap);
 
 	List<Map<String, Object>> releaseAllCaseQuery(Integer relId);
+
+	List<Warning> productWarningQuery(Integer productId, String warningDate);
 }

@@ -50,7 +50,7 @@ public interface BaseQueryDAO {
 
 	List<ReleaseStatus> releaseStatus();
 
-	List<ProductBranch> productBranch(int productId);
+	List<ProductBranch> productBranch(Integer productId);
 
 	List<ReportType> reportType();
 

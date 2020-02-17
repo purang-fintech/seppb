@@ -20,10 +20,14 @@ public class WarningService {
 	@Autowired
 	private WarningDAO warningDAO;
 
-	public PageInfo<WarningMessage> warningListPaging(WarningQuery warningQuery, Integer pageNum, Integer pageSize) {
+	public PageInfo<WarningMessage> warningListPaging(Integer productId, Integer userId, Integer pageNum, Integer pageSize) {
 		PageHelper.startPage(pageNum, pageSize);
-		List<WarningMessage> warnings = warningDAO.findWarningsByUser(warningQuery);
+		List<WarningMessage> warnings = warningDAO.findWarningsByUser(productId, userId);
 		return new PageInfo<>(warnings);
+	}
+
+	public List<WarningMessage> warningQuery(WarningQuery warningQuery){
+		return warningDAO.warningQuery(warningQuery);
 	}
 
 	public ReleaseSepData groupReleaseData(Integer relId, String warnDate) {
@@ -66,10 +70,6 @@ public class WarningService {
 			warningNotifies.add(warningNotifyMail);
 		});
 		warningDAO.createWarningNotifyBatch(warningNotifies);
-	}
-
-	public List<WarningMessage> findWarningsByUser(WarningQuery warningQuery) {
-		return warningDAO.findWarningsByUser(warningQuery);
 	}
 
 	public void updateWarningMessageSendStatus(Integer userId, Integer messageType) {

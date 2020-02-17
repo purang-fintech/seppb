@@ -9,6 +9,7 @@ public class SonarScanHistory {
 	private Integer NoteId;
 	private Integer productId;
 	private String submitter;
+	private String instanceName;
 	private String projectKey;
 	private String gitBranch;
 	private String startTime;

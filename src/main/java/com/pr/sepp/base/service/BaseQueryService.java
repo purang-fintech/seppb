@@ -7,9 +7,10 @@ import java.util.List;
 import java.util.Map;
 
 public interface BaseQueryService {
-	Map<String, Object> baseQueryProduct(int productId);
+	Map<String, Object> baseQueryProduct(Integer productId);
 
 	Map<String, Object> baseQueryNonParams();
+
 	List<AutotestType> autotestType();
 
 	List<ReleaseNoteStatus> releaseNoteStatus();
@@ -54,7 +55,7 @@ public interface BaseQueryService {
 
 	List<ReleaseStatus> releaseStatus();
 
-	List<ProductBranch> productBranch(int productId);
+	List<ProductBranch> productBranch(Integer productId);
 
 	List<ReportType> reportType();
 

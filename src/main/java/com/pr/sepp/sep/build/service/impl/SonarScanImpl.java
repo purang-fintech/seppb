@@ -3,7 +3,6 @@ package com.pr.sepp.sep.build.service.impl;
 import com.pr.sepp.mgr.system.constants.SettingType;
 import com.pr.sepp.mgr.system.dao.SettingDAO;
 import com.pr.sepp.mgr.system.model.SystemSetting;
-import com.pr.sepp.sep.build.dao.BuildInstanceDAO;
 import com.pr.sepp.sep.build.dao.SonarDAO;
 import com.pr.sepp.sep.build.model.BuildInstance;
 import com.pr.sepp.sep.build.model.GitProperties;
@@ -11,6 +10,7 @@ import com.pr.sepp.sep.build.model.sonar.*;
 import com.pr.sepp.sep.build.service.SonarScanService;
 import com.pr.sepp.utils.jenkins.JenkinsClient;
 import com.pr.sepp.utils.jenkins.JenkinsClientProvider;
+import com.pr.sepp.utils.sonar.SonarProperties;
 import lombok.extern.slf4j.Slf4j;
 import org.gitlab.api.GitlabAPI;
 import org.gitlab.api.models.GitlabBranch;
@@ -36,9 +36,6 @@ public class SonarScanImpl implements SonarScanService {
 	private SettingDAO settingDAO;
 
 	@Autowired
-	private BuildInstanceDAO buildInstanceDAO;
-
-	@Autowired
 	private JenkinsClientProvider jenkinsClientProvider;
 
 	@Override
@@ -49,6 +46,7 @@ public class SonarScanImpl implements SonarScanService {
 		project.setSubmitter(sonarScanReq.getSubmitter());
 		project.setGitBranch(sonarScanReq.getGitBranch());
 		project.setProductId(sonarScanReq.getProductId());
+		project.setInstanceName(sonarScanReq.getInstanceName());
 		project.setProjectVersion(sonarScanReq.getGitBranch() + "_" + sonarScanReq.getStartTime());
 		for (String projectKey : sonarScanReq.getProjectKeys()) {
 			project.setProjectKey(projectKey);
@@ -84,6 +82,21 @@ public class SonarScanImpl implements SonarScanService {
 		return sonarDAO.listUnSyncProject();
 	}
 
+	@Override
+	public boolean handleConfig() throws IOException {
+	    List<SonarProperties.SonarConfig> sonarConfigs = SonarProperties.settingToSonarConfig(settingDAO.findSetting(SettingType.SONAR.getValue()));
+        System.out.println(sonarConfigs.size());
+		if(sonarConfigs.size() > 0){
+			if(sonarConfigs.get(0).getBaseHost().length()>0){
+				return true;
+			}else{
+				return false;
+			}
+		}else {
+			return false;
+		}
+	}
+
 	public List<SonarProjectNames> listSonarProjectNames(Integer noteId) {
 		return sonarDAO.listSonarProjectNames(noteId);
 	}
@@ -96,6 +109,12 @@ public class SonarScanImpl implements SonarScanService {
 	@Override
 	public List<GitlabBranch> listBranch(BuildInstance buildInstance) throws IOException {
 		SystemSetting gitConfig = settingDAO.findSetting(SettingType.GIT.getValue());
+
+
+		if(gitConfig == null){
+			log.info("尚未查询到Git系统配置" );
+			return null;
+		}
 		List<GitProperties.GitConfig> gitConfigs = GitProperties.settingToGitConfig(gitConfig);
 		String apiToken = null;
 		String repoUrl = null;
