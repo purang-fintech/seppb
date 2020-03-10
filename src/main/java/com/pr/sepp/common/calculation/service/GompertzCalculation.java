@@ -227,11 +227,16 @@ public class GompertzCalculation {
 	 */
 	public Double[] gompertzParamAvg(int productId) {
 		List<Release> filterdRelease = this.rulesFilteredRelease(productId);
-		if (filterdRelease.size() == 0) {
-			return null;
+		if (!filterdRelease.isEmpty()) {
+			return ruledReleasesParamCalculation(filterdRelease);
 		}
 
-		return this.ruledReleasesParamCalculation(filterdRelease);
+		//产品配置数据
+		ProductConfig config = productDAO.productConfigQuery(productId);
+		Map<String, Double> gompertz = new Gson().fromJson(config.getGompertzParams(), new TypeToken<Map<String, Double>>() {
+		}.getType());
+
+		return new Double[] {gompertz.get("k"), gompertz.get("a"), gompertz.get("b"), gompertz.get("m")};
 	}
 
 	/**

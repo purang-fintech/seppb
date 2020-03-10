@@ -1669,7 +1669,8 @@ CREATE TABLE `sepp_warning` (
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   PRIMARY KEY (`id`),
   KEY `INDEX_BATCH` (`batch_id`),
-  KEY `INDEX_WARN` (`batch_id`,`type`,`sub_type`,`category`,`warning_date`)
+  KEY `INDEX_WARN` (`batch_id`,`type`,`sub_type`,`category`,`warning_date`),
+  KEY `INDEX_DATE` (`warning_date`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_warning_batch` */
@@ -1713,7 +1714,7 @@ CREATE TABLE `sepp_warning_notify` (
   `created_date` timestamp NOT NULL DEFAULT current_timestamp() COMMENT '创建日期',
   PRIMARY KEY (`id`),
   UNIQUE KEY `INDEX_MESSAGE` (`warning_id`,`send_gateway`,`to`),
-  KEY `INDEX_TO_SEND` (`send_gateway`,`to`,`is_sent`)
+  KEY `INDEX_TO_SEND` (`send_gateway`,`is_sent`,`to`)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 /*Table structure for table `sepp_warning_rules` */

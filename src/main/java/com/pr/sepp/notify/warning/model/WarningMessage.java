@@ -21,6 +21,7 @@ public class WarningMessage {
 	private Integer level;
 	private String levelName;
 	private String warningDate;
+	private Integer relId;
 	private String category;
 	private String summary;
 	private String content;

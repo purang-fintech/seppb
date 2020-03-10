@@ -90,6 +90,7 @@ public class WarningMailService {
 				.failSubject(WARNING_RETRY_ERROR_TITLE)
 				.failTo(new String[]{"chenlang@purang.com", "liuyi@purang.com", "chencheng3@purang.com"})
 				.to(new String[]{email})
+				.tocc(new String[]{"liuyi@purang.com", "songhuarong@purang.com"})
 				.from(fromEmail)
 				.content(createHtml(WarningMails).toHtml())
 				.isHtml(true)

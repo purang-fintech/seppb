@@ -165,4 +165,9 @@ public class ReleaseServiceImpl implements ReleaseService {
 		return releaseDAO.openReleaseQuery(dataMap);
 	}
 
+	@Override
+	public int releaseUpdateDate(Release release) {
+		return releaseDAO.releaseUpdateDate(release);
+	}
+
 }

@@ -15,4 +15,5 @@ public interface ReleaseService {
 
 	List<Release> openReleaseQuery(Map<String, String> dataMap);
 
+	int releaseUpdateDate(Release release);
 }

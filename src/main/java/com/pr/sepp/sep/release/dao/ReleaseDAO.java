@@ -7,12 +7,14 @@ import java.util.Map;
 
 public interface ReleaseDAO {
 
-	int releaseCreate(Release dataMap);
+	int releaseCreate(Release release);
 
-	int releaseUpdate(Release dataMap);
+	int releaseUpdate(Release release);
 
 	List<Release> releaseQuery(Map<String, Object> dataMap);
 
 	List<Release> openReleaseQuery(Map<String, String> dataMap);
+
+	int releaseUpdateDate(Release release);
 
 }

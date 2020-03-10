@@ -21,7 +21,7 @@ import com.pr.sepp.sep.testing.dao.TestPlanDAO;
 import com.pr.sepp.sep.testing.dao.TestReportDAO;
 import com.pr.sepp.sep.testing.model.TestPlan;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -129,6 +129,7 @@ public class WarningCalculation {
 				continue;
 			}
 		}
+		;
 	}
 
 	/**
@@ -186,10 +187,10 @@ public class WarningCalculation {
 		releaseSepData.setExpectDefect(expectDefectNum);
 
 		// 以 Aviator 支持的日期格式配置版本的关键日期点和告警计算日期
-		releaseSepData.setSitBeginDate(fmt.format(fmt.parse(release.getSitBeginDate() + " 00:00:00:00")));
-		releaseSepData.setUatBeginDate(fmt.format(fmt.parse(release.getUatBeginDate() + " 00:00:00:00")));
-		releaseSepData.setRelDate(fmt.format(fmt.parse(release.getRelDate() + " 00:00:00:00")));
-		releaseSepData.setWarnDate(fmt.format(fmt.parse(warnDate + " 00:00:00:00")));
+		releaseSepData.setSitBeginDate(fmt.format(fmt.parse(StringUtils.join(release.getSitBeginDate()," 00:00:00:00"))));
+		releaseSepData.setUatBeginDate(fmt.format(fmt.parse(StringUtils.join(release.getUatBeginDate()," 00:00:00:00"))));
+		releaseSepData.setRelDate(fmt.format(fmt.parse(StringUtils.join(release.getRelDate()," 00:00:00:00"))));
+		releaseSepData.setWarnDate(fmt.format(fmt.parse(StringUtils.join(warnDate," 00:00:00:00"))));
 
 		// SIT 的测试计划是否建立的计算数据依据
 		Map<String, Object> sitPlanQuery = new HashMap<>();
@@ -274,8 +275,8 @@ public class WarningCalculation {
 			return null;
 		}
 
-		if (targetType == ObjectType.CMS.getKey()) {
-			// 开发任务相关
+		if (targetType == ObjectType.CMS.getKey() || targetType == ObjectType.PROBLEM.getKey()) {
+			// 开发任务和线上问题相关
 			return Integer.valueOf(memberConfig.get("devResponser"));
 		} else if (targetType == ObjectType.TMS.getKey() || targetType == ObjectType.CASE.getKey() ||
 				targetType == ObjectType.CASESTEP.getKey() || targetType == ObjectType.SCENARIO.getKey() ||

@@ -33,6 +33,11 @@ public class ReleaseController {
 		return releaseService.releaseUpdate(release);
 	}
 
+	@RequestMapping(value = "/release/update/date", method = RequestMethod.POST)
+	public int releaseUpdateDate(@RequestBody Release release) {
+		return releaseService.releaseUpdateDate(release);
+	}
+
 	@RequestMapping(value = "/release/query", method = RequestMethod.POST)
 	public PageInfo<Release> releaseQuery(HttpServletRequest request) {
 		Map<String, Object> dataMap = new HashMap<>();
