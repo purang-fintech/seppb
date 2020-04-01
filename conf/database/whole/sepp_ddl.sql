@@ -1370,7 +1370,7 @@ CREATE TABLE `sepp_sonar_scan` (
   `note_id` int(10) DEFAULT NULL COMMENT '构建id',
   `product_id` int(10) DEFAULT NULL COMMENT '产品编号',
   `submitter` int(10) DEFAULT NULL COMMENT '提交人',
-  `instance`` VARCHAR(40) DEFAULT NULL COMMENT '实例名称',
+  `instance` VARCHAR(40) DEFAULT NULL COMMENT '实例名称',
   `project_key` varchar(40) DEFAULT NULL COMMENT '项目Key',
   `git_branch` varchar(50) DEFAULT NULL COMMENT 'git分支',
   `project_version` varchar(40) DEFAULT NULL COMMENT '版本',
