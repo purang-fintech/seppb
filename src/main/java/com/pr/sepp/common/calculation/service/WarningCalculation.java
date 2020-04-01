@@ -187,10 +187,10 @@ public class WarningCalculation {
 		releaseSepData.setExpectDefect(expectDefectNum);
 
 		// 以 Aviator 支持的日期格式配置版本的关键日期点和告警计算日期
-		releaseSepData.setSitBeginDate(fmt.format(fmt.parse(StringUtils.join(release.getSitBeginDate()," 00:00:00:00"))));
-		releaseSepData.setUatBeginDate(fmt.format(fmt.parse(StringUtils.join(release.getUatBeginDate()," 00:00:00:00"))));
-		releaseSepData.setRelDate(fmt.format(fmt.parse(StringUtils.join(release.getRelDate()," 00:00:00:00"))));
-		releaseSepData.setWarnDate(fmt.format(fmt.parse(StringUtils.join(warnDate," 00:00:00:00"))));
+		releaseSepData.setSitBeginDate(fmt.format(fmt.parse(StringUtils.join(release.getSitBeginDate(), " 00:00:00:00"))));
+		releaseSepData.setUatBeginDate(fmt.format(fmt.parse(StringUtils.join(release.getUatBeginDate(), " 00:00:00:00"))));
+		releaseSepData.setRelDate(fmt.format(fmt.parse(StringUtils.join(release.getRelDate(), " 00:00:00:00"))));
+		releaseSepData.setWarnDate(fmt.format(fmt.parse(StringUtils.join(warnDate, " 00:00:00:00"))));
 
 		// SIT 的测试计划是否建立的计算数据依据
 		Map<String, Object> sitPlanQuery = new HashMap<>();
@@ -343,7 +343,7 @@ public class WarningCalculation {
 		} else if (cal.getTime().after(endDate)) {    // 测试周期结束之后默认为1
 			sitRatio = 1.0;
 		} else {    // 测试计划结束时间减去当前时间 除以 测试计划结束时间减去测试计划开始时间
-			sitRatio = (endDate.getTime() - nowDate.getTime()) / (endDate.getTime() - beginDate.getTime());
+			sitRatio = (double) (endDate.getTime() - nowDate.getTime()) / (double) (endDate.getTime() - beginDate.getTime());
 		}
 
 		result.put("planed", index * sitCaseStr.split(",").length * sitRatio);

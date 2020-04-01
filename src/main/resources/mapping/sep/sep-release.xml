@@ -86,6 +86,7 @@
         select r.id,
                r.rel_code                                  as relCode,
                r.branch_id                                 as branchId,
+               r.product_id                                as productId,
                rt.branch_name                              as branchName,
                r.status,
                rs.status_name                              as statusName,
@@ -141,6 +142,15 @@
             ready_date=#{readyDate},
             rel_date_act=#{relDateAct},
             environment = #{environment}
+        where id=#{id}
+    </update>
+
+    <update id="releaseUpdateDate" parameterType="com.pr.sepp.sep.release.model.Release">
+        update
+            sepp_release
+        set
+            sit_begin_date=#{sitBeginDate},
+            uat_begin_date=#{uatBeginDate}
         where id=#{id}
     </update>
 

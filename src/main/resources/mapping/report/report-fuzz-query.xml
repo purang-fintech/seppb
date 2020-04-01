@@ -9,6 +9,7 @@
         SELECT r.id,
                r.rel_code                                  as relCode,
                r.branch_id                                 as branchId,
+               r.product_id                                as productId,
                rt.branch_name                              as branchName,
                r.status,
                rs.status_name                              as statusName,

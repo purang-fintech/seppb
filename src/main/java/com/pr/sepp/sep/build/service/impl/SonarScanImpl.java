@@ -85,7 +85,6 @@ public class SonarScanImpl implements SonarScanService {
 	@Override
 	public boolean handleConfig() throws IOException {
 	    List<SonarProperties.SonarConfig> sonarConfigs = SonarProperties.settingToSonarConfig(settingDAO.findSetting(SettingType.SONAR.getValue()));
-        System.out.println(sonarConfigs.size());
 		if(sonarConfigs.size() > 0){
 			if(sonarConfigs.get(0).getBaseHost().length()>0){
 				return true;

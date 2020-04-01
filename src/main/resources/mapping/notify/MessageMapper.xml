@@ -29,6 +29,7 @@
           AND mf.message_id = m.id
           AND u1.user_id = mf.creator
           AND u2.user_id = mf.user_id
+          AND u2.is_valid = 'Y'
         <if test="list!=null">
             AND mf.user_id in
             <foreach collection="list" index="index" item="userId" open="(" separator="," close=")">
@@ -40,6 +41,7 @@
           AND mf.type = 2
           AND mf.is_sent is false
         ORDER BY mf.created_date DESC
+        LIMIT 20
     </select>
 
     <select id="findMessagesByUser" resultType="com.pr.sepp.notify.message.model.resp.MessageResp">

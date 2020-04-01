@@ -267,6 +267,7 @@
             wt1.type_desc   typeName,
             w.sub_type      subType,
             wt2.sub_desc    subTypeName,
+            r.id            relId,
             w.category,
             n.is_sent       isSent,
             n.to,
@@ -283,7 +284,8 @@
             sepp_warning_batch wb,
             (SELECT DISTINCT `type`, type_desc FROM sepp_warning_type) wt1,
             (SELECT DISTINCT `type`, type_desc, sub_type, sub_desc FROM sepp_warning_type) wt2,
-            sepp_warning_level wl
+            sepp_warning_level wl,
+            sepp_release r
         WHERE w.id = n.warning_id
           AND n.to = u.user_id
           And wb.id = w.batch_id
@@ -294,6 +296,7 @@
           AND w.level = wl.level_id
           AND n.send_gateway = #{sendGateway}
           AND n.is_sent = #{isSent}
+          AND r.rel_code = w.category
         <if test="warningDate!=null and warningDate!=''">
             AND w.warning_date = #{warningDate}
         </if>
@@ -405,6 +408,7 @@
              WHERE TO_DAYS(NOW()) - TO_DAYS(warning_date) = 0
              GROUP BY category)
           AND n.to = u.user_id
+          AND u.is_valid = 'Y'
           AND n.is_sent = 0
           AND n.send_gateway = 2
           AND n.warning_id = w.id
@@ -415,6 +419,7 @@
           AND p.product_id = w.product_id
           AND n.to = #{userId}
         ORDER BY w.category DESC, w.type, w.sub_type ASC
+        LIMIT 20
     </select>
 
     <insert id="createWarningNotifyBatch" parameterType="java.util.List" useGeneratedKeys="false">
@@ -445,8 +450,11 @@
 
     <select id="distinctEmailRecivers" resultType="java.lang.Integer">
         select distinct wn.to
-          from sepp_warning_notify wn
+          from sepp_warning_notify wn,
+               sepp_user u
          where wn.is_sent = 0
+           and u.user_id = wn.to
+           and u.is_valid = 'Y'
     </select>
 
 </mapper>

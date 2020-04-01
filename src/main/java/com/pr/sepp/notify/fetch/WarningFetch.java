@@ -26,7 +26,9 @@ public class WarningFetch implements BaseFetch<WarningMessage> {
 		Integer pageSize = optionPageSize.orElse(500);
 		Optional<Integer> optionalProductId = attributesFetch(session, PRODUCT_ID);
 		Optional<Integer> optionalUserId = attributesFetch(session, USER_ID);
-
-		return warningService.warningListPaging(optionalProductId.get(), optionalUserId.get(), pageNum, pageSize);
+		if (optionalProductId.isPresent() && optionalUserId.isPresent()) {
+			return warningService.warningListPaging(optionalProductId.get(), optionalUserId.get(), pageNum, pageSize);
+		}
+		return null;
 	}
 }

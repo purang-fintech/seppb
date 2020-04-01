@@ -34,12 +34,11 @@
 		  date_format(d.found_time, '%Y-%m-%d') as foundTime,
 		  count(d.id) as dailyFound
 		 from
-		  sepp_defects d,
-		  sepp_requirement r
-		 where d.req_id = r.id
+		  sepp_defects d
+		 where 1 = 1
 		<choose>
 			<when test="relId != null and relId != ''">
-		 		 and r.rel_id = #{relId}
+		 		 and d.rel_id = #{relId}
 			</when>
 			<otherwise>
 		 		and d.product_id = #{productId}
@@ -76,12 +75,11 @@
 			date_format(d.response_time, '%Y-%m-%d') as responseTime,
 			count(d.id) as dailyResponse
 		 from
-			sepp_defects d,
-			sepp_requirement r
-		where d.req_id = r.id
+			sepp_defects d
+		where 1 = 1
 		<choose>
 			<when test="relId != null and relId != ''">
-		 		 and r.rel_id = #{relId}
+		 		 and d.rel_id = #{relId}
 			</when>
 			<otherwise>
 		 		and d.product_id = #{productId}
@@ -119,12 +117,11 @@
 			date_format(d.fixed_time, '%Y-%m-%d') as fixedTime,
 			count(d.id) as dailyFixed
 		 from
-			sepp_defects d,
-			sepp_requirement r
-		where d.req_id = r.id
+			sepp_defects d
+		where 1 = 1
 		<choose>
 			<when test="relId != null and relId != ''">
-		 		 and r.rel_id = #{relId}
+		 		 and d.rel_id = #{relId}
 			</when>
 			<otherwise>
 		 		and d.product_id = #{productId}
@@ -162,12 +159,11 @@
 			date_format(d.deployed_time, '%Y-%m-%d') as deployedTime,
 			count(d.id) as dailyDeployed
 		 from
-			sepp_defects d,
-			sepp_requirement r
-		where d.req_id = r.id
+			sepp_defects d
+		where 1 = 1
 		<choose>
 			<when test="relId != null and relId != ''">
-		 		 and r.rel_id = #{relId}
+		 		 and d.rel_id = #{relId}
 			</when>
 			<otherwise>
 		 		and d.product_id = #{productId}
@@ -205,12 +201,11 @@
 			date_format(d.closed_time, '%Y-%m-%d') as closedTime,
 			count(d.id) as dailyClosed
 		 from
-			sepp_defects d,
-			sepp_requirement r
-		where d.req_id = r.id
+			sepp_defects d
+		where 1 = 1
 		<choose>
 			<when test="relId != null and relId != ''">
-		 		 and r.rel_id = #{relId}
+		 		 and d.rel_id = #{relId}
 			</when>
 			<otherwise>
 		 		and d.product_id = #{productId}
@@ -245,12 +240,11 @@
 			m.module_name as moduleName
 		from
 			sepp_prod_module m,
-			sepp_defects d,
-			sepp_requirement r
-		where d.req_id = r.id
+			sepp_defects d
+		where 1 = 1
 		<choose>
 			<when test="relId != null and relId != ''">
-		 		 and r.rel_id = #{relId}
+		 		 and d.rel_id = #{relId}
 			</when>
 			<otherwise>
 		 		and d.product_id = #{productId}
@@ -288,7 +282,7 @@
 		where d.req_id = r.id
 		<choose>
 			<when test="relId != null and relId != ''">
-		 		 and r.rel_id = #{relId}
+		 		 and d.rel_id = #{relId}
 			</when>
 			<otherwise>
 		 		and d.product_id = #{productId}
@@ -320,7 +314,7 @@
 		  and rel.id = r.rel_id
 		<choose>
 			<when test="relId != null and relId != ''">
-		 		 and r.rel_id = #{relId}
+		 		 and d.rel_id = #{relId}
 			</when>
 			<otherwise>
 		 		and d.product_id = #{productId}
@@ -349,18 +343,16 @@
 
 	<select id="defectFounder" resultMap="defectFounderr" parameterType="java.util.HashMap">
 		select 
-		 count(d.id) as num,
-		 d.influence,
-		 concat(u.user_name,'(', u.user_account,')') as founder
+			count(d.id) as num,
+			d.influence,
+			concat(u.user_name,'(', u.user_account,')') as founder
 		from
-		 sepp_defects d,
-		 sepp_requirement r,
-		 sepp_user u
+			sepp_defects d,
+			sepp_user u
 		where u.user_id = d.submitter
-		  and d.req_id = r.id
 		<choose>
 			<when test="relId != null and relId != ''">
-		 		 and r.rel_id = #{relId}
+		 		 and d.rel_id = #{relId}
 			</when>
 			<otherwise>
 		 		and d.product_id = #{productId}
@@ -381,17 +373,16 @@
 
 	<select id="defectResponser" resultMap="defectResponserr" parameterType="java.util.HashMap">
 		select 
-		 count(d.id) as num,
-		 d.influence,
-		 concat(u.user_name,'(', u.user_account,')') as responser
+			count(d.id) as num,
+			d.influence,
+			concat(u.user_name,'(', u.user_account,')') as responser
 		from
-		 sepp_user u,
-		 sepp_requirement r,
-		 sepp_defects d
-	  where d.req_id = r.id
+			sepp_user u,
+			sepp_defects d
+	  where 1 = 1
 		<choose>
 			<when test="relId!=null and relId!=''">
-		 		 and r.rel_id = #{relId}
+		 		 and d.rel_id = #{relId}
 			</when>
 			<otherwise>
 		 		and d.product_id = #{productId}
@@ -406,16 +397,15 @@
 		group by d.responser, d.influence
 		union
 		select 
-		 count(d.id) as num,
-		 d.influence,
-		 '尚未分配' as responser
+			count(d.id) as num,
+			d.influence,
+			'尚未分配' as responser
 		from
-		 sepp_requirement r,
-		 sepp_defects d
-	  where d.req_id = r.id
+			sepp_defects d
+	  where 1 = 1
 		<choose>
 			<when test="relId!=null and relId!=''">
-		 		 and r.rel_id = #{relId}
+		 		 and d.rel_id = #{relId}
 			</when>
 			<otherwise>
 		 		and d.product_id = #{productId}
@@ -437,15 +427,14 @@
 
 	<select id="defectPriority" resultMap="defectPriorityr" parameterType="java.util.HashMap">
 		select 
-		 count(d.id) as num,
-		 d.priority
+			count(d.id) as num,
+			d.priority
 		from
-		 sepp_requirement r,
-		 sepp_defects d
-	  where d.req_id = r.id
+			sepp_defects d
+	   where 1 = 1
 		<choose>
 			<when test="relId != null and relId != ''">
-		 		 and r.rel_id = #{relId}
+		 		 and d.rel_id = #{relId}
 			</when>
 			<otherwise>
 		 		and d.product_id = #{productId}
@@ -472,15 +461,14 @@
 
 	<select id="defectInfluence" resultMap="defectInfluencer" parameterType="java.util.HashMap">
 		select 
-		 count(d.id) as num,
-		 d.influence
+			count(d.id) as num,
+			d.influence
 		from
-			sepp_requirement r,
 			sepp_defects d
-	  where d.req_id = r.id
+	  where 1 = 1
 		<choose>
 			<when test="relId != null and relId != ''">
-		 		 and r.rel_id = #{relId}
+		 		 and d.rel_id = #{relId}
 			</when>
 			<otherwise>
 		 		and d.product_id = #{productId}
@@ -507,15 +495,14 @@
 
 	<select id="defectType" resultMap="defectTyper" parameterType="java.util.HashMap">
 		select 
-		 count(d.id) as num,
-		 ifnull(defect_type, 0) as defectType
+			count(d.id) as num,
+			ifnull(defect_type, 0) as defectType
 		from
-			sepp_requirement r,
 			sepp_defects d
-	  where d.req_id = r.id
+	  where 1 = 1
 		<choose>
 			<when test="relId != null and relId != ''">
-		 		 and r.rel_id = #{relId}
+		 		 and d.rel_id = #{relId}
 			</when>
 			<otherwise>
 		 		and d.product_id = #{productId}
@@ -542,15 +529,14 @@
 
 	<select id="defectFoundPeriod" resultMap="defectFoundPeriodr" parameterType="java.util.HashMap">
 		select 
-		 count(d.id) as num,
-		 ifnull(d.found_period, 0) as foundPeriod
+			count(d.id) as num,
+			ifnull(d.found_period, 0) as foundPeriod
 		from
-			sepp_requirement r,
 			sepp_defects d
-	  where d.req_id = r.id
+	  where 1 = 1
 		<choose>
 			<when test="relId != null and relId != ''">
-		 		 and r.rel_id = #{relId}
+		 		 and d.rel_id = #{relId}
 			</when>
 			<otherwise>
 		 		and d.product_id = #{productId}
@@ -577,15 +563,14 @@
 
 	<select id="defectProducePeriod" resultMap="defectProducePeriodr" parameterType="java.util.HashMap">
 		select 
-		 count(d.id) as num,
-		 ifnull(defect_period, 0) as defectPeriod
+			count(d.id) as num,
+			ifnull(defect_period, 0) as defectPeriod
 		from
-			sepp_requirement r,
 			sepp_defects d
-		where d.req_id = r.id
+		where 1 = 1
 		<choose>
 			<when test="relId != null and relId != ''">
-		 		 and r.rel_id = #{relId}
+		 		 and d.rel_id = #{relId}
 			</when>
 			<otherwise>
 		 		and d.product_id = #{productId}
@@ -616,7 +601,7 @@
 		 case
 			d.fix_times 
 			when 0 
-			then '拒绝并关闭'
+			then '尚未修复'
 			when 1 
 			then '修复1次(正常)' 
 			when 2 
@@ -626,14 +611,11 @@
 			else '修复3次以上' 
 		 end as fixedTimes
 		from
-			sepp_requirement r,
 			sepp_defects d
-		where d.req_id = r.id
-		  and d.status = 0
-	      and d.closed_time is not null
+		where 1 = 1
 		<choose>
 			<when test="relId != null and relId != ''">
-		 		 and r.rel_id = #{relId}
+		 		 and d.rel_id = #{relId}
 			</when>
 			<otherwise>
 		 		and d.product_id = #{productId}
@@ -676,12 +658,11 @@
 			else '大于72小时响应' 
 		 end as responseCosts
 		from
-			sepp_requirement r,
 			sepp_defects d
-		where d.req_id = r.id
+		where 1 = 1
 		<choose>
 			<when test="relId != null and relId != ''">
-		 		 and r.rel_id = #{relId}
+		 		 and d.rel_id = #{relId}
 			</when>
 			<otherwise>
 		 		and d.product_id = #{productId}
@@ -711,7 +692,7 @@
 		 count(d.id) as num,
 		 case
 			when ifnull(d.fix_cost, 0) = 0
-			then '拒绝并关闭'
+			then '尚未修复'
 			when ifnull(d.fix_cost, 0) > 0
 			and ifnull(d.fix_cost, 0) <![CDATA[<=]]> 4
 			then '4小时内修复' 
@@ -724,14 +705,11 @@
 			else '大于72小时修复' 
 		 end as fixCosts
 		from
-			sepp_requirement r,
 			sepp_defects d
-		where d.req_id = r.id
-		  and d.status = 0
-	      and d.closed_time is not null
+		where 1 = 1
 		<choose>
 			<when test="relId != null and relId != ''">
-		 		 and r.rel_id = #{relId}
+		 		 and d.rel_id = #{relId}
 			</when>
 			<otherwise>
 		 		and d.product_id = #{productId}
@@ -774,12 +752,11 @@
 			else '大于72小时部署' 
 		 end as deployCosts
 		from
-			sepp_requirement r,
 			sepp_defects d
-		where d.req_id = r.id
+		where 1 = 1
 		<choose>
 			<when test="relId != null and relId != ''">
-		 		 and r.rel_id = #{relId}
+		 		 and d.rel_id = #{relId}
 			</when>
 			<otherwise>
 		 		and d.product_id = #{productId}
@@ -821,14 +798,13 @@
 			else '大于72小时验证' 
 		 end as verifyCosts
 		from
-			sepp_requirement r,
 			sepp_defects d
-		where d.req_id = r.id
+		where 1 = 1
 		  and d.status = 0
 	      and d.closed_time is not null
 		<choose>
 			<when test="relId != null and relId != ''">
-		 		 and r.rel_id = #{relId}
+		 		 and d.rel_id = #{relId}
 			</when>
 			<otherwise>
 		 		and d.product_id = #{productId}
