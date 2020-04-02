@@ -1,0 +1,25 @@
+table.hovertable {
+    font-family: 微软雅黑, verdana, arial, sans-serif;
+    font-size: 14px;
+    color: #333333;
+    border-width: 1px;
+    border-color: #dcdfe6;
+    border-collapse: collapse;
+    border-radius: 2px;
+    margin-left: 40px;
+}
+
+table.hovertable th {
+    background-color: #c3dde0;
+    border: 1px solid #dcdfe6;
+    padding: 8px 12px;
+}
+
+table.hovertable tr {
+    background-color: #f5f7fa;
+}
+
+table.hovertable td {
+    border: 1px solid #dcdfe6;
+    padding: 5px 10px;
+}

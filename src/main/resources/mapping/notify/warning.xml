@@ -419,7 +419,6 @@
           AND p.product_id = w.product_id
           AND n.to = #{userId}
         ORDER BY w.category DESC, w.type, w.sub_type ASC
-        LIMIT 20
     </select>
 
     <insert id="createWarningNotifyBatch" parameterType="java.util.List" useGeneratedKeys="false">
