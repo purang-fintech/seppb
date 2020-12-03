@@ -4,11 +4,6 @@
 
 # Software Engineering Productivity Platform #
 
-### 问题解决步骤：
-- 先赏个STAR
-- 再加QQ群：362260709
-- 再问问题，当然，建议提问之前仔细看完下面的说明
-
 ### 启动方式：
 
 - Main Class：com.pr.sepp.SeppApplication（线上可注释掉@EnableSwagger2）
