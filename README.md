@@ -1,3 +1,7 @@
+![GitHub last commit](https://img.shields.io/github/last-commit/purang-fintech/seppb)
+![GitHub commit activity](https://img.shields.io/github/commit-activity/m/purang-fintech/seppb)
+![GitHub license](https://img.shields.io/github/license/purang-fintech/seppb)
+
 # Software Engineering Productivity Platform #
 
 ### 问题解决步骤：
