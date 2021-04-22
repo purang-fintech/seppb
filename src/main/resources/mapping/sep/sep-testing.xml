@@ -23,7 +23,7 @@
             <otherwise>
                 and parent_id = #{parentId}
                 <if test='productId!=null and productId!="" and parentId!="0"'>
-                    and product_id = #{productId}
+                    <![CDATA[and (product_id = #{productId} or product_id < 0)]]>
                 </if>
             </otherwise>
         </choose>
