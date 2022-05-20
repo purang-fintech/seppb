@@ -139,7 +139,7 @@
         <dependency>
             <groupId>com.google.code.gson</groupId>
             <artifactId>gson</artifactId>
-            <version>2.8.5</version><!--$NO-MVN-MAN-VER$-->
+            <version>2.8.9</version><!--$NO-MVN-MAN-VER$-->
             <type>jar</type>
         </dependency>
 
